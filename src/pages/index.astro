@@ -11,6 +11,77 @@
 		<title>Astro</title>
 	</head>
 	<body>
+		<div id="background-carrusel">
+			<img src="ram1.avif" alt="" />
+			<img src="ram2.avif" alt="" />
+			<img src="ram3.avif" alt="" />
+			<img src="toyota-hilux-rad-1.avif" alt="" />
+			<img src="toyota-hilux-rad-2.avif" alt="" />
+			<img src="toyota-hilux-rad-3.avif" alt="" />
+			<img src="toyota-hilux-rad-4.avif" alt="" />
+			<img src="ram1.avif" alt="" />
+		</div>
 		<h1>Astro</h1>
 	</body>
 </html>
+
+<style>
+	* {
+		padding: 0;
+		margin: 0;
+	}
+	body {
+		#background-carrusel {
+
+			display: block;
+			width: 100dvw;
+			height: 100dvh;
+			overflow: hidden;
+			text-wrap: nowrap;
+			white-space: nowrap;
+			font-size: 0;
+
+			img {
+				object-fit: cover;
+				width: 100dvw;
+				height: 100dvh;
+				filter: blur(5px);
+				animation: background-carrusel 10s infinite ease;
+			}
+		}
+
+		h1 {
+			z-index: 0;
+			display: block;
+			position: fixed;
+		}
+	}
+
+	@keyframes background-carrusel {
+		0% {
+			transform: translateX(0);
+		}
+
+		12.5% {
+			transform: translateX(-100dvw);
+		}
+		25% {
+			transform: translateX(-200dvw);
+		}
+		37.5% {
+			transform: translateX(-300dvw);
+		}
+		50% {
+			transform: translateX(-400dvw);
+		}
+		62.5% {
+			transform: translateX(-500dvw);
+		}
+		75% {
+			transform: translateX(-600dvw);
+		}
+		100% {
+			transform: translateX(-700dvw);
+		}
+	}
+</style>
