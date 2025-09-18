@@ -1,5 +1,5 @@
 ---
-
+import { Backgroung } from "../components/background/Background";
 ---
 
 <html lang="en">
@@ -11,28 +11,18 @@
 		<title>Astro</title>
 	</head>
 	<body>
-		<div id="background-carrusel">
-			<img src="ram1.avif" alt="" />
-			<img src="ram2.avif" alt="" />
-			<img src="ram3.avif" alt="" />
-			<img src="toyota-hilux-rad-1.avif" alt="" />
-			<img src="toyota-hilux-rad-2.avif" alt="" />
-			<img src="toyota-hilux-rad-3.avif" alt="" />
-			<img src="toyota-hilux-rad-4.avif" alt="" />
-			<img src="ram1.avif" alt="" />
-		</div>
+		<Backgroung />
 		<h1>Astro</h1>
 	</body>
 </html>
 
-<style>
+<style is:global>
 	* {
 		padding: 0;
 		margin: 0;
 	}
 	body {
 		#background-carrusel {
-
 			display: block;
 			width: 100dvw;
 			height: 100dvh;
@@ -46,14 +36,8 @@
 				width: 100dvw;
 				height: 100dvh;
 				filter: blur(5px);
-				animation: background-carrusel 10s infinite ease;
+				animation: background-carrusel 120s infinite ease;
 			}
-		}
-
-		h1 {
-			z-index: 0;
-			display: block;
-			position: fixed;
 		}
 	}
 
