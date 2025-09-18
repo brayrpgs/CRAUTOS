@@ -13,3 +13,9 @@ header {
     color: snow;
     padding: 1rem;
 }
+
+@media (prefers-color-scheme: dark) {
+    header{
+        background-color: initial;
+    }
+}

@@ -1,7 +1,6 @@
 ---
-import { Backgroung } from "../components/background/Background";
+import { Background } from "../components/background/Background";
 import { HeaderPage } from "../components/header/HeaderPage";
-
 ---
 
 <html lang="en">
@@ -13,7 +12,7 @@ import { HeaderPage } from "../components/header/HeaderPage";
 		<title>Astro</title>
 	</head>
 	<body>
-		<Backgroung />
+		<Background />
 		<HeaderPage children={"HOLA"}/>
 	</body>
 </html>
@@ -70,4 +69,10 @@ import { HeaderPage } from "../components/header/HeaderPage";
 			transform: translateX(-700dvw);
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+    #background-carrusel{
+        filter: brightness(0.5);
+    }
+}
 </style>

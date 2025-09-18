@@ -1,4 +1,4 @@
-const Backgroung = () => {
+const Background = () => {
     return <>
         <div id="background-carrusel">
             <img src="ram1.avif" alt="" />
@@ -13,4 +13,4 @@ const Backgroung = () => {
     </>
 }
 
-export { Backgroung }
+export { Background }
