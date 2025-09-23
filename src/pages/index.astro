@@ -2,6 +2,7 @@
 import { Background } from "../components/background/Background";
 import { HeaderPage } from "../components/header/HeaderPage";
 import FloatingInput from "../components/input/FloatingInput";
+import DatePicker from  "../components/datePicker/DatePicker";
 ---
 
 <html lang="en">
@@ -13,7 +14,7 @@ import FloatingInput from "../components/input/FloatingInput";
 		<title>Astro</title>
 	</head>
 	<body>
-		<FloatingInput label="Email" type="email" name="email" />
+		<DatePicker client:load />
 	</body>
 </html>
 

@@ -1,29 +1,31 @@
-import React, { useState } from "react";
-import './FloatingInput.css'
+import React, { useState, useId } from "react";
+import "./FloatingInput.css";
 import type { InputHTMLAttributes } from "react";
 
 interface FloatingInputProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string;
 }
 
-const FloatingInput: React.FC<FloatingInputProps> = ({ label, ...props }) => {
+const FloatingInput: React.FC<FloatingInputProps> = ({ label, id, ...props }) => {
     const [value, setValue] = useState("");
+    const autoId = useId();
+
+    const inputId = id ?? autoId;
 
     return (
-        <div style={{ background: "#0b1633", borderRadius: "8px", width: "200px" }}>   
-            <div className="floating-input">
-                <input
-                    value={value}
-                    onChange={(e) => {
-                        setValue(e.target.value);
-                        props.onChange?.(e);
-                    }}
-
-                    placeholder=" "
-                />
-
-                <label>{label}</label>
-            </div>
+        <div className="floating-input">
+            <input
+                id={inputId}
+                autoComplete="off"
+                value={value}
+                onChange={(e) => {
+                    setValue(e.target.value);
+                    props.onChange?.(e);
+                }}
+                placeholder=" "
+                {...props}
+            />
+            <label htmlFor={inputId}>{label}</label>
         </div>
     );
 };
