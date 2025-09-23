@@ -1,6 +1,7 @@
 ---
 import { Background } from "../components/background/Background";
 import { HeaderPage } from "../components/header/HeaderPage";
+import FloatingInput from "../components/input/FloatingInput";
 ---
 
 <html lang="en">
@@ -12,8 +13,7 @@ import { HeaderPage } from "../components/header/HeaderPage";
 		<title>Astro</title>
 	</head>
 	<body>
-		<Background />
-		<HeaderPage children={"HOLA"}/>
+		<FloatingInput label="Email" type="email" name="email" />
 	</body>
 </html>
 
