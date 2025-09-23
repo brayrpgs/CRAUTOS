@@ -83,6 +83,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ onChange }) => {
   return (
     <div className="datepicker">
       <input
+        id="datepicker"
         type="text"
         readOnly
         value={
