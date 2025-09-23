@@ -1,8 +1,14 @@
 ---
 import { Background } from "../components/background/Background";
 import { HeaderPage } from "../components/header/HeaderPage";
-import FloatingInput from "../components/input/FloatingInput";
-import DatePicker from  "../components/datePicker/DatePicker";
+import Carousel from "../components/carousel/Carousel";
+
+const images = [
+	"/ram1.avif",
+	"/ram2.avif",
+	"/ram3.avif",
+	"/toyota-hilux-rad-1.avif",
+];
 ---
 
 <html lang="en">
@@ -14,7 +20,14 @@ import DatePicker from  "../components/datePicker/DatePicker";
 		<title>Astro</title>
 	</head>
 	<body>
-		<DatePicker client:load />
+		<div
+			style="width: 100%; max-width: 1000px; margin: auto; border: 2px solid #ccc; padding: 20px; border-radius: 10px;"
+		>
+			<h2 style="text-align: center; margin-bottom: 20px;">
+				Contenedor de prueba
+			</h2>
+			<Carousel images={images} client:only="react" />
+		</div>
 	</body>
 </html>
 
@@ -72,8 +85,8 @@ import DatePicker from  "../components/datePicker/DatePicker";
 	}
 
 	@media (prefers-color-scheme: dark) {
-    #background-carrusel{
-        filter: brightness(0.5);
-    }
-}
+		#background-carrusel {
+			filter: brightness(0.5);
+		}
+	}
 </style>
