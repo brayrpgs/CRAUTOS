@@ -1,5 +1,5 @@
 import type React from "react"
-import "./HeaderPage.css";
+import "../../styles/header/styles.css";
 
 interface HeaderProps {
     children: React.ReactNode
