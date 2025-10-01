@@ -3,13 +3,6 @@ import { Background } from "../components/background/Background";
 import { HeaderPage } from "../components/header/HeaderPage";
 import Carousel from "../components/carousel/Carousel";
 import FooterCustom from "../components/footer/FooterCustom";
-
-const images = [
-	"/ram1.avif",
-	"/ram2.avif",
-	"/ram3.avif",
-	"/toyota-hilux-rad-1.avif",
-];
 ---
 
 <html lang="en">
@@ -21,66 +14,7 @@ const images = [
 		<title>Astro</title>
 	</head>
 	<body>
-		<FooterCustom>
+		<Background />
+		<HeaderPage children={"HOLA"} />
 	</body>
 </html>
-
-<style is:global>
-	* {
-		padding: 0;
-		margin: 0;
-	}
-	body {
-		#background-carrusel {
-			display: block;
-			width: 100dvw;
-			height: 100dvh;
-			overflow: hidden;
-			text-wrap: nowrap;
-			white-space: nowrap;
-			font-size: 0;
-
-			img {
-				object-fit: cover;
-				width: 100dvw;
-				height: 100dvh;
-				filter: blur(5px);
-				animation: background-carrusel 120s infinite ease;
-			}
-		}
-	}
-
-	@keyframes background-carrusel {
-		0% {
-			transform: translateX(0);
-		}
-
-		12.5% {
-			transform: translateX(-100dvw);
-		}
-		25% {
-			transform: translateX(-200dvw);
-		}
-		37.5% {
-			transform: translateX(-300dvw);
-		}
-		50% {
-			transform: translateX(-400dvw);
-		}
-		62.5% {
-			transform: translateX(-500dvw);
-		}
-		75% {
-			transform: translateX(-600dvw);
-		}
-		100% {
-			transform: translateX(-700dvw);
-		}
-	}
-
-	@media (prefers-color-scheme: dark) {
-		#background-carrusel {
-			filter: brightness(0.5);
-		}
-	}
-</style>
