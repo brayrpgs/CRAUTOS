@@ -1,5 +1,5 @@
 import React, { useState, useId } from "react";
-import "./FloatingInput.css";
+import "../../styles/input/styles.css";
 import type { InputHTMLAttributes } from "react";
 
 // Props for the FloatingInput component

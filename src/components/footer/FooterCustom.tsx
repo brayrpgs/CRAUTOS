@@ -1,9 +1,9 @@
-import EmailIcon from "../icons/footerIcons/EmailIcon"
-import FacebookIcon from "../icons/footerIcons/FacebookIcon"
-import InstagramIcon from "../icons/footerIcons/InstagramIcon"
-import TelephoneIcon from "../icons/footerIcons/TelephoneIcon"
-import TiktokIcon from "../icons/footerIcons/TiktokIcon"
-import "./FooterCustom.css"
+import EmailIcon from "../../icons/footer/EmailIcon"
+import FacebookIcon from "../../icons/footer/FacebookIcon"
+import InstagramIcon from "../../icons/footer/InstagramIcon"
+import TelephoneIcon from "../../icons/footer/TelephoneIcon"
+import TiktokIcon from "../../icons/footer/TiktokIcon"
+import "../../styles/footer/styles.css"
 
 export default function Footer() {
   return (

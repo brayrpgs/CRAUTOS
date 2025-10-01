@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
-import "./DatePicker.css";
+import "../../styles/datePicker/styles.css";
 
 type DatePickerProps = {
   onChange?: (date: Date) => void; // Callback function when a date is selected
