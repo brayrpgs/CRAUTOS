@@ -1,0 +1,55 @@
+.container-card {
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+  transition: 1s;
+  border-radius: 10px;
+  overflow: clip;
+  outline: #ffffff30 solid 1px;
+}
+
+.image {
+  grid-area: item;
+  overflow: hidden;
+}
+
+.info {
+  z-index: 0;
+  grid-area: item;
+  overflow: hidden;
+  color: white;
+  text-align: center;
+  height: fit-content !important;
+  align-self: end;
+}
+
+/*
+-- class for handle width
+*/
+.size-card,
+img {
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+}
+
+/*
+-- animations and hovers
+*/
+
+.container-card:hover {
+  animation: card .5s linear ;
+  filter: drop-shadow(0px 0px 3px black);
+
+}
+
+@keyframes card {
+  25% {
+    transform:rotateZ(5deg)
+  }
+  75% {
+    transform:rotateZ(-5deg)
+  }
+}
