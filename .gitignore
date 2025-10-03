@@ -5,6 +5,3 @@ dist/
 
 # dependencies
 node_modules/
-
-#test file
-src/pages/test.astro
