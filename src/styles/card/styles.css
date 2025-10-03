@@ -13,6 +13,7 @@
 .image {
   grid-area: item;
   overflow: hidden;
+  filter: brightness(.5);
 }
 
 .info {
@@ -23,10 +24,14 @@
   text-align: center;
   height: fit-content !important;
   align-self: end;
+  border-top: rgba(255, 255, 255, 0.5) solid .9px;
+  text-transform: uppercase;
+  backdrop-filter: blur(.1px);
+  background: linear-gradient(transparent, rgb(0, 0, 0));
 }
 
 /*
--- class for handle width
+-- class for handle the width
 */
 .size-card,
 img {
@@ -40,16 +45,48 @@ img {
 */
 
 .container-card:hover {
-  animation: card .5s linear ;
-  filter: drop-shadow(0px 0px 3px black);
+  animation: card 1s linear;
+  filter: drop-shadow(0px 0px 10px black);
 
+  .image {
+    filter: none;
+  }
+
+  .info {
+    opacity: 0;
+  }
 }
 
 @keyframes card {
   25% {
-    transform:rotateZ(5deg)
+    transform: rotateZ(5deg)
   }
+
   75% {
-    transform:rotateZ(-5deg)
+    transform: rotateZ(-5deg)
   }
+}
+
+* {
+  transition: 1s;
+}
+
+/*
+-- control schema colors
+*/
+
+@media (prefers-color-scheme: dark) {
+  .container-card:hover {
+    filter: drop-shadow(0px 0px 10px snow);
+  }
+
+  .image {
+    grid-area: item;
+    overflow: hidden;
+    filter: brightness(.8);
+  }
+}
+
+body {
+  background-color: grey;
 }
