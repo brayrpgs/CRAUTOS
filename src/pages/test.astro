@@ -1,7 +1,10 @@
 ---
-import "../styles/global/styles.css";
-import { Card } from "../components/card/Card";
 import { Modal } from "../components/modal/Modal";
+import { Card } from "../components/card/Card";
+import { ModalHeader } from "../components/modal/ModalHeader";
+import { ModalContent } from "../components/modal/ModalContent";
+import { ModalFooter } from "../components/modal/ModalFooter";
+import "../styles/global/styles.css";
 ---
 
 <html lang="en">
@@ -12,8 +15,32 @@ import { Modal } from "../components/modal/Modal";
     <title>Playground</title>
   </head>
   <body>
-    Este es una Playground para hacer pruebas!
-    <!--<Card info={"ram 1500 rho $10.000"} image="/ram1.avif" />-->
-    <Modal />
+    <h1>Playground para hacer pruebas!</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error quisquam inventore pariatur dolor sit magni nesciunt optio soluta quia eveniet iste earum doloremque, repellat ab magnam sed quidem repellendus facilis!
+    Pariatur doloribus cum ipsa fuga vitae error, dolor voluptatum necessitatibus debitis mollitia maxime enim sint quas sapiente ut doloremque. Incidunt deleniti voluptates blanditiis eum inventore ratione repudiandae distinctio nulla quidem!
+    Nemo eos illo ratione in. Dolore esse porro, eum totam tempora cumque, eveniet quaerat molestias, accusantium nulla nesciunt ducimus! Fugit ipsam nemo reprehenderit ullam necessitatibus in quae veritatis consequuntur commodi?
+    Molestias fugiat alias, quibusdam sunt dolores harum, officiis aut provident velit est dignissimos veritatis quis assumenda minima nostrum consequatur. Quidem corrupti, eligendi recusandae autem dolorem nulla? Repudiandae blanditiis sint perferendis.
+    Facere, in velit ad debitis ipsum accusamus voluptas id at error molestias veritatis aliquam? In quos et beatae, placeat aliquam adipisci odit deserunt, nobis amet aut fuga cupiditate? In, asperiores.
+    Soluta eveniet error minima quia pariatur numquam odio ea expedita. Quae fugit facilis distinctio optio, quam a ad deserunt magni ipsum, tempore voluptas aspernatur odio maiores eaque accusantium omnis ratione!
+    Quibusdam officiis aspernatur debitis voluptatem minus ipsam eaque sequi dolor quae voluptatibus quidem, id similique assumenda sint vel reiciendis commodi. Voluptatibus, modi libero temporibus inventore nam praesentium pariatur ipsum consequatur.
+    Harum exercitationem quas culpa amet odit magni in velit. Iusto dicta nisi eum a sit, assumenda, nobis tempore repellendus illo deserunt reiciendis dolore tenetur eveniet facere eaque magnam voluptatem deleniti?
+    Ullam veritatis magnam repudiandae, nostrum nobis obcaecati cupiditate molestiae, autem deleniti qui nesciunt, eos ab atque aliquid! Quisquam, ipsa ratione et sit placeat accusamus, nesciunt, eligendi qui magni consequuntur veniam?
+    Corrupti nostrum blanditiis dignissimos, quia quibusdam cumque perferendis rerum aspernatur eligendi aut, numquam facere eius animi inventore natus distinctio maiores veritatis nulla repellat velit dolore iusto magni explicabo libero? Tenetur?</p>
+    <!-- Ahora puedes usar el Modal con children directamente -->
+    <Modal open={true} client:load>
+      <ModalHeader client:load>
+        <h1>este es el encabezado</h1>
+      </ModalHeader>
+      <ModalContent>
+        <Card info="ram 1500 rho $10.000" image="/ram1.avif" client:load />
+        <p>Contenido adicional del modal</p>
+      </ModalContent>
+      <ModalFooter>
+        <button onclick="">Click me</button>
+        <button onclick="">Cancel</button>
+        <button onclick="">Acept</button>
+        <button onclick="">Close</button>
+      </ModalFooter>
+    </Modal>
   </body>
 </html>

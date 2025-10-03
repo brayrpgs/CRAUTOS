@@ -8,6 +8,8 @@ WORKDIR /home/app
 
 COPY . .
 
-RUN nmp run build
+RUN npm i
+
+RUN npm run build
 
 CMD [ "npm", "run" , "preview" ]

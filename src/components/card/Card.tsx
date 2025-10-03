@@ -2,8 +2,8 @@ import React from 'react'
 import styles from '../../styles/card/styles.module.css'
 
 interface CardProps {
-  image: string
-  info: string
+  image?: string
+  info?: string
 }
 
 const Card: React.FC<CardProps> = (data: CardProps) => {

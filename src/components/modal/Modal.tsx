@@ -1,30 +1,28 @@
+import { useEffect, useRef, type ReactNode } from 'react'
+import styles from '../../styles/modal/styles.module.css'
+
 interface ModalProps {
-  head?: React.ReactNode[]
-  body?: React.ReactNode[]
-  footer?: React.ReactNode[]
-  onClose?: () => {}
+  children?: ReactNode
+  open?: boolean
 }
 
-const Modal: React.FC<ModalProps> = (Modal: ModalProps) => (
-  <>
-    <dialog open>
-      <div>
-        {Modal.head?.map(async (k, i) => (
-          await k
-        ))}
-      </div>
-      <div>
-        {Modal.body?.map(async (k, i) => (
-          await k
-        ))}
-      </div>
-      <div>
-        {Modal.footer?.map(async (k, i) => (
-          await k
-        ))}
-      </div>
+const Modal: React.FC<ModalProps> = ({ children, open }: ModalProps) => {
+  const dialogRef = useRef<HTMLDialogElement>(null)
+
+  useEffect(() => {
+    if (open ?? false) {
+      console.log(open)
+      dialogRef.current?.showModal()
+    } else {
+      dialogRef.current?.close()
+    }
+  }, [open])
+
+  return (
+    <dialog ref={dialogRef} className={styles.container}>
+      {children}
     </dialog>
-  </>
-)
+  )
+}
 
 export { Modal }
