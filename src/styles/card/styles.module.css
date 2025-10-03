@@ -62,7 +62,7 @@ img {
   }
 }
 
-* {
+.info,.image,.card {
   transition: 1s;
 }
 
@@ -82,3 +82,44 @@ img {
   }
 }
 
+/*
+-- media query
+*/
+@media (min-width: 320px) and (max-width: 425px) {
+
+  .size-card,
+  img {
+    height: 100px;
+    width: 100px;
+  }
+
+  .info {
+    font-size: small;
+  }
+}
+
+@media (min-width: 426px) and (max-width: 768px) {
+
+  .size-card,
+  img {
+    height: 150px;
+    width: 150px;
+  }
+
+  .info {
+    font-size: large;
+  }
+}
+
+@media (min-width: 769px) {
+
+  .size-card,
+  img {
+    height: 200px;
+    width: 200px;
+  }
+
+   .info {
+    font-size: xx-large;
+  }
+}

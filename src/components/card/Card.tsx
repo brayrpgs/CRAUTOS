@@ -1,4 +1,5 @@
 import React from 'react'
+import styles from '../../styles/card/styles.module.css'
 
 interface CardProps {
   image: string
@@ -8,11 +9,11 @@ interface CardProps {
 const Card: React.FC<CardProps> = (data: CardProps) => {
   return (
     <>
-      <div className='container-card size-card'>
-        <div className='image size-card'>
+      <div className={`${styles['container-card']}  ${styles['size-card']}`}>
+        <div className={`${styles.image}  ${styles['size-card']}`}>
           <img src={data.image} alt='' />
         </div>
-        <p className='info size-card'>
+        <p className={`${styles.info}  ${styles['size-card']}`}>
           {data.info}
         </p>
       </div>
