@@ -26,8 +26,7 @@
   align-self: end;
   border-top: rgba(255, 255, 255, 0.5) solid .9px;
   text-transform: uppercase;
-  backdrop-filter: blur(.1px);
-  background: linear-gradient(transparent, rgb(0, 0, 0));
+  background: linear-gradient(transparent, #00000099);
 }
 
 /*
