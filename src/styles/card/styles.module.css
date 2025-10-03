@@ -1,3 +1,7 @@
+/*
+-- Main card container styles
+-- Uses CSS Grid for layout and positioning
+*/
 .container-card {
   display: grid;
   align-content: center;
@@ -10,12 +14,21 @@
   outline: #ffffff30 solid 1px;
 }
 
+/*
+-- Image overlay styling
+-- Positioned in the same grid area as info for overlay effect
+*/
 .image {
   grid-area: item;
   overflow: hidden;
   filter: brightness(.5);
 }
 
+/*
+-- Text information overlay
+-- Positioned over the image with gradient background
+-- Positioned at bottom of grid area
+*/
 .info {
   z-index: 0;
   grid-area: item;
@@ -41,12 +54,12 @@ img {
 
 /*
 -- animations and hovers
+-- Card lift effect with image brightness and info fade
 */
 
 .container-card:hover {
-  animation: card .5s linear;
   filter: drop-shadow(0px 0px 10px black);
-
+  transform: translateY(-10px);
   .image {
     filter: none;
   }
@@ -56,18 +69,17 @@ img {
   }
 }
 
-@keyframes card {
-  50% {
-    transform: translateY(10px)
-  }
-}
-
+/*
+-- Transition effects for smooth animations
+-- Applied to card elements for hover interactions
+*/
 .info,.image,.card {
   transition: 1s;
 }
 
 /*
 -- control schema colors
+-- Dark mode adaptations for better visibility
 */
 
 @media (prefers-color-scheme: dark) {
@@ -84,6 +96,12 @@ img {
 
 /*
 -- media query
+-- Responsive breakpoints for different screen sizes
+-- Mobile: 320px-425px | Tablet: 426px-768px | Desktop: 769px+
+*/
+/*
+-- Mobile devices breakpoint (320px - 425px)
+-- Smaller card size and font for mobile screens
 */
 @media (min-width: 320px) and (max-width: 425px) {
 
@@ -98,6 +116,10 @@ img {
   }
 }
 
+/*
+-- Tablet devices breakpoint (426px - 768px)
+-- Medium card size and font for tablet screens
+*/
 @media (min-width: 426px) and (max-width: 768px) {
 
   .size-card,
@@ -111,6 +133,10 @@ img {
   }
 }
 
+/*
+-- Desktop devices breakpoint (769px+)
+-- Larger card size and font for desktop screens
+*/
 @media (min-width: 769px) {
 
   .size-card,
