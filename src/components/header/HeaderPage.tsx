@@ -7,11 +7,9 @@ interface HeaderProps {
 
 const HeaderPage: React.FC<HeaderProps> = ({ children }: HeaderProps) => {
   return (
-    <>
-      <header>
-        {children}
-      </header>
-    </>
+    <header>
+      {children}
+    </header>
   )
 }
 
