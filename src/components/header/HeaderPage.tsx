@@ -1,5 +1,5 @@
 import type React from 'react'
-import '../../styles/header/styles.css'
+import styles from '../../styles/header/styles.module.css'
 
 interface HeaderProps {
   children: React.ReactNode
@@ -7,7 +7,7 @@ interface HeaderProps {
 
 const HeaderPage: React.FC<HeaderProps> = ({ children }: HeaderProps) => {
   return (
-    <header>
+    <header className={styles.header}>
       {children}
     </header>
   )
