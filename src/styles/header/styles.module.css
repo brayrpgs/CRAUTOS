@@ -1,0 +1,21 @@
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  display: flex;
+  margin: 1rem;
+  border-radius: .5rem;
+  box-shadow: inset 0 0 5px 0px snow;
+  outline: 1px snow solid;
+  color: snow;
+  padding: 1rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  backdrop-filter: blur(1px);
+}
+
+body {
+  background-color: #0E1E34;
+  color: rgba(255, 250, 250, 0.219);
+}

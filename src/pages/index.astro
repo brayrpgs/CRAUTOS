@@ -1,20 +1,19 @@
 ---
 import { Background } from "../components/background/Background";
 import { HeaderPage } from "../components/header/HeaderPage";
-import Carousel from "../components/carousel/Carousel";
-import FooterCustom from "../components/footer/FooterCustom";
+import "../styles/global/styles.css";
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<Background />
-		<HeaderPage children={"HOLA"} />
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro</title>
+  </head>
+  <body>
+    <Background client:load />
+    <HeaderPage client:load> HOLA </HeaderPage>
+  </body>
 </html>
