@@ -1,0 +1,60 @@
+---
+import { HeaderPage } from "../components/header/HeaderPage";
+import { Footer } from "../components/footer/FooterCustom";
+
+import styles from "../styles/announcement/styles.module.css";
+
+const cards = Array.from({ length: 6 });
+---
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrAutos</title>
+</head>
+
+<div class={styles.page}>
+  {/* HEADER */}
+  <header class={styles.header}>
+    <HeaderPage client:load />
+  </header>
+
+  {/* CONTENIDO PRINCIPAL */}
+  <main class={styles.main}>
+    <section class={styles.box}>
+      <div class={styles.boxHeader}>
+        <h2 class={styles.title}>Tus publicaciones</h2>
+
+        <button type="button" class={styles.addButton}>
+          + Nueva publicación
+        </button>
+      </div>
+
+      <hr class={styles.divider} />
+
+      {/* Cards flex responsive */}
+      <div class={styles.cards}>
+        {
+          cards.map((_, index) => (
+            <article class={styles.card}>
+              <span class={styles.cardTitle}>Tarjeta {index + 1}</span>
+
+              <button
+                type="button"
+                class={styles.cardClose}
+                aria-label="Eliminar tarjeta"
+              >
+                x
+              </button>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  {/* FOOTER */}
+  <footer class={styles.footer}>
+    <Footer client:load />
+  </footer>
+</div>
