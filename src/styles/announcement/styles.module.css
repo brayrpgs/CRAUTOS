@@ -191,3 +191,18 @@
 .modalSecondaryBtn:hover {
   color: rgba(255, 0, 0, 0.686); 
 }
+
+/* Cada item de la paginación se comporta como tus cards originales */
+.cardItemWrapper {
+  flex: 1 1 calc(20% - 1.5rem);
+  max-width: 320px;
+  display: flex;
+}
+
+
+.cardOverlayClick {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background: transparent;
+}
