@@ -24,7 +24,7 @@ const FavoriteCarsManager: React.FC = () => {
   }
 
   const renderFavoriteCard = (car: FavoriteCar): React.ReactNode => (
-    <div className={styles.cardWrapper}>
+    <div className={styles.cardWrapperFav}>
       <Card image={car.image} info={car.info}>
         <button
           className={styles.favoriteButton}

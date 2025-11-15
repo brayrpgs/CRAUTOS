@@ -110,6 +110,12 @@
   cursor: pointer;
 }
 
+.cardWrapperFav {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
 /* Botón cerrar “x” */
 .cardClose {
   position: absolute;
