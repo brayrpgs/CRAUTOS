@@ -1,34 +1,28 @@
 .container {
-    display: block;
+  display: block;
 }
 
 .child {
-    display: block;
-    color: grey;
+  display: block;
+  color: grey;
 }
 
 .childContent {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    div{
-        justify-self: center;
-    }
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, calc(90dvw / 5)));
+  gap: 15px;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  padding: 1rem;
+
+  div {
+    height: unset;
+    width: unset;
+  }
 }
 
 .childFilters {
-    justify-self: end;
-    padding: 1rem;
-}
-
-@media (width > 1024px) {
-    .childContent {
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    }
-}
-
-@media (width < 426px) {
-    .childContent {
-        grid-template-columns: 1fr 1fr;
-    }
+  justify-self: end;
+  padding: 1rem;
 }

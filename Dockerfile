@@ -11,4 +11,5 @@ RUN npm  i
 
 COPY . .
 
-CMD [ "npm", "run" , "preview" ]
+CMD [ "npm", "run" , "dev" ]
+#CMD [ "npm", "run" , "preview" ] <-- to production
