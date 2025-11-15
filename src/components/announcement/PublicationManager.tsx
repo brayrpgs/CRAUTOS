@@ -9,12 +9,16 @@ import { Card } from '../card/Card'
 import styles from '../../styles/announcement/styles.module.css'
 
 const cards = [
-  { id: 1, image: "/ram1.avif", info: "Toyota Corolla 2020" },
-  { id: 2, image: "/ram2.avif", info: "Honda Civic 2019" },
-  { id: 3, image: "/ram3.avif", info: "Mazda 3 Touring" },
-  { id: 4, image: "/toyota-hilux-rad-1.avif", info: "Hyundai Elantra 2021" },
-  { id: 5, image: "/toyota-hilux-rad-2.avif", info: "Toyota Yaris 2021" },
-  { id: 6, image: "/toyota-hilux-rad-3.avif", info: "Suzuki Swift 2020" },
+  { id: 1, image: '/ram1.avif', info: 'Toyota Corolla 2020' },
+  { id: 2, image: '/ram2.avif', info: 'Honda Civic 2019' },
+  { id: 3, image: '/ram3.avif', info: 'Mazda 3 Touring' },
+  { id: 4, image: '/toyota-hilux-rad-1.avif', info: 'Hyundai Elantra 2021' },
+  { id: 5, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
+  { id: 6, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' },
+  { id: 7, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
+  { id: 8, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' },
+  { id: 9, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
+  { id: 10, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' }
 ]
 
 const PublicationManager: React.FC = () => {
@@ -24,7 +28,7 @@ const PublicationManager: React.FC = () => {
 
   useEffect(() => {
     const modal = document.getElementById('publicacion-modal') as HTMLDialogElement | null
-    if (!modal) return
+    if (modal == null) return
 
     const checkClosed = (): void => {
       if (!modal.open && open) {
@@ -36,13 +40,13 @@ const PublicationManager: React.FC = () => {
     return () => modal.removeEventListener('close', checkClosed)
   }, [open])
 
-  const openAddModal = () => {
+  const openAddModal = (): void => {
     setMode('add')
     setSelected(null)
     setOpen(true)
   }
 
-  const openEditModal = (index: number) => {
+  const openEditModal = (index: number): void => {
     setMode('edit')
     setSelected(index + 1)
     setOpen(true)
@@ -67,16 +71,16 @@ const PublicationManager: React.FC = () => {
           {cards.map((car, index) => (
             <div
               key={car.id}
-              style={{ position: "relative" }}
+              style={{ position: 'relative' }}
             >
               {/* CARD */}
               <div onClick={() => openEditModal(index)}>
                 <Card image={car.image} info={car.info}>
                   {/* BOTÓN ELIMINAR */}
                   <button
-                    type="button"
+                    type='button'
                     className={styles.cardClose}
-                    aria-label="Eliminar tarjeta"
+                    aria-label='Eliminar tarjeta'
                     onClick={(e) => {
                       e.stopPropagation()
                       alert(`Eliminar: ${car.info}`)
@@ -111,29 +115,14 @@ const PublicationManager: React.FC = () => {
           <ModalFooter>
             <button
               onClick={() => setOpen(false)}
-              style={{
-                background: '#0d6efd',
-                padding: '0.5rem 1rem',
-                borderRadius: '8px',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer',
-                marginRight: '0.5rem'
-              }}
+              className={styles.modalPrimaryBtn}
             >
               {mode === 'add' ? 'Agregar' : 'Guardar'}
             </button>
 
             <button
               onClick={() => setOpen(false)}
-              style={{
-                background: '#6c757d',
-                padding: '0.5rem 1rem',
-                borderRadius: '8px',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer'
-              }}
+              className={styles.modalSecondaryBtn}
             >
               Cancelar
             </button>

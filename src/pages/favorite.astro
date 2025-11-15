@@ -4,7 +4,9 @@ import { Footer } from "../components/footer/FooterCustom";
 
 import { FavoriteCarsManager } from "../components/favorites/FavoriteCarsManager";
 
+import "../styles/global/styles.css";
 import styles from "../styles/announcement/styles.module.css";
+import { Background } from "../components/background/Background";
 ---
 
 <head>
@@ -30,4 +32,5 @@ import styles from "../styles/announcement/styles.module.css";
   <footer class={styles.footer}>
     <Footer client:load />
   </footer>
+  <Background client:load>
 </div>
