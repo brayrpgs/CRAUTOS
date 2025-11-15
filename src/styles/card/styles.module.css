@@ -2,7 +2,18 @@
 /*        CARD ESTILO ANUNCIO (GLASSMORPHISM PRO)        */
 /* ===================================================== */
 
+/* ===================================================== */
+/*        CARD ESTILO ANUNCIO (GLASSMORPHISM PRO)        */
+/* ===================================================== */
+
 .container-card {
+  position: relative;
+  width: 280px;
+  height: 360px;
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 1rem;
   position: relative;
   width: 280px;
   height: 360px;
@@ -21,7 +32,23 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  outline: 1px solid white;
+
+  box-shadow: inset 0 0 5px 0px white;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
 .container-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 20px 0px white;
+}
+
+/* ===================================================== */
+/*                       IMAGEN                          */
+/* ===================================================== */
   transform: translateY(-6px);
   box-shadow: 0 0 20px 0px white;
 }
@@ -52,9 +79,31 @@
 /* ===================================================== */
 /*                        TEXTO                          */
 /* ===================================================== */
+.image {
+  width: 100%;
+  height: 72%;
+  overflow: hidden;
+  position: relative;
+}
+
+.image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s ease, filter .4s ease;
+}
+
+.container-card:hover .image img {
+  transform: scale(1.06);
+  filter: brightness(.85);
+}
+
+/* ===================================================== */
+/*                        TEXTO                          */
+/* ===================================================== */
 
 .info {
-  width: 100%;
+  width: auto;
   height: 28%;
 
   display: flex;

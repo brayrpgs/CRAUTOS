@@ -1,0 +1,28 @@
+.container {
+  display: block;
+}
+
+.child {
+  display: block;
+  color: grey;
+}
+
+.childContent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, calc(90dvw / 5)));
+  gap: 15px;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  padding: 1rem;
+
+  div {
+    height: unset;
+    width: unset;
+  }
+}
+
+.childFilters {
+  justify-self: end;
+  padding: 1rem;
+}
