@@ -1,0 +1,64 @@
+---
+import { HeaderPage } from "../components/header/HeaderPage";
+import { Footer } from "../components/footer/FooterCustom";
+
+import { ContactForm } from "../components/contact/ContacForm";
+import styles from "../styles/contact/styles.module.css";
+import "../styles/global/styles.css";
+import { Background } from "../components/background/Background";
+---
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRAUTOS</title>
+</head>
+
+<div class={styles.page}>
+  <header class={styles.header}>
+    <HeaderPage client:load />
+  </header>
+
+  <main class={styles.main}>
+    <section class={styles.box}>
+      <div class={styles.banner}>
+        <h2>¿Desea contactarnos?</h2>
+        <p>
+          Si necesita asistencia con el uso de nuestro sitio, desea realizar una
+          consulta o requiere información adicional, con gusto estamos para
+          ayudarle. Nuestro equipo de soporte estará encantado de atenderle y
+          brindarle una respuesta lo antes posible.
+        </p>
+      </div>
+
+      <div class={styles.container}>
+        <div class={styles.infoCard}>
+          <h3>📧 Escríbanos a:</h3>
+          <p>
+            Si necesita asistencia con el sitio, tiene consultas sobre
+            publicaciones, desea reportar un problema o simplemente quiere
+            recibir más información, puede escribirnos directamente a:
+          </p>
+          <p><strong>soporte@crautos.com</strong></p>
+
+          <h3>📞 Llámenos al:</h3>
+          <p>
+            Nuestro equipo de atención está disponible para ayudarle con
+            cualquier duda relacionada con vehículos, vendedores, publicaciones
+            o soporte técnico.
+          </p>
+          <p><strong>+506 2291-4141</strong></p>
+        </div>
+
+        <div class={styles.formCard}>
+          <ContactForm client:load />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class={styles.footer}>
+    <Footer client:load />
+  </footer>
+  <Background client:load />
+</div>

@@ -1,0 +1,36 @@
+---
+import { HeaderPage } from "../components/header/HeaderPage";
+import { Footer } from "../components/footer/FooterCustom";
+
+import { FavoriteCarsManager } from "../components/favorites/FavoriteCarsManager";
+
+import "../styles/global/styles.css";
+import styles from "../styles/announcement/styles.module.css";
+import { Background } from "../components/background/Background";
+---
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRAUTOS</title>
+</head>
+
+<div class={styles.page}>
+  {/* HEADER */}
+  <header class={styles.header}>
+    <HeaderPage client:load />
+  </header>
+
+  {/* CONTENIDO PRINCIPAL */}
+  <main class={styles.main}>
+
+    <FavoriteCarsManager client:load />
+
+  </main>
+
+  {/* FOOTER */}
+  <footer class={styles.footer}>
+    <Footer client:load />
+  </footer>
+  <Background client:load>
+</div>
