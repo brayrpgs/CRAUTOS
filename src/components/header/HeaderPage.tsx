@@ -2,7 +2,7 @@ import type React from 'react'
 import styles from '../../styles/header/styles.module.css'
 
 interface HeaderProps {
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 const HeaderPage: React.FC<HeaderProps> = ({ children }: HeaderProps) => {

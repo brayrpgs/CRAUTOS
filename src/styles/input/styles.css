@@ -1,47 +1,68 @@
+/* ============================================================
+   INPUT FLOATING – GLASSMORPHISM PREMIUM
+   ============================================================ */
 .floating-input {
   position: relative;
-  width: 100%;        /* ← Para que respete su contenedor */
-  margin: 0;          /* ← Quitamos márgenes que rompían layout */
+  width: 100%;
+  margin: 0;
   box-sizing: border-box;
 }
 
-/* INPUT */
+/* ---------------- INPUT ---------------- */
 .floating-input input {
   width: 100%;
-  border: 2px solid #665;
-  border-radius: 6px;
-  background: white;
-  padding: 14px 12px;
-  font-size: 16px;
-  color: black;
+  box-sizing: border-box;
+
+  padding: 14px 14px;
+  font-size: 15px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.35);
+
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+
   outline: none;
-
-  box-sizing: border-box;  
+  transition: 0.25s ease;
 }
 
+/* placeholder invisible (necesario para el floating) */
+.floating-input input::placeholder {
+  color: transparent;
+}
+
+/* Focus */
 .floating-input input:focus {
-  border-color: #00cc66;
+  border-color: #4ade80;       /* verde suave */
+  background: rgba(255, 255, 255, 0.17);
 }
 
-/* LABEL */
+/* ---------------- LABEL ---------------- */
 .floating-input label {
   position: absolute;
-  left: 12px;
-  top: 14px;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
 
-  color: #777;
-  font-size: 16px;
+  color: rgba(255, 255, 255, 0.70);
+  font-size: 1rem;
+
   pointer-events: none;
+  transition: all 0.25s ease;
 
-  background: white;
+  background: rgba(20, 20, 20, 0.40);
   padding: 0 6px;
-  transition: all 0.2s ease;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
 }
 
-/* EFECTO FLOAT */
+/* ---------------- FLOATING EFFECT ---------------- */
 .floating-input input:focus + label,
 .floating-input input:not(:placeholder-shown) + label {
   top: -10px;
-  font-size: 14px;
-  color: #00cc66;
+  left: 12px;
+  font-size: 0.80rem;
+  color: #4ade80;                   /* verde suave */
+  font-weight: 500;
 }

@@ -4,6 +4,8 @@ import { Footer } from "../components/footer/FooterCustom";
 
 import { ContactForm } from "../components/contact/ContacForm";
 import styles from "../styles/contact/styles.module.css";
+import "../styles/global/styles.css";
+import { Background } from "../components/background/Background";
 ---
 
 <head>
@@ -19,35 +21,44 @@ import styles from "../styles/contact/styles.module.css";
 
   <main class={styles.main}>
     <section class={styles.box}>
-      
       <div class={styles.banner}>
-        <h2>Desea contactarnos?</h2>
+        <h2>¿Desea contactarnos?</h2>
         <p>
-          Si desea contactarnos, ya sea porque necesita ayuda utilizando nuestro sitio,
-          o necesita cualquier otra información, por favor no dude en llamarnos o enviarnos un mensaje.
+          Si necesita asistencia con el uso de nuestro sitio, desea realizar una
+          consulta o requiere información adicional, con gusto estamos para
+          ayudarle. Nuestro equipo de soporte estará encantado de atenderle y
+          brindarle una respuesta lo antes posible.
         </p>
       </div>
 
       <div class={styles.container}>
-        
         <div class={styles.infoCard}>
-          <h3>Escríbanos a:</h3>
+          <h3>📧 Escríbanos a:</h3>
+          <p>
+            Si necesita asistencia con el sitio, tiene consultas sobre
+            publicaciones, desea reportar un problema o simplemente quiere
+            recibir más información, puede escribirnos directamente a:
+          </p>
           <p><strong>soporte@crautos.com</strong></p>
 
-          <h3>O llámenos al:</h3>
-          <p><strong>2291-4141</strong></p>
+          <h3>📞 Llámenos al:</h3>
+          <p>
+            Nuestro equipo de atención está disponible para ayudarle con
+            cualquier duda relacionada con vehículos, vendedores, publicaciones
+            o soporte técnico.
+          </p>
+          <p><strong>+506 2291-4141</strong></p>
         </div>
 
         <div class={styles.formCard}>
           <ContactForm client:load />
         </div>
-
       </div>
-
     </section>
   </main>
 
   <footer class={styles.footer}>
     <Footer client:load />
   </footer>
+  <Background client:load />
 </div>
