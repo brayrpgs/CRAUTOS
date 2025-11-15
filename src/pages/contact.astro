@@ -1,0 +1,53 @@
+---
+import { HeaderPage } from "../components/header/HeaderPage";
+import { Footer } from "../components/footer/FooterCustom";
+
+import { ContactForm } from "../components/contact/ContacForm";
+import styles from "../styles/contact/styles.module.css";
+---
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRAUTOS</title>
+</head>
+
+<div class={styles.page}>
+  <header class={styles.header}>
+    <HeaderPage client:load />
+  </header>
+
+  <main class={styles.main}>
+    <section class={styles.box}>
+      
+      <div class={styles.banner}>
+        <h2>Desea contactarnos?</h2>
+        <p>
+          Si desea contactarnos, ya sea porque necesita ayuda utilizando nuestro sitio,
+          o necesita cualquier otra información, por favor no dude en llamarnos o enviarnos un mensaje.
+        </p>
+      </div>
+
+      <div class={styles.container}>
+        
+        <div class={styles.infoCard}>
+          <h3>Escríbanos a:</h3>
+          <p><strong>soporte@crautos.com</strong></p>
+
+          <h3>O llámenos al:</h3>
+          <p><strong>2291-4141</strong></p>
+        </div>
+
+        <div class={styles.formCard}>
+          <ContactForm client:load />
+        </div>
+
+      </div>
+
+    </section>
+  </main>
+
+  <footer class={styles.footer}>
+    <Footer client:load />
+  </footer>
+</div>

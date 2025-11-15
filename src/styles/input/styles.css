@@ -1,39 +1,47 @@
 .floating-input {
-    position: relative;
-    width: 100%; 
-    margin: 16px 0;
+  position: relative;
+  width: 100%;        /* ← Para que respete su contenedor */
+  margin: 0;          /* ← Quitamos márgenes que rompían layout */
+  box-sizing: border-box;
+}
 
-    input {
-        width: 100%;
-        border: 2px solid #665;
-        border-radius: 4px;
-        background: white;
-        padding: 12px 12px;
-        font-size: 16px;
-        color: black;
-        outline: none;
-    }
+/* INPUT */
+.floating-input input {
+  width: 100%;
+  border: 2px solid #665;
+  border-radius: 6px;
+  background: white;
+  padding: 14px 12px;
+  font-size: 16px;
+  color: black;
+  outline: none;
 
-    input:focus {
-        border-color: #00cc66;
-    }
+  box-sizing: border-box;  
+}
 
-    label {
-        position: absolute;
-        left: 10px;
-        top: 14px;
-        color: #aaa;
-        font-size: 16px;
-        pointer-events: none;
-        background: white; 
-        padding: 0 10px;
-        transition: all 0.2s ease;
-    }
+.floating-input input:focus {
+  border-color: #00cc66;
+}
 
-    input:focus + label,
-    input:not(:placeholder-shown) + label {
-        top: -10px; 
-        font-size: 16px;
-        color: #00cc66;
-    }
+/* LABEL */
+.floating-input label {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+
+  color: #777;
+  font-size: 16px;
+  pointer-events: none;
+
+  background: white;
+  padding: 0 6px;
+  transition: all 0.2s ease;
+}
+
+/* EFECTO FLOAT */
+.floating-input input:focus + label,
+.floating-input input:not(:placeholder-shown) + label {
+  top: -10px;
+  font-size: 14px;
+  color: #00cc66;
 }
