@@ -2,11 +2,9 @@
 import { HeaderPage } from "../components/header/HeaderPage";
 import { Footer } from "../components/footer/FooterCustom";
 
-import { PublicationManager } from "../components/announcement/PublicationManager.jsx";
+import { FavoriteCarsManager } from "../components/favorites/FavoriteCarsManager";
 
 import styles from "../styles/announcement/styles.module.css";
-import "../styles/global/styles.css";
-import { Background } from "../components/background/Background";
 ---
 
 <head>
@@ -15,8 +13,7 @@ import { Background } from "../components/background/Background";
   <title>CRAUTOS</title>
 </head>
 
-<div class={styles}>
-  
+<div class={styles.page}>
   {/* HEADER */}
   <header class={styles.header}>
     <HeaderPage client:load />
@@ -24,8 +21,8 @@ import { Background } from "../components/background/Background";
 
   {/* CONTENIDO PRINCIPAL */}
   <main class={styles.main}>
-    
-    <PublicationManager client:load />
+
+    <FavoriteCarsManager client:load />
 
   </main>
 
@@ -33,5 +30,4 @@ import { Background } from "../components/background/Background";
   <footer class={styles.footer}>
     <Footer client:load />
   </footer>
-  <Background client:load>
 </div>

@@ -25,7 +25,7 @@
   justify-content: center;
   align-items: flex-start;
 
-  padding: 1rem 0; /* padding vertical */
+  padding: 1rem 0; 
 }
 
 /* ============================= */
@@ -101,43 +101,8 @@
 
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;               /* más aire */
-  justify-content: center;   /* centrado perfecto */
-}
-
-/* CARD */
-.card {
-  flex: 1 1 280px;          /* tamaño base más bonito */
-  max-width: 340px;         /* más ancho disponible */
-  aspect-ratio: 4 / 3;      /* 🔥 proporción estética */
-  
-  background: #ffffff;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #eaeaea;
-
-  padding: 1rem;
-  position: relative;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
-
-  transition: 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
-}
-
-/* Texto */
-.cardTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #0b1e3f;
+  gap: 1.5rem;        
+  justify-content: center;   
 }
 
 /* Botón cerrar “x” */
@@ -164,4 +129,28 @@
 
 .cardClose:hover {
   background: #e1e1e1;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 20;
+}
+
+.favoriteButton {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.favoriteButton:hover {
+  transform: scale(1.2);
 }
