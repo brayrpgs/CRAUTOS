@@ -23,7 +23,6 @@ const cards = [
   { id: 10, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
   { id: 11, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
   { id: 12, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' }
-
 ]
 
 const PublicationManager: React.FC = () => {
@@ -56,6 +55,9 @@ const PublicationManager: React.FC = () => {
     setOpen(true)
   }
 
+  const selectedCarInfo =
+    selected != null ? cards.find((c) => c.id === selected)?.info ?? '' : ''
+
   return (
     <>
       {open && <div className={styles.overlay} />}
@@ -80,24 +82,21 @@ const PublicationManager: React.FC = () => {
           items={cards}
           itemsPerPage={10}
           renderItem={(car) => (
-            <div className={styles.cardWrapper}>
+            <div
+              className={styles.cardWrapper}
+              onClick={() => openEditModal(car.id)}
+            >
               <Card image={car.image} info={car.info}>
                 <button
                   className={styles.cardClose}
                   onClick={(e) => {
-                    e.stopPropagation()
+                    e.stopPropagation() // ⛔ evita que dispare el editar
                     alert(`Eliminar: ${car.info}`)
                   }}
                 >
                   x
                 </button>
               </Card>
-
-              {/* Clic para editar */}
-              <div
-                className={styles.cardOverlayClick}
-                onClick={() => openEditModal(car.id)}
-              />
             </div>
           )}
         />
@@ -108,10 +107,7 @@ const PublicationManager: React.FC = () => {
             <h2 style={{ color: 'white' }}>
               {mode === 'add'
                 ? 'Nueva publicación'
-                : `Editar ${selected != null
-                  ? cards.find((c) => c.id === selected)?.info ?? ''
-                  : ''
-                }`}
+                : `Editar ${selectedCarInfo}`}
             </h2>
           </ModalHeader>
 
