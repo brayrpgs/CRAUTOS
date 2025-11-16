@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styles from '../../styles/announcement/styles.module.css'
 import { Card } from '../card/Card'
+import { Pagination } from '../pagination/Pagination'
 
 interface FavoriteCar {
   id: number
@@ -22,6 +23,19 @@ const FavoriteCarsManager: React.FC = () => {
     setFavorites(prev => prev.filter(car => car.id !== id))
   }
 
+  const renderFavoriteCard = (car: FavoriteCar): React.ReactNode => (
+    <div className={styles.cardWrapperFav}>
+      <Card image={car.image} info={car.info}>
+        <button
+          className={styles.favoriteButton}
+          onClick={() => toggleFavorite(car.id)}
+        >
+          ❤️
+        </button>
+      </Card>
+    </div>
+  )
+
   return (
     <section className={styles.box}>
       <div className={styles.boxHeader}>
@@ -30,27 +44,19 @@ const FavoriteCarsManager: React.FC = () => {
 
       <hr className={styles.divider} />
 
-      <div className={styles.cards}>
-        {favorites.length === 0 && (
+      {favorites.length === 0
+        ? (
           <p style={{ color: 'white', fontSize: '1rem' }}>
             No tienes vehículos favoritos.
           </p>
-        )}
-
-        {favorites.map(car => (
-          <div key={car.id} style={{ position: 'relative' }}>
-            {/* TU CARD PERSONALIZADA */}
-            <Card image={car.image} info={car.info}>
-              <button
-                className={styles.favoriteButton}
-                onClick={() => toggleFavorite(car.id)}
-              >
-                ❤️
-              </button>
-            </Card>
-          </div>
-        ))}
-      </div>
+          )
+        : (
+          <Pagination
+            items={favorites}
+            renderItem={renderFavoriteCard}
+            itemsPerPage={10}
+          />
+          )}
     </section>
   )
 }

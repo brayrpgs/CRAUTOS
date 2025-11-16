@@ -6,6 +6,8 @@ import { ModalContent } from '../modal/ModalContent'
 import { ModalFooter } from '../modal/ModalFooter'
 
 import { Card } from '../card/Card'
+import { Pagination } from '../pagination/Pagination'
+
 import styles from '../../styles/announcement/styles.module.css'
 
 const cards = [
@@ -18,7 +20,9 @@ const cards = [
   { id: 7, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
   { id: 8, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' },
   { id: 9, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
-  { id: 10, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' }
+  { id: 10, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
+  { id: 11, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
+  { id: 12, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' }
 ]
 
 const PublicationManager: React.FC = () => {
@@ -26,14 +30,13 @@ const PublicationManager: React.FC = () => {
   const [mode, setMode] = useState<'add' | 'edit'>('add')
   const [selected, setSelected] = useState<number | null>(null)
 
+  // Sincroniza cierre del <dialog> con el estado de React
   useEffect(() => {
     const modal = document.getElementById('publicacion-modal') as HTMLDialogElement | null
     if (modal == null) return
 
     const checkClosed = (): void => {
-      if (!modal.open && open) {
-        setOpen(false)
-      }
+      if (!modal.open && open) setOpen(false)
     }
 
     modal.addEventListener('close', checkClosed)
@@ -46,11 +49,14 @@ const PublicationManager: React.FC = () => {
     setOpen(true)
   }
 
-  const openEditModal = (index: number): void => {
+  const openEditModal = (id: number): void => {
     setMode('edit')
-    setSelected(index + 1)
+    setSelected(id)
     setOpen(true)
   }
+
+  const selectedCarInfo =
+    selected != null ? cards.find((c) => c.id === selected)?.info ?? '' : ''
 
   return (
     <>
@@ -60,39 +66,40 @@ const PublicationManager: React.FC = () => {
         <div className={styles.boxHeader}>
           <h2 className={styles.title}>Tus publicaciones</h2>
 
-          <button type='button' className={styles.addButton} onClick={openAddModal}>
+          <button
+            type='button'
+            className={styles.addButton}
+            onClick={openAddModal}
+          >
             + Nueva publicación
           </button>
         </div>
 
         <hr className={styles.divider} />
 
-        <div className={styles.cards}>
-          {cards.map((car, index) => (
+        {/* LISTA PAGINADA DE CARDS */}
+        <Pagination
+          items={cards}
+          itemsPerPage={10}
+          renderItem={(car) => (
             <div
-              key={car.id}
-              style={{ position: 'relative' }}
+              className={styles.cardWrapper}
+              onClick={() => openEditModal(car.id)}
             >
-              {/* CARD */}
-              <div onClick={() => openEditModal(index)}>
-                <Card image={car.image} info={car.info}>
-                  {/* BOTÓN ELIMINAR */}
-                  <button
-                    type='button'
-                    className={styles.cardClose}
-                    aria-label='Eliminar tarjeta'
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      alert(`Eliminar: ${car.info}`)
-                    }}
-                  >
-                    x
-                  </button>
-                </Card>
-              </div>
+              <Card image={car.image} info={car.info}>
+                <button
+                  className={styles.cardClose}
+                  onClick={(e) => {
+                    e.stopPropagation() // ⛔ evita que dispare el editar
+                    alert(`Eliminar: ${car.info}`)
+                  }}
+                >
+                  x
+                </button>
+              </Card>
             </div>
-          ))}
-        </div>
+          )}
+        />
 
         {/* === MODAL === */}
         <Modal open={open} id='publicacion-modal'>
@@ -100,7 +107,7 @@ const PublicationManager: React.FC = () => {
             <h2 style={{ color: 'white' }}>
               {mode === 'add'
                 ? 'Nueva publicación'
-                : `Editar ${selected !== null ? cards[selected - 1].info : ''}`}
+                : `Editar ${selectedCarInfo}`}
             </h2>
           </ModalHeader>
 
@@ -114,15 +121,15 @@ const PublicationManager: React.FC = () => {
 
           <ModalFooter>
             <button
-              onClick={() => setOpen(false)}
               className={styles.modalPrimaryBtn}
+              onClick={() => setOpen(false)}
             >
               {mode === 'add' ? 'Agregar' : 'Guardar'}
             </button>
 
             <button
-              onClick={() => setOpen(false)}
               className={styles.modalSecondaryBtn}
+              onClick={() => setOpen(false)}
             >
               Cancelar
             </button>
