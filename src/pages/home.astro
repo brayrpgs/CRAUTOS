@@ -5,6 +5,11 @@ import { HeaderPage } from "../components/header/HeaderPage";
 import styles from "../styles/home/styles.module.css";
 import { Card } from "../components/card/Card";
 import { Footer } from "../components/footer/FooterCustom";
+import { Modal } from "../components/modal/Modal";
+import { ModalHeader } from "../components/modal/ModalHeader";
+import { ModalContent } from "../components/modal/ModalContent";
+import { ModalFooter } from "../components/modal/ModalFooter";
+import { Pagination } from "../components/pagination/Pagination";
 ---
 
 <!doctype html>
@@ -20,10 +25,19 @@ import { Footer } from "../components/footer/FooterCustom";
     <HeaderPage client:load> HOLA </HeaderPage>
     <div class={styles.container}>
       <div class={`${styles.child} ${styles.childFilters}`}>
-        <select id="selct">
+        <Modal open={true} id="modalFilters" client:load>
+          <ModalHeader>Filtros Avanzados de Busqueda</ModalHeader>
+          <ModalContent></ModalContent>
+          <ModalFooter></ModalFooter>
+        </Modal>
+        <select id="selct" class:list={styles.searchBar}>
+          <button><selectedcontent></selectedcontent></button>
+          <option >filtros</option>
+          <option >filtros</option>
+          <option >filtros</option>
           <option selected="">filtros</option>
         </select>
-        <input type="search" placeholder="busquedas" />
+        <input type="search" placeholder="busquedas"  class:list={styles.searchBar} />
       </div>
       <div class={`${styles.child} ${styles.childContent}`}>
         <Card image="ram1.avif" info="test" client:load />
@@ -37,8 +51,9 @@ import { Footer } from "../components/footer/FooterCustom";
         <Card image="ram1.avif" client:load />
         <Card image="ram1.avif" client:load />
       </div>
-      <div class={styles.child}></div>
-      <Footer></Footer>
+      <div class={styles.child}>
+      </div>
     </div>
+    <Footer></Footer>
   </body>
 </html>
