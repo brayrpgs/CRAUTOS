@@ -1,0 +1,76 @@
+/* ====== CONTENEDOR GENERAL ====== */
+.paginationContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+/* ====== LISTA DE ITEMS ====== */
+.itemsList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+/* 
+  Cada item ocupa 1/5 del ancho disponible.
+  Esto hace que funcione con **cualquier componente**.
+*/
+.itemWrapper {
+  flex: 0 1 calc(20% - 1.5rem);
+  display: flex;
+  justify-content: center;
+}
+
+/* ====== CONTROLES DE PÁGINA ====== */
+.controls {
+  margin-top: 2rem;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+
+  /* Glassmorphism suave */
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+
+/* ====== BOTONES ====== */
+.btn {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ====== TEXTO DE PÁGINA ACTUAL ====== */
+.pageInfo {
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+}

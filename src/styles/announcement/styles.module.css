@@ -23,8 +23,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-
-  padding: 1rem 0; 
+  padding: 1rem 0;
 }
 
 /* ============================= */
@@ -33,8 +32,7 @@
 .box {
   width: 100%;
   max-width: 1600px;
-  
-  /* márgenes fluidos responsivos */
+
   padding-left: clamp(12px, 4vw, 36px);
   padding-right: clamp(12px, 4vw, 36px);
   padding-top: 1.5rem;
@@ -42,7 +40,7 @@
 
   border-radius: 1rem;
   border: 1px solid #c4c4c4;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 
   margin: 0 auto;
   box-sizing: border-box;
@@ -67,7 +65,7 @@
   color: white;
 }
 
-/* Botón */
+/* Botón "Nueva publicación" */
 .addButton {
   padding: 0.5rem 1.2rem;
   border-radius: 0.5rem;
@@ -94,21 +92,34 @@
 }
 
 /* ============================= */
-/*   CONTENEDOR DE CARDS */
+/*   CONTENEDOR DE CARDS (FAVORITES, ETC) */
 /* ============================= */
 .cards {
   width: 100%;
-
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;        
-  justify-content: center;   
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+/* Wrapper usado por PublicationManager con paginación */
+.cardWrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cardWrapperFav {
+  position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 /* Botón cerrar “x” */
 .cardClose {
   position: absolute;
-  top: 0.6rem;              
+  top: 0.6rem;
   right: 0.6rem;
 
   width: 28px;
@@ -125,12 +136,14 @@
   justify-content: center;
 
   transition: 0.2s;
+  z-index: 10;
 }
 
 .cardClose:hover {
   background: #e1e1e1;
 }
 
+/* Overlay global cuando el modal está abierto */
 .overlay {
   position: fixed;
   inset: 0;
@@ -139,6 +152,7 @@
   z-index: 20;
 }
 
+/* Botón corazón de favoritos (FavoriteCarsManager) */
 .favoriteButton {
   position: absolute;
   top: 0.6rem;
@@ -166,7 +180,7 @@
   cursor: pointer;
   margin-right: 0.5rem;
   font-weight: 600;
-  transition: background 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease;
   outline: 1px solid white;
   backdrop-filter: blur(50px);
 }
@@ -183,11 +197,11 @@
   border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease;
   outline: 1px solid white;
   backdrop-filter: blur(50px);
 }
 
 .modalSecondaryBtn:hover {
-  color: rgba(255, 0, 0, 0.686); 
+  color: rgba(255, 0, 0, 0.7);
 }
