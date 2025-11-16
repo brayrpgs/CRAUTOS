@@ -5,14 +5,18 @@ interface ModalProps {
   children?: ReactNode
   open?: boolean
   id?: string
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Modal: React.FC<ModalProps> = ({ children, open, id }: ModalProps) => {
+const Modal: React.FC<ModalProps> = ({ children, open, id, setOpen }: ModalProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     dialogRef.current?.setAttribute('closedby', 'any')
     if (open ?? false) {
       dialogRef.current?.showModal()
+    } else if (setOpen !== undefined) {
+      setOpen(false)
+      dialogRef.current?.close()
     } else {
       dialogRef.current?.close()
     }
@@ -20,7 +24,16 @@ const Modal: React.FC<ModalProps> = ({ children, open, id }: ModalProps) => {
 
   return (
     <dialog ref={dialogRef} className={styles.container} id={id}>
-      <button className={styles['close-btn']} title='close' onClick={() => { dialogRef.current?.close() }} />
+      <button
+        className={styles['close-btn']} title='close' onClick={() => {
+          dialogRef.current?.close()
+          if (setOpen !== undefined) {
+            setOpen(false)
+          } else {
+            console.log('set is undefined')
+          }
+        }}
+      />
       {children}
     </dialog>
   )
