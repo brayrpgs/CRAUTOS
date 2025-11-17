@@ -55,3 +55,143 @@ input[type=number].glass {
 .hide{
   display: none !important;
 }
+
+input[type="range"].range {
+  display: block;
+  margin-block: 1rem;
+  width: 100%;
+}
+
+
+input[type="range"].range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+
+input[type="range"].range::-webkit-slider-runnable-track {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 999px;
+}
+
+input[type="range"].range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: grey;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  margin-top: -6px;
+  cursor: pointer;
+}
+
+
+input[type="range"].range::-moz-range-track {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 999px;
+}
+
+input[type="range"].range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: grey;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+
+input[type="range"].range::-ms-track {
+  height: 6px;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+input[type="range"].range::-ms-fill-lower,
+input[type="range"].range::-ms-fill-upper {
+  background: #e0e0e0;
+  border-radius: 999px;
+}
+
+input[type="range"].range::-ms-thumb {
+  width: 18px;
+  height: 18px;
+  background: grey;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+
+input[type="range"].range:focus {
+  outline: none;
+}
+
+input[type="range"].range::-webkit-slider-thumb:hover,
+input[type="range"].range::-moz-range-thumb:hover,
+input[type="range"].range::-ms-thumb:hover {
+  transform: scale(1.06);
+}
+
+
+.rangeWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.rangeTooltip {
+  position: absolute;
+  top: -30px;
+  transform: translateX(-50%);
+  background: #9E9E9E;
+  color: #040404;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.rangeTooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -6px;
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+}
+
+.radioOptions {
+  align-self: stretch;
+  margin: .5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: flex-end;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding-inline: 2rem;
+
+}
+
+.radioOptions input[type=radio]:checked {
+  appearance: none;
+  border: white 4px solid;
+  padding: 2px;
+  outline: white 1px solid;
+  color: white;
+  border-color: white;
+}

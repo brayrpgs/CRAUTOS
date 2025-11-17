@@ -68,7 +68,7 @@ const HomeWrapper: React.FC = () => {
                   <input
                     id='year-from'
                     type='range'
-                    className={`glass ${styles.range}`}
+                    className='glass range'
                     min={MIN_YEAR}
                     max={MAX_YEAR}
                     value={yearFrom}
@@ -77,18 +77,18 @@ const HomeWrapper: React.FC = () => {
                   />
                   {/* tooltip positioned according to value percent */}
                   <div
-                    className={styles.rangeTooltip}
+                    className='rangeTooltip'
                     style={{ left: `${((yearFrom - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100}%` }}
                   >
                     {yearFrom}
                   </div>
                 </div>
 
-                <div className={styles.rangeWrapper}>
+                <div className='rangeWrapper'>
                   <input
                     id='year-to'
                     type='range'
-                    className={`glass ${styles.range}`}
+                    className='glass range'
                     min={MIN_YEAR}
                     max={MAX_YEAR}
                     value={yearTo}
@@ -96,7 +96,7 @@ const HomeWrapper: React.FC = () => {
                     onInput={e => setYearTo(Number((e.target as HTMLInputElement).value))}
                   />
                   <div
-                    className={styles.rangeTooltip}
+                    className='rangeTooltip'
                     style={{ left: `${((yearTo - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100}%` }}
                   >
                     {yearTo}
@@ -107,11 +107,11 @@ const HomeWrapper: React.FC = () => {
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
               <label htmlFor='test'>Precio :</label>
               <div>
-                <div className={styles.rangeWrapper}>
+                <div className='rangeWrapper'>
                   <input
                     id='year-from'
                     type='range'
-                    className={`glass ${styles.range}`}
+                    className='glass range'
                     min={MIN_YEAR}
                     max={MAX_YEAR}
                     value={yearFrom}
@@ -120,18 +120,18 @@ const HomeWrapper: React.FC = () => {
                   />
                   {/* tooltip positioned according to value percent */}
                   <div
-                    className={styles.rangeTooltip}
+                    className='rangeTooltip'
                     style={{ left: `${((yearFrom - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100}%` }}
                   >
                     {yearFrom}
                   </div>
                 </div>
 
-                <div className={styles.rangeWrapper}>
+                <div className='rangeWrapper'>
                   <input
                     id='year-to'
                     type='range'
-                    className={`glass ${styles.range}`}
+                    className='glass range'
                     min={MIN_YEAR}
                     max={MAX_YEAR}
                     value={yearTo}
@@ -139,7 +139,7 @@ const HomeWrapper: React.FC = () => {
                     onInput={e => setYearTo(Number((e.target as HTMLInputElement).value))}
                   />
                   <div
-                    className={styles.rangeTooltip}
+                    className='rangeTooltip'
                     style={{ left: `${((yearTo - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100}%` }}
                   >
                     {yearTo}
@@ -151,60 +151,71 @@ const HomeWrapper: React.FC = () => {
               <label htmlFor='test'>Cilindraje :</label>
               <input type='number' className='glass' min={1} />
             </span>
-            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 2 ? '' : 'hide'}>
+            {/** second page */}
+            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
               <legend>Transmisión :</legend>
-              <div className={styles.radioOptions}>
+              <div className='radioOptions'>
                 <input type='radio' id='1' name='test' className='glass' value='test' />
                 <label htmlFor='1'>dato 1</label>
               </div>
-              <div className={styles.radioOptions}>
+              <div className='radioOptions'>
                 <input type='radio' id='2' name='test' className='glass' value='test' />
                 <label htmlFor='2'>dato 2</label>
               </div>
             </fieldset>
-            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 2 ? '' : 'hide'}>
+            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
               <legend>Combustible :</legend>
-              <div className={styles.radioOptions}>
+              <div className='radioOptions'>
                 <input type='radio' id='1' name='test' className='glass' value='test' />
                 <label htmlFor='1'>dato 1</label>
               </div>
-              <div className={styles.radioOptions}>
+              <div className='radioOptions'>
                 <input type='radio' id='2' name='test' className='glass' value='test' />
                 <label htmlFor='2'>dato 2</label>
               </div>
             </fieldset>
-            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 2 ? '' : 'hide'}>
+            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
               <legend>Cantidad de Puertas :</legend>
-              <div className={styles.radioOptions}>
+              <div className='radioOptions'>
                 <input type='radio' id='1' name='test' className='glass' value='test' />
                 <label htmlFor='1'>dato 1</label>
               </div>
-              <div className={styles.radioOptions}>
+              <div className='radioOptions'>
                 <input type='radio' id='2' name='test' className='glass' value='test' />
                 <label htmlFor='2'>dato 2</label>
               </div>
             </fieldset>
-            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 2 ? '' : 'hide'}>
+            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
               <legend>Ordernar por :</legend>
-              <div className={styles.radioOptions}>
+              <div className='radioOptions'>
                 <input type='radio' id='1' name='test' className='glass' value='test' />
                 <label htmlFor='1'>precio</label>
               </div>
-              <div className={styles.radioOptions}>
+              <div className='radioOptions'>
                 <input type='radio' id='2' name='test' className='glass' value='test' />
                 <label htmlFor='2'>año</label>
               </div>
             </fieldset>
             {/** button navegation in modal */}
-            <span>
+            <span style={{
+              alignSelf: 'stretch',
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'nowrap',
+              columnGap: '1rem',
+              marginBlock: '.5rem'
+            }}
+            >
               <button
-                className={pageModal === 2 ? 'glass' : 'hide'}
+                style={{ display: 'block', flex: '1' }}
+                className={pageModal === 2 || pageModal === 3 ? 'glass' : 'hide'}
                 onClick={(e) => { setPageModal(pageModal - 1) }}
               >
                 prev
               </button>
               <button
-                className={pageModal === 1 ? 'glass' : 'hide'}
+                style={{ display: 'block', flex: '1' }}
+                className={pageModal === 1 || pageModal === 2 ? 'glass' : 'hide'}
                 onClick={(e) => { setPageModal(pageModal + 1) }}
               >
                 next
@@ -212,11 +223,10 @@ const HomeWrapper: React.FC = () => {
             </span>
           </ModalContent>
           <ModalFooter>
-            <button>action</button>
-            <button>action</button>
+            <button className='glass'>Realizar filtro</button>
           </ModalFooter>
         </Modal>
-        <button className='glass' onClick={() => ctx?.setStateModal?.(prev => !prev)}>Filters</button>
+        <button className='glass' onClick={() => ctx?.setStateModal?.(prev => !prev)}>Filtros</button>
         <input
           type='search'
           placeholder='busquedas'
