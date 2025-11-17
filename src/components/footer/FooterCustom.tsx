@@ -5,6 +5,7 @@ import InstagramIcon from '../../icons/footer/InstagramIcon'
 import TelephoneIcon from '../../icons/footer/TelephoneIcon'
 import TiktokIcon from '../../icons/footer/TiktokIcon'
 import '../../styles/footer/styles.css'
+import Logo from '../logo/Logo'
 
 const Footer: React.FC = () => {
   return (
@@ -12,19 +13,17 @@ const Footer: React.FC = () => {
       <div className='footer-container'>
 
         <div className='footer-brand'>
-          <div className='footer-logo'>
-            <span>CR</span>
-          </div>
-          <h2 className='footer-title'>CRAUTOS</h2>
-          <p className='footer-description'>
-            Tu plataforma confiable para comprar y vender vehículos. Conectamos compradores y vendedores de manera
-            segura.
-          </p>
-        </div>
+          <>
+            <Logo />
+            <p className='footer-description'>
+              Tu plataforma confiable para comprar y vender vehículos.
+            </p>
+          </>
 
-        <div className='footer-copy'>
-          <p>© 2025 CrAutos. Todos los derechos reservados.</p>
-          <p className='small'>Plataforma autorizada para la compra y venta de vehículos</p>
+          <div className='footer-copy'>
+            <p>© 2025 CrAutos. Todos los derechos reservados.</p>
+            <p className='small'>Plataforma autorizada para la compra y venta de vehículos</p>
+          </div>
         </div>
 
         <div className='footer-contact'>
