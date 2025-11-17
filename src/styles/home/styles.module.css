@@ -9,13 +9,12 @@
 
 .childContent {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, calc(90dvw / 5)));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, calc(100vw / 6)));
+  gap: 2rem;
   align-items: center;
   justify-items: center;
   justify-content: center;
   padding: 1rem;
-  grid-template-rows: repeat(auto-fit, 200px);
 
   div {
     height: unset;
