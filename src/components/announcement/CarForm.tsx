@@ -59,7 +59,10 @@ export const CarForm: React.FC<CarFormProps> = ({
     id_year: 0,
     price: '',
     sold: false,
-    images: [] as File[]
+
+    // NUEVO
+    existingImages: [] as { id_images: number; base64: string }[],
+    newImages: [] as File[]
   }
 
   const [form, setForm] = useState<any>(initialForm)
@@ -133,7 +136,6 @@ export const CarForm: React.FC<CarFormProps> = ({
     const car = cars.find(c => c.id_cars === selected)
     if (!car) return
 
-    // MAPEO ENTRE SINGULAR (BACK) Y PLURAL (CATÁLOGOS)
     setForm({
       id_brands: car.id_brands ?? 0,
       id_models: car.id_models ?? 0,
@@ -143,23 +145,28 @@ export const CarForm: React.FC<CarFormProps> = ({
       interior_color: car.interior_color ?? '',
 
       id_transmission: car.id_transmission ?? 0,
-
-      // 👇 catálogo tiene plural: id_displacements
       id_displacement: car.id_displacement ?? 0,
-
       id_fuel: car.id_fuel ?? 0,
 
       receives: car.receives ?? false,
       negotiable: car.negotiable ?? false,
       number_of_doors: car.number_of_doors ?? 4,
-
-      // 👇 catálogo usa id_years
       id_year: car.id_year ?? 0,
 
       price: car.price?.toString() ?? '',
       sold: car.sold ?? false,
-      images: []
+
+      // CARGAR IMÁGENES EXISTENTES
+      existingImages: car.cars_images?.map(img => ({
+        id_images: img.id_images,
+        base64: img.images?.image
+          ? `data:image/jpeg;base64,${img.images?.image}`
+          : ""
+      })) ?? [],
+
+      newImages: []
     })
+
   }, [mode, selected, cars, catalogs])
 
   // ============================
@@ -175,9 +182,22 @@ export const CarForm: React.FC<CarFormProps> = ({
   // SUBMIT
   // ============================
   const submit = () => {
+    const originalImages = cars.find(c => c.id_cars === selected)?.cars_images || []
+
     onSubmit({
       ...form,
-      price: Number(form.price) || 0
+      price: Number(form.price) || 0,
+
+      // IDs de imágenes existentes que quedaron
+      imagesToKeep: form.existingImages.map(i => i.id_images),
+
+      // IDs de imágenes eliminadas
+      imagesToDelete: originalImages
+        .filter(img => !form.existingImages.some(e => e.id_images === img.id_images))
+        .map(img => img.id_images),
+
+      // Nuevas imágenes
+      newImages: form.newImages
     })
   }
 
@@ -376,9 +396,36 @@ export const CarForm: React.FC<CarFormProps> = ({
             /> ¿Negociable?
           </label>
 
+          {/* === IMÁGENES EXISTENTES === */}
+          {form.existingImages.length > 0 && (
+            <>
+              <p style={{ fontWeight: '600', marginTop: '10px' }}>Imágenes actuales</p>
+
+              <div className={styles.imagesGrid}>
+                {form.existingImages.map((img, i) => (
+                  <div key={i} className={styles.imageWrapper}>
+                    <img src={img.base64} className={styles.previewImg} />
+
+                    <button
+                      type='button'
+                      className={styles.deleteBtn}
+                      onClick={() =>
+                        update('existingImages',
+                          form.existingImages.filter((_, idx) => idx !== i)
+                        )
+                      }
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
           <div>
             <label style={{ fontWeight: '600', marginBottom: '5px', display: 'block' }}>
-              Imágenes
+              Agregar nuevas imágenes
             </label>
 
             <div
@@ -394,58 +441,30 @@ export const CarForm: React.FC<CarFormProps> = ({
               multiple
               accept='image/*'
               style={{ display: 'none' }}
-              onChange={e => update('images', [
-                ...form.images,
+              onChange={e => update('newImages', [
+                ...form.newImages,
                 ...Array.from(e.target.files ?? [])
               ])}
             />
 
-            {form.images.length > 0 && (
-              <div
-                style={{
-                  marginTop: '1rem',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))',
-                  gap: '10px'
-                }}
-              >
-                {form.images.map((img: File, i: number) => (
-                  <div
-                    key={i}
-                    style={{
-                      position: 'relative',
-                      width: '100%',
-                      height: '90px'
-                    }}
-                  >
+            {/* === NUEVAS IMÁGENES === */}
+            {form.newImages.length > 0 && (
+              <div className={styles.imagesGrid}>
+                {form.newImages.map((file, i) => (
+                  <div key={i} className={styles.imageWrapper}>
                     <img
-                      src={URL.createObjectURL(img)}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: '8px',
-                        objectFit: 'cover'
-                      }}
+                      src={URL.createObjectURL(file)}
+                      className={styles.previewImg}
                     />
 
                     <button
                       type='button'
+                      className={styles.deleteBtn}
                       onClick={() =>
-                        update('images', form.images.filter((_, idx) => idx !== i))
+                        update('newImages',
+                          form.newImages.filter((_, idx) => idx !== i)
+                        )
                       }
-                      style={{
-                        position: 'absolute',
-                        top: '-6px',
-                        right: '-6px',
-                        background: 'rgba(0,0,0,0.7)',
-                        color: 'white',
-                        borderRadius: '50%',
-                        border: 'none',
-                        width: '22px',
-                        height: '22px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
                     >
                       ✕
                     </button>

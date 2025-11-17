@@ -130,56 +130,136 @@ const PublicationManager: React.FC = () => {
   }
 
   const deleteCar = async (): Promise<void> => {
-    if (selected == null) return
+    if (selected == null) return;
 
     try {
+      // 1. Obtener relaciones cars_images → ids de imágenes
+      const relRes = await fetch(
+        `${CAR_IMAGES_URL}?id_cars=eq.${selected}&select=id_images`
+      );
+      const relData = await relRes.json();
+
+      const imageIds = relData.map(r => r.id_images);
+
+      // 2. Eliminar relaciones cars_images
+      await fetch(`${CAR_IMAGES_URL}?id_cars=eq.${selected}`, {
+        method: 'DELETE'
+      });
+
+      // 3. Eliminar imágenes físicas (tabla images)
+      for (const id of imageIds) {
+        await fetch(`${IMAGES_URL}?id_images=eq.${id}`, {
+          method: 'DELETE'
+        });
+      }
+
+      // 4. Finalmente eliminar el carro
       await fetch(`${CARS_URL}?id_cars=eq.${selected}`, {
         method: 'DELETE'
-      })
+      });
 
-      setCars(prev => prev.filter(c => c.id_cars !== selected))
+      // Actualizar frontend
+      setCars(prev => prev.filter(c => c.id_cars !== selected));
+
     } catch (error) {
-      console.error('Error eliminando vehículo:', error)
+      console.error("Error eliminando vehículo:", error);
     } finally {
-      setDeleteOpen(false)
-      setSelected(null)
+      setDeleteOpen(false);
+      setSelected(null);
     }
-  }
+  };
 
   const handleSave = async (data) => {
     try {
-      // 1. Convertir imágenes a base64
+      /* ==================================================
+         A. CREAR NUEVAS IMÁGENES (solo si hay newImages)
+      ================================================== */
       const toBase64 = async (file: File) =>
         await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader()
-          reader.onload = () => resolve(String(reader.result).split(',')[1])
-          reader.onerror = reject
-          reader.readAsDataURL(file)
-        })
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result).split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
 
-      const base64Images = await Promise.all(
-        data.images.map(async img => await toBase64(img))
-      )
+      let newImageIds: number[] = [];
 
-      // 2. Subir imágenes → /images
-      const uploadedImagesIds: number[] = []
+      if (data.newImages.length > 0) {
+        const base64Images = await Promise.all(
+          data.newImages.map(async (f) => await toBase64(f))
+        );
 
-      for (const b64 of base64Images) {
-        const res = await fetch(IMAGES_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation'
-          },
-          body: JSON.stringify({ image: b64 })
-        })
+        for (const b64 of base64Images) {
+          const res = await fetch(IMAGES_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Prefer: "return=representation",
+            },
+            body: JSON.stringify({ image: b64 }),
+          });
 
-        const json = await res.json()
-        uploadedImagesIds.push(json[0].id_images)
+          const json = await res.json();
+          newImageIds.push(json[0].id_images);
+        }
       }
 
-      // 3. Crear CARRO → /cars
-      const carPayload = {
+      /* ==================================================
+         B. SI ES "ADD" → CREAR CARRO Y RELACIONAR IMÁGENES
+      ================================================== */
+      if (mode === "add") {
+        const carPayload = {
+          id_brands: data.id_brands,
+          id_models: data.id_models,
+          id_styles: data.id_styles,
+          exterior_color: data.exterior_color,
+          interior_color: data.interior_color,
+          id_transmission: data.id_transmission,
+          id_displacement: data.id_displacement,
+          id_fuel: data.id_fuel,
+          receives: data.receives,
+          negotiable: data.negotiable,
+          number_of_doors: data.number_of_doors,
+          id_year: data.id_year,
+          price: data.price,
+          sold: false,
+          id_users: 7,
+        };
+
+        const carRes = await fetch(CARS_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Prefer: "return=representation",
+          },
+          body: JSON.stringify(carPayload),
+        });
+
+        const createdCar = await carRes.json();
+        const id_cars = createdCar[0].id_cars;
+
+        // Relacionar imágenes nuevas
+        for (const id_images of newImageIds) {
+          await fetch(CAR_IMAGES_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Prefer: "return=representation",
+            },
+            body: JSON.stringify({ id_cars, id_images }),
+          });
+        }
+
+        alert("Carro publicado correctamente 🎉");
+        setResetFormSignal((p) => p + 1);
+        setOpen(false);
+        return;
+      }
+
+      /* ==================================================
+         C. SI ES "EDIT" → ACTUALIZAR CARRO
+      ================================================== */
+      const updatePayload = {
         id_brands: data.id_brands,
         id_models: data.id_models,
         id_styles: data.id_styles,
@@ -193,45 +273,53 @@ const PublicationManager: React.FC = () => {
         number_of_doors: data.number_of_doors,
         id_year: data.id_year,
         price: data.price,
-        sold: false,
-        id_users: 7
+        sold: data.sold,
+      };
+
+      await fetch(`${CARS_URL}?id_cars=eq.${selected}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify(updatePayload),
+      });
+
+      /* ==================================================
+         D. ELIMINAR IMÁGENES BORRADAS
+      ================================================== */
+      for (const idImg of data.imagesToDelete) {
+        await fetch(`${CAR_IMAGES_URL}?id_images=eq.${idImg}`, {
+          method: "DELETE",
+        });
       }
 
-      const carRes = await fetch(CARS_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Prefer: 'return=representation'
-        },
-        body: JSON.stringify(carPayload)
-      })
-
-      const createdCar = await carRes.json()
-      const id_cars = createdCar[0].id_cars
-
-      // 4. Relacionar imágenes con el carro
-      for (const id_images of uploadedImagesIds) {
+      /* ==================================================
+         E. RELACIONAR NUEVAS IMÁGENES SUBIDAS
+      ================================================== */
+      for (const idImg of newImageIds) {
         await fetch(CAR_IMAGES_URL, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation'
+            "Content-Type": "application/json",
+            Prefer: "return=representation",
           },
           body: JSON.stringify({
-            id_cars,
-            id_images
-          })
-        })
+            id_cars: selected,
+            id_images: idImg,
+          }),
+        });
       }
 
-      alert('Carro publicado correctamente 🎉')
-      setResetFormSignal(prev => prev + 1)
-      setOpen(false)
+      alert("Vehículo actualizado correctamente ✔");
+      setResetFormSignal((p) => p + 1);
+      setOpen(false);
     } catch (err) {
-      console.error('Error publicando carro:', err)
-      alert('Ocurrió un error al publicar el vehículo')
+      console.error("Error guardando vehículo:", err);
+      alert("Ocurrió un error al guardar el vehículo.");
     }
-  }
+  };
+
 
   const selectedCarInfo =
     selected != null ? cars.find((c) => c.id_cars === selected)?.models?.desc ?? '' : ''
