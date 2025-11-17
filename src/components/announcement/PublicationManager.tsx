@@ -58,8 +58,9 @@ const PublicationManager: React.FC = () => {
     const fetchCars = async (): Promise<void> => {
       try {
         const res = await fetch(
-          `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,price,brands(desc),models(desc),years(desc),sold,cars_images(id_images,images(image))`
+          `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,id_brands,id_models,id_styles,exterior_color,interior_color,id_transmission,id_displacement,id_fuel,receives,negotiable,number_of_doors,id_year,price,sold,brands(desc),models(desc),years(desc),cars_images(id_images,images(image))`
         )
+
         const data = await res.json()
 
         // Procesar la primera imagen base64
@@ -82,6 +83,7 @@ const PublicationManager: React.FC = () => {
         setLoading(false)
       }
     }
+
 
     void fetchCars()
   }, [])
@@ -252,11 +254,11 @@ const PublicationManager: React.FC = () => {
         {loading
           ? (
             <p style={{ color: 'white' }}>Cargando...</p>
-            )
+          )
           : cars.length === 0
             ? (
               <p style={{ color: 'white', textAlign: 'center' }}>Aún no tienes publicaciones.</p>
-              )
+            )
             : (
               <Pagination
                 items={cars}
@@ -283,7 +285,7 @@ const PublicationManager: React.FC = () => {
                   </div>
                 )}
               />
-              )}
+            )}
 
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>

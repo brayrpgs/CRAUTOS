@@ -44,9 +44,6 @@ export const CarForm: React.FC<CarFormProps> = ({
     years: [] as CatalogItem[]
   })
 
-  // -------------------------
-  // FORMULARIO EN SINGULAR
-  // -------------------------
   const initialForm = {
     id_brands: 0,
     id_models: 0,
@@ -136,9 +133,7 @@ export const CarForm: React.FC<CarFormProps> = ({
     const car = cars.find(c => c.id_cars === selected)
     if (!car) return
 
-    // -------------------------
-    // MAPEO COMPLETO EN SINGULAR
-    // -------------------------
+    // MAPEO ENTRE SINGULAR (BACK) Y PLURAL (CATÁLOGOS)
     setForm({
       id_brands: car.id_brands ?? 0,
       id_models: car.id_models ?? 0,
@@ -148,20 +143,23 @@ export const CarForm: React.FC<CarFormProps> = ({
       interior_color: car.interior_color ?? '',
 
       id_transmission: car.id_transmission ?? 0,
+
+      // 👇 catálogo tiene plural: id_displacements
       id_displacement: car.id_displacement ?? 0,
+
       id_fuel: car.id_fuel ?? 0,
 
       receives: car.receives ?? false,
       negotiable: car.negotiable ?? false,
       number_of_doors: car.number_of_doors ?? 4,
 
+      // 👇 catálogo usa id_years
       id_year: car.id_year ?? 0,
 
       price: car.price?.toString() ?? '',
       sold: car.sold ?? false,
       images: []
     })
-
   }, [mode, selected, cars, catalogs])
 
   // ============================
@@ -183,35 +181,30 @@ export const CarForm: React.FC<CarFormProps> = ({
     })
   }
 
+  // ============================
+  // ENUM TRANSMISSION → SELECT
+  // ============================
   const transmissionOptions = Object.entries(TransmissionEnum)
-    .filter(([key, value]) => isNaN(Number(key))) // solo nombres
+    .filter(([key]) => isNaN(Number(key)))
     .map(([name, id]) => ({
       id: id as number,
       desc: name
-    }));
+    }))
 
   // ======================================================================
-  // UI — IGUAL AL TUYO
+  // UI
   // ======================================================================
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
 
       {/* TABS */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '.8rem' }}>
-        <button type='button'
-          className={`glass ${tab === 1 ? styles.activeTab : ''}`}
-          onClick={() => setTab(1)}>Información</button>
-
-        <button type='button'
-          className={`glass ${tab === 2 ? styles.activeTab : ''}`}
-          onClick={() => setTab(2)}>Especificaciones</button>
-
-        <button type='button'
-          className={`glass ${tab === 3 ? styles.activeTab : ''}`}
-          onClick={() => setTab(3)}>Opciones & Fotos</button>
+        <button type='button' className={`glass ${tab === 1 ? styles.activeTab : ''}`} onClick={() => setTab(1)}>Información</button>
+        <button type='button' className={`glass ${tab === 2 ? styles.activeTab : ''}`} onClick={() => setTab(2)}>Especificaciones</button>
+        <button type='button' className={`glass ${tab === 3 ? styles.activeTab : ''}`} onClick={() => setTab(3)}>Opciones & Fotos</button>
       </div>
 
-      {/* TAB 1 */}
+      {/* ================= TAB 1 ================= */}
       {tab === 1 && (
         <>
           <div className={styles.formGrid}>
@@ -223,8 +216,8 @@ export const CarForm: React.FC<CarFormProps> = ({
                 onChange={e => update('id_brands', Number(e.target.value))}
               >
                 <option value={0}>Seleccione</option>
-                {catalogs.brands.map((b, i) => (
-                  <option key={i} value={b.id_brands}>{b.desc}</option>
+                {catalogs.brands.map((b) => (
+                  <option key={b.id_brands} value={b.id_brands}>{b.desc}</option>
                 ))}
               </select>
             </span>
@@ -237,8 +230,8 @@ export const CarForm: React.FC<CarFormProps> = ({
                 onChange={e => update('id_models', Number(e.target.value))}
               >
                 <option value={0}>Seleccione</option>
-                {filteredModels.map((m, i) => (
-                  <option key={i} value={m.id_models}>{m.desc}</option>
+                {filteredModels.map((m) => (
+                  <option key={m.id_models} value={m.id_models}>{m.desc}</option>
                 ))}
               </select>
             </span>
@@ -251,26 +244,24 @@ export const CarForm: React.FC<CarFormProps> = ({
                 onChange={e => update('id_styles', Number(e.target.value))}
               >
                 <option value={0}>Seleccione</option>
-                {catalogs.styles.map((s, i) => (
-                  <option key={i} value={s.id_styles}>{s.desc}</option>
+                {catalogs.styles.map((s) => (
+                  <option key={s.id_styles} value={s.id_styles}>{s.desc}</option>
                 ))}
               </select>
             </span>
           </div>
 
           <span className={styles.rowWrapper}>
-            <label className={styles.rowWrapperLabel}>Color exterior</label>
-            <input
-              className={`glass ${styles.fullInput}`}
+            <label>Color exterior</label>
+            <input className={`glass ${styles.fullInput}`}
               value={form.exterior_color}
               onChange={e => update('exterior_color', e.target.value)}
             />
           </span>
 
           <span className={styles.rowWrapper}>
-            <label className={styles.rowWrapperLabel}>Color interior</label>
-            <input
-              className={`glass ${styles.fullInput}`}
+            <label>Color interior</label>
+            <input className={`glass ${styles.fullInput}`}
               value={form.interior_color}
               onChange={e => update('interior_color', e.target.value)}
             />
@@ -278,18 +269,16 @@ export const CarForm: React.FC<CarFormProps> = ({
 
           <span className={styles.rowWrapper}>
             <label>Precio</label>
-            <input
-              className={`glass ${styles.fullInput}`}
+            <input className={`glass ${styles.fullInput}`}
               type='number'
               value={form.price}
               onChange={e => update('price', e.target.value)}
             />
           </span>
-
         </>
       )}
 
-      {/* TAB 2 */}
+      {/* ================= TAB 2 ================= */}
       {tab === 2 && (
         <div className={styles.formGrid}>
 
@@ -302,8 +291,8 @@ export const CarForm: React.FC<CarFormProps> = ({
             >
               <option value={0}>Seleccione</option>
 
-              {transmissionOptions.map((t, i) => (
-                <option key={i} value={t.id}>
+              {transmissionOptions.map((t) => (
+                <option key={t.id} value={t.id}>
                   {t.desc}
                 </option>
               ))}
@@ -318,8 +307,10 @@ export const CarForm: React.FC<CarFormProps> = ({
               onChange={e => update('id_displacement', Number(e.target.value))}
             >
               <option value={0}>Seleccione</option>
-              {catalogs.displacement.map((d, i) => (
-                <option key={i} value={d.id_displacements}>{d.desc}</option>
+              {catalogs.displacement.map((d) => (
+                <option key={d.id_displacements} value={d.id_displacements}>
+                  {d.desc}
+                </option>
               ))}
             </select>
           </span>
@@ -332,8 +323,8 @@ export const CarForm: React.FC<CarFormProps> = ({
               onChange={e => update('id_fuel', Number(e.target.value))}
             >
               <option value={0}>Seleccione</option>
-              {catalogs.fuel.map((f, i) => (
-                <option key={i} value={f.id_fuel}>{f.desc}</option>
+              {catalogs.fuel.map((f) => (
+                <option key={f.id_fuel} value={f.id_fuel}>{f.desc}</option>
               ))}
             </select>
           </span>
@@ -358,8 +349,8 @@ export const CarForm: React.FC<CarFormProps> = ({
               onChange={e => update('id_year', Number(e.target.value))}
             >
               <option value={0}>Seleccione</option>
-              {catalogs.years.map((y, i) => (
-                <option key={i} value={y.id_years}>{y.desc}</option>
+              {catalogs.years.map((y) => (
+                <option key={y.id_years} value={y.id_years}>{y.desc}</option>
               ))}
             </select>
           </span>
@@ -367,7 +358,7 @@ export const CarForm: React.FC<CarFormProps> = ({
         </div>
       )}
 
-      {/* TAB 3 */}
+      {/* ================= TAB 3 ================= */}
       {tab === 3 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
@@ -475,7 +466,6 @@ export const CarForm: React.FC<CarFormProps> = ({
       >
         {mode === 'add' ? 'Publicar' : 'Guardar cambios'}
       </button>
-
     </div>
   )
 }
