@@ -9,9 +9,26 @@
 }
 
 .actionsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
+  display: grid;
   gap: 1rem;
   justify-content: space-evenly;
+  grid-template-columns: repeat(auto-fit, minmax(10ch, 17ch));
+  font-size: xx-small;
+  margin-block-start: 1rem;
+}
+
+.details {
+  overflow: hidden;
+  transition: all 1s ease;
+  interpolate-size: allow-keywords;
+}
+
+.details:not([open]) {
+  height: 1lh;
+  transition: all 1s ease;
+}
+
+.details[open] {
+  height: auto;
+  transition: all 1s ease;
 }
