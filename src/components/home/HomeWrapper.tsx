@@ -7,6 +7,7 @@ import { Modal } from '../modal/Modal'
 import { ModalContent } from '../modal/ModalContent'
 import { ModalFooter } from '../modal/ModalFooter'
 import { ModalHeader } from '../modal/ModalHeader'
+import { CarTechnicalSheet } from '../CarTechnicalSheet/CarSheet'
 
 const HomeWrapper: React.FC = () => {
   const ctx = useContext(HomeContext)
@@ -15,9 +16,9 @@ const HomeWrapper: React.FC = () => {
   const MAX_YEAR = 2025
   const [yearFrom, setYearFrom] = useState<number>(2005)
   const [yearTo, setYearTo] = useState<number>(2018)
+  const [idSelected, setIdSelected] = useState(0)
   useEffect(() => {
-    console.table(ctx)
-  }, [ctx?.stateModal])
+  }, [ctx?.stateModal, idSelected])
   return (
     <div className={styles.container}>
       <div className={`${styles.child} ${styles.childFilters}`}>
@@ -211,14 +212,14 @@ const HomeWrapper: React.FC = () => {
                 className={pageModal === 2 || pageModal === 3 ? 'glass' : 'hide'}
                 onClick={(e) => { setPageModal(pageModal - 1) }}
               >
-                prev
+                atras
               </button>
               <button
                 style={{ display: 'block', flex: '1' }}
                 className={pageModal === 1 || pageModal === 2 ? 'glass' : 'hide'}
                 onClick={(e) => { setPageModal(pageModal + 1) }}
               >
-                next
+                siguiente
               </button>
             </span>
           </ModalContent>
@@ -254,6 +255,8 @@ const HomeWrapper: React.FC = () => {
         </span>
         <button className={stylePagination.btn}>→</button>
       </div>
+      {}
+      <CarTechnicalSheet id={idSelected} />
     </div>
   )
 }
