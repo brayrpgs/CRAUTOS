@@ -29,28 +29,12 @@
 }
 
 .searchBar {
-   all: unset;
-  outline: 1px solid rgb(255 255 255 / 25%);
-  padding: 0.5rem;
-  border-radius: 1rem;
-  box-shadow: inset 0 0 5px 0 rgb(255 255 255 / 25%);
-  color: white;
-  text-align: center;
-  backdrop-filter: blur(10px);
   margin-left: 4rem;
 }
 
-.searchBar::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
 
-#selct{
-  all: unset;
-  outline: 1px solid rgb(255 255 255 / 25%);
-  padding: 0.5rem;
-  border-radius: 1rem;
-  box-shadow: inset 0 0 5px 0 rgb(255 255 255 / 25%);
-  color: rgb(255, 255, 255);
-  text-align: center;
-  background-color: transparent;
+.fixPagination {
+  margin-block: 2rem;
+  width: fit-content;
+  margin-inline: auto;
 }
