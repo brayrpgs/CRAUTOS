@@ -9,6 +9,7 @@ import {
   YEARS_URL
 } from '../../common/common'
 import styles from '../../styles/announcement/styles.module.css'
+import { TransmissionEnum } from '../../enums/TransmissionEnum'
 
 interface CarFormProps {
   mode: 'add' | 'edit'
@@ -30,6 +31,7 @@ export const CarForm: React.FC<CarFormProps> = ({
   resetSignal,
   onSubmit
 }) => {
+
   const [tab, setTab] = useState<1 | 2 | 3>(1)
 
   const [catalogs, setCatalogs] = useState({
@@ -42,6 +44,9 @@ export const CarForm: React.FC<CarFormProps> = ({
     years: [] as CatalogItem[]
   })
 
+  // -------------------------
+  // FORMULARIO EN SINGULAR
+  // -------------------------
   const initialForm = {
     id_brands: 0,
     id_models: 0,
@@ -80,8 +85,8 @@ export const CarForm: React.FC<CarFormProps> = ({
           YEARS_URL
         ]
 
-        const responses = await Promise.all(urls.map(async url => await fetch(url)))
-        const data = await Promise.all(responses.map(async r => await r.json()))
+        const responses = await Promise.all(urls.map(url => fetch(url)))
+        const data = await Promise.all(responses.map(r => r.json()))
 
         if (mounted) {
           setCatalogs({
@@ -100,14 +105,11 @@ export const CarForm: React.FC<CarFormProps> = ({
     }
 
     load()
-
-    return () => {
-      mounted = false
-    }
+    return () => { mounted = false }
   }, [])
 
   // ============================
-  // RESET TOTAL DEL FORMULARIO
+  // RESET FORM
   // ============================
   useEffect(() => {
     setForm(initialForm)
@@ -115,38 +117,52 @@ export const CarForm: React.FC<CarFormProps> = ({
   }, [resetSignal])
 
   // ============================
-  // CARGAR DATOS AL EDITAR
+  // CARGAR DATOS PARA EDITAR
   // ============================
   useEffect(() => {
-    let mounted = true
+    if (mode !== 'edit' || selected == null) return
 
-    if (mode === 'edit' && selected != null) {
-      const car = cars.find(c => c.id_cars === selected)
-      if (!car) return
+    const catalogsLoaded =
+      catalogs.brands.length > 0 &&
+      catalogs.models.length > 0 &&
+      catalogs.styles.length > 0 &&
+      catalogs.transmissions.length > 0 &&
+      catalogs.fuel.length > 0 &&
+      catalogs.displacement.length > 0 &&
+      catalogs.years.length > 0
 
-      if (mounted) {
-        setForm({
-          id_brands: car.brands?.id_brands ?? 0,
-          id_models: car.models?.id_models ?? 0,
-          id_styles: car.styles?.id_styles ?? 0,
-          exterior_color: car.exterior_color ?? '',
-          interior_color: car.interior_color ?? '',
-          id_transmission: car.transmissions?.id_transmission ?? 0,
-          id_displacement: car.displacement?.id_displacements ?? 0,
-          id_fuel: car.fuel?.id_fuel ?? 0,
-          receives: car.receives ?? false,
-          negotiable: car.negotiable ?? false,
-          number_of_doors: car.number_of_doors ?? 4,
-          id_year: car.years?.id_years ?? 0,
-          price: car.price?.toString() ?? '',
-          sold: car.sold ?? false,
-          images: []
-        })
-      }
-    }
+    if (!catalogsLoaded) return
 
-    return () => { mounted = false }
-  }, [mode, selected, cars])
+    const car = cars.find(c => c.id_cars === selected)
+    if (!car) return
+
+    // -------------------------
+    // MAPEO COMPLETO EN SINGULAR
+    // -------------------------
+    setForm({
+      id_brands: car.id_brands ?? 0,
+      id_models: car.id_models ?? 0,
+      id_styles: car.id_styles ?? 0,
+
+      exterior_color: car.exterior_color ?? '',
+      interior_color: car.interior_color ?? '',
+
+      id_transmission: car.id_transmission ?? 0,
+      id_displacement: car.id_displacement ?? 0,
+      id_fuel: car.id_fuel ?? 0,
+
+      receives: car.receives ?? false,
+      negotiable: car.negotiable ?? false,
+      number_of_doors: car.number_of_doors ?? 4,
+
+      id_year: car.id_year ?? 0,
+
+      price: car.price?.toString() ?? '',
+      sold: car.sold ?? false,
+      images: []
+    })
+
+  }, [mode, selected, cars, catalogs])
 
   // ============================
   // HANDLER UNIVERSAL
@@ -158,32 +174,46 @@ export const CarForm: React.FC<CarFormProps> = ({
   const filteredModels = catalogs.models
 
   // ============================
-  // SUBMIT (CONVERSIÓN CORRECTA)
+  // SUBMIT
   // ============================
   const submit = () => {
-    console.log('CATÁLOGO CILINDRAJES:', catalogs.years)
     onSubmit({
       ...form,
       price: Number(form.price) || 0
     })
   }
 
+  const transmissionOptions = Object.entries(TransmissionEnum)
+    .filter(([key, value]) => isNaN(Number(key))) // solo nombres
+    .map(([name, id]) => ({
+      id: id as number,
+      desc: name
+    }));
+
+  // ======================================================================
+  // UI — IGUAL AL TUYO
+  // ======================================================================
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
 
       {/* TABS */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '.8rem' }}>
-        <button type='button' className={`glass ${tab === 1 ? styles.activeTab : ''}`} onClick={() => setTab(1)}>Información</button>
-        <button type='button' className={`glass ${tab === 2 ? styles.activeTab : ''}`} onClick={() => setTab(2)}>Especificaciones</button>
-        <button type='button' className={`glass ${tab === 3 ? styles.activeTab : ''}`} onClick={() => setTab(3)}>Opciones & Fotos</button>
+        <button type='button'
+          className={`glass ${tab === 1 ? styles.activeTab : ''}`}
+          onClick={() => setTab(1)}>Información</button>
+
+        <button type='button'
+          className={`glass ${tab === 2 ? styles.activeTab : ''}`}
+          onClick={() => setTab(2)}>Especificaciones</button>
+
+        <button type='button'
+          className={`glass ${tab === 3 ? styles.activeTab : ''}`}
+          onClick={() => setTab(3)}>Opciones & Fotos</button>
       </div>
 
-      {/* ====================================== */}
-      {/* TAB 1 — INFORMACIÓN */}
-      {/* ====================================== */}
+      {/* TAB 1 */}
       {tab === 1 && (
         <>
-
           <div className={styles.formGrid}>
             <span>
               <label>Marca</label>
@@ -194,7 +224,7 @@ export const CarForm: React.FC<CarFormProps> = ({
               >
                 <option value={0}>Seleccione</option>
                 {catalogs.brands.map((b, i) => (
-                  <option key={b.id_brands ?? i} value={b.id_brands}>{b.desc}</option>
+                  <option key={i} value={b.id_brands}>{b.desc}</option>
                 ))}
               </select>
             </span>
@@ -208,7 +238,7 @@ export const CarForm: React.FC<CarFormProps> = ({
               >
                 <option value={0}>Seleccione</option>
                 {filteredModels.map((m, i) => (
-                  <option key={m.id_models ?? i} value={m.id_models}>{m.desc}</option>
+                  <option key={i} value={m.id_models}>{m.desc}</option>
                 ))}
               </select>
             </span>
@@ -222,49 +252,44 @@ export const CarForm: React.FC<CarFormProps> = ({
               >
                 <option value={0}>Seleccione</option>
                 {catalogs.styles.map((s, i) => (
-                  <option key={s.id_styles ?? i} value={s.id_styles}>{s.desc}</option>
+                  <option key={i} value={s.id_styles}>{s.desc}</option>
                 ))}
               </select>
             </span>
           </div>
 
-          {/* Inputs FULL WIDTH YA ARREGLADOS */}
-          <span className={`${styles.rowWrapper}`} style={{ display: 'flex', flexDirection: 'column' }}>
+          <span className={styles.rowWrapper}>
             <label className={styles.rowWrapperLabel}>Color exterior</label>
             <input
               className={`glass ${styles.fullInput}`}
-              type='text'
               value={form.exterior_color}
               onChange={e => update('exterior_color', e.target.value)}
             />
           </span>
 
-          <span className={`${styles.rowWrapper}`} style={{ display: 'flex', flexDirection: 'column' }}>
+          <span className={styles.rowWrapper}>
             <label className={styles.rowWrapperLabel}>Color interior</label>
             <input
               className={`glass ${styles.fullInput}`}
-              type='text'
               value={form.interior_color}
               onChange={e => update('interior_color', e.target.value)}
             />
           </span>
 
-          <span className={`${styles.rowWrapper}`} style={{ display: 'flex', flexDirection: 'column' }}>
+          <span className={styles.rowWrapper}>
             <label>Precio</label>
             <input
               className={`glass ${styles.fullInput}`}
               type='number'
               value={form.price}
-              onChange={e => update('price', Number(e.target.value))}
+              onChange={e => update('price', e.target.value)}
             />
           </span>
 
         </>
       )}
 
-      {/* ====================================== */}
-      {/* TAB 2 — ESPECIFICACIONES */}
-      {/* ====================================== */}
+      {/* TAB 2 */}
       {tab === 2 && (
         <div className={styles.formGrid}>
 
@@ -276,9 +301,12 @@ export const CarForm: React.FC<CarFormProps> = ({
               onChange={e => update('id_transmission', Number(e.target.value))}
             >
               <option value={0}>Seleccione</option>
-              <option value={1}>Manual</option>
-              <option value={2}>Automática</option>
-              <option value={3}>Híbrida</option>
+
+              {transmissionOptions.map((t, i) => (
+                <option key={i} value={t.id}>
+                  {t.desc}
+                </option>
+              ))}
             </select>
           </span>
 
@@ -286,14 +314,12 @@ export const CarForm: React.FC<CarFormProps> = ({
             <label>Cilindraje</label>
             <select
               className='glass'
-              value={form.id_displacements}
+              value={form.id_displacement}
               onChange={e => update('id_displacement', Number(e.target.value))}
             >
               <option value={0}>Seleccione</option>
               {catalogs.displacement.map((d, i) => (
-                <option key={i} value={d.id_displacements}>
-                  {d.desc}
-                </option>
+                <option key={i} value={d.id_displacements}>{d.desc}</option>
               ))}
             </select>
           </span>
@@ -307,9 +333,7 @@ export const CarForm: React.FC<CarFormProps> = ({
             >
               <option value={0}>Seleccione</option>
               {catalogs.fuel.map((f, i) => (
-                <option key={i} value={f.id_fuel}>
-                  {f.desc}
-                </option>
+                <option key={i} value={f.id_fuel}>{f.desc}</option>
               ))}
             </select>
           </span>
@@ -330,14 +354,12 @@ export const CarForm: React.FC<CarFormProps> = ({
             <label>Año</label>
             <select
               className='glass'
-              value={form.id_years}
+              value={form.id_year}
               onChange={e => update('id_year', Number(e.target.value))}
             >
               <option value={0}>Seleccione</option>
               {catalogs.years.map((y, i) => (
-                <option key={i} value={y.id_years}>
-                  {y.desc}
-                </option>
+                <option key={i} value={y.id_years}>{y.desc}</option>
               ))}
             </select>
           </span>
@@ -345,22 +367,20 @@ export const CarForm: React.FC<CarFormProps> = ({
         </div>
       )}
 
-      {/* ====================================== */}
-      {/* TAB 3 — OPCIONES & FOTOS */}
-      {/* ====================================== */}
+      {/* TAB 3 */}
       {tab === 3 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
           <label>
-            <input
-              type='checkbox' checked={form.receives}
+            <input type='checkbox'
+              checked={form.receives}
               onChange={e => update('receives', e.target.checked)}
             /> ¿Recibe vehículo?
           </label>
 
           <label>
-            <input
-              type='checkbox' checked={form.negotiable}
+            <input type='checkbox'
+              checked={form.negotiable}
               onChange={e => update('negotiable', e.target.checked)}
             /> ¿Negociable?
           </label>
@@ -419,9 +439,9 @@ export const CarForm: React.FC<CarFormProps> = ({
 
                     <button
                       type='button'
-                      onClick={() => update('images',
-                        form.images.filter((_, idx) => idx !== i)
-                      )}
+                      onClick={() =>
+                        update('images', form.images.filter((_, idx) => idx !== i))
+                      }
                       style={{
                         position: 'absolute',
                         top: '-6px',
@@ -442,7 +462,6 @@ export const CarForm: React.FC<CarFormProps> = ({
                 ))}
               </div>
             )}
-
           </div>
         </div>
       )}
@@ -455,7 +474,6 @@ export const CarForm: React.FC<CarFormProps> = ({
         style={{ marginTop: '1rem' }}
       >
         {mode === 'add' ? 'Publicar' : 'Guardar cambios'}
-
       </button>
 
     </div>
