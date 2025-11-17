@@ -205,3 +205,29 @@
 .modalSecondaryBtn:hover {
   color: rgba(255, 0, 0, 0.7);
 }
+
+.carTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+  display: block;
+  text-align: center;
+}
+
+.carPrice {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #e3e3e3;
+  display: block;
+  margin-top: .25rem;
+  text-align: center;
+}
+
+.carDetail {
+  font-size: 0.85rem;
+  color: #b9b9b9;
+  text-align: center;
+  display: block;
+  margin-top: .2rem;
+}
+

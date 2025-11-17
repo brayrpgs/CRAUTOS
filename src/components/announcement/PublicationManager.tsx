@@ -9,28 +9,53 @@ import { Card } from '../card/Card'
 import { Pagination } from '../pagination/Pagination'
 
 import styles from '../../styles/announcement/styles.module.css'
+import { CARS_URL } from '../../common/common'
 
-const cards = [
-  { id: 1, image: '/ram1.avif', info: 'Toyota Corolla 2020' },
-  { id: 2, image: '/ram2.avif', info: 'Honda Civic 2019' },
-  { id: 3, image: '/ram3.avif', info: 'Mazda 3 Touring' },
-  { id: 4, image: '/toyota-hilux-rad-1.avif', info: 'Hyundai Elantra 2021' },
-  { id: 5, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
-  { id: 6, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' },
-  { id: 7, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
-  { id: 8, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' },
-  { id: 9, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
-  { id: 10, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
-  { id: 11, image: '/toyota-hilux-rad-2.avif', info: 'Toyota Yaris 2021' },
-  { id: 12, image: '/toyota-hilux-rad-3.avif', info: 'Suzuki Swift 2020' }
-]
+// Tipo de respuesta del backend
+interface CarFromApi {
+  id_cars: number
+  id_users: number
+  price: number
+  image: string
+  brands?: { desc: string }
+  models?: { desc: string }
+  years?: { desc: number }
+  sold: boolean
+}
+
+const TEMP_USER_ID = 7 // luego vendrá por contexto
 
 const PublicationManager: React.FC = () => {
+  const [cars, setCars] = useState<CarFromApi[]>([])
+  const [loading, setLoading] = useState(true)
+
   const [open, setOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+
   const [mode, setMode] = useState<'add' | 'edit'>('add')
   const [selected, setSelected] = useState<number | null>(null)
 
-  // Sincroniza cierre del <dialog> con el estado de React
+  useEffect(() => {
+    const fetchCars = async (): Promise<void> => {
+      try {
+        const res = await fetch(
+          `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,price,brands(desc),models(desc),years(desc),sold`
+        )
+        const data = await res.json()
+        setCars(data)
+      } catch (err) {
+        console.error('Error cargando tus vehículos:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    void fetchCars()
+  }, [])
+
+  /* =============================
+        Sincronizar modal
+  ============================== */
   useEffect(() => {
     const modal = document.getElementById('publicacion-modal') as HTMLDialogElement | null
     if (modal == null) return
@@ -43,6 +68,9 @@ const PublicationManager: React.FC = () => {
     return () => modal.removeEventListener('close', checkClosed)
   }, [open])
 
+  /* =============================
+        Abrir modal
+  ============================== */
   const openAddModal = (): void => {
     setMode('add')
     setSelected(null)
@@ -55,81 +83,133 @@ const PublicationManager: React.FC = () => {
     setOpen(true)
   }
 
+  /* =============================
+        Eliminar vehículo
+  ============================== */
+  const confirmDelete = (id: number): void => {
+    setSelected(id)
+    setDeleteOpen(true)
+  }
+
+  const deleteCar = async (): Promise<void> => {
+    if (selected == null) return
+
+    try {
+      await fetch(`${CARS_URL}?id_cars=eq.${selected}`, {
+        method: 'DELETE'
+      })
+
+      setCars(prev => prev.filter(c => c.id_cars !== selected))
+    } catch (error) {
+      console.error('Error eliminando vehículo:', error)
+    } finally {
+      setDeleteOpen(false)
+      setSelected(null)
+    }
+  }
+
   const selectedCarInfo =
-    selected != null ? cards.find((c) => c.id === selected)?.info ?? '' : ''
+    selected != null ? cars.find((c) => c.id_cars === selected)?.models?.desc ?? '' : ''
 
   return (
     <>
-      {open && <div className={styles.overlay} />}
+      {(open || deleteOpen) && <div className={styles.overlay} />}
 
       <section className={styles.box}>
         <div className={styles.boxHeader}>
           <h2 className={styles.title}>Tus publicaciones</h2>
 
-          <button
-            type='button'
-            className={styles.addButton}
-            onClick={openAddModal}
-          >
+          <button className={styles.addButton} onClick={openAddModal}>
             + Nueva publicación
           </button>
         </div>
 
         <hr className={styles.divider} />
 
-        {/* LISTA PAGINADA DE CARDS */}
-        <Pagination
-          items={cards}
-          itemsPerPage={10}
-          renderItem={(car) => (
-            <div
-              className={styles.cardWrapper}
-              onClick={() => openEditModal(car.id)}
-            >
-              <Card image={car.image} info={car.info}>
-                <button
-                  className={styles.cardClose}
-                  onClick={(e) => {
-                    e.stopPropagation() // ⛔ evita que dispare el editar
-                    alert(`Eliminar: ${car.info}`)
-                  }}
-                >
-                  x
-                </button>
-              </Card>
-            </div>
-          )}
-        />
+        {loading
+          ? (
+            <p style={{ color: 'white' }}>Cargando...</p>
+            )
+          : cars.length === 0
+            ? (
+              <p style={{ color: 'white', textAlign: 'center' }}>Aún no tienes publicaciones.</p>
+              )
+            : (
+              <Pagination
+                items={cars}
+                itemsPerPage={10}
+                renderItem={(car) => (
+                  <div
+                    className={styles.cardWrapper}
+                    onClick={() => openEditModal(car.id_cars)}
+                  >
+                    <Card
+                      image={car.image ?? '/ram1.avif'}
+                      info={`${car.brands?.desc ?? ''} ${car.models?.desc ?? ''} ${car.years?.desc ?? ''} — ₡${car.price.toLocaleString('es-CR')}`}
+                    >
+                      <button
+                        className={styles.cardClose}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          confirmDelete(car.id_cars)
+                        }}
+                      >
+                        x
+                      </button>
+                    </Card>
+                  </div>
+                )}
+              />
+              )}
 
-        {/* === MODAL === */}
+        {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>
           <ModalHeader>
             <h2 style={{ color: 'white' }}>
-              {mode === 'add'
-                ? 'Nueva publicación'
-                : `Editar ${selectedCarInfo}`}
+              {mode === 'add' ? 'Nueva publicación' : `Editar ${selectedCarInfo}`}
             </h2>
           </ModalHeader>
 
           <ModalContent>
             <p style={{ color: 'white' }}>
-              {mode === 'add'
-                ? 'Formulario para agregar una nueva publicación.'
-                : 'Formulario para editar el vehículo seleccionado.'}
+              Aquí va el formulario real (marca, modelo, color, transmisión, imágenes…)
+            </p>
+          </ModalContent>
+
+          <ModalFooter>
+            <button className={styles.modalPrimaryBtn} onClick={() => setOpen(false)}>
+              {mode === 'add' ? 'Agregar' : 'Guardar cambios'}
+            </button>
+
+            <button className={styles.modalSecondaryBtn} onClick={() => setOpen(false)}>
+              Cancelar
+            </button>
+          </ModalFooter>
+        </Modal>
+
+        {/* === MODAL DELETE === */}
+        <Modal open={deleteOpen} id='delete-car-modal'>
+          <ModalHeader>
+            <h2 style={{ color: 'white' }}>Eliminar vehículo</h2>
+          </ModalHeader>
+
+          <ModalContent>
+            <p style={{ color: 'white' }}>
+              ¿Estás seguro de que deseas eliminar esta publicación?
             </p>
           </ModalContent>
 
           <ModalFooter>
             <button
               className={styles.modalPrimaryBtn}
-              onClick={() => setOpen(false)}
+              onClick={() => { void deleteCar() }}
             >
-              {mode === 'add' ? 'Agregar' : 'Guardar'}
+              Sí, eliminar
             </button>
 
             <button
               className={styles.modalSecondaryBtn}
-              onClick={() => setOpen(false)}
+              onClick={() => setDeleteOpen(false)}
             >
               Cancelar
             </button>
