@@ -39,50 +39,49 @@ const PublicationManager: React.FC = () => {
   const [resetFormSignal, setResetFormSignal] = useState(0)
 
   useEffect(() => {
-    const modal = document.getElementById('publicacion-modal') as HTMLDialogElement | null;
-    if (modal == null) return;
+    const modal = document.getElementById('publicacion-modal') as HTMLDialogElement | null
+    if (modal == null) return
 
     const checkClosed = () => {
       if (!modal.open && open) {
-        setOpen(false);
-        setSelected(null);
+        setOpen(false)
+        setSelected(null)
         setResetFormSignal(prev => prev + 1)
       }
-    };
+    }
 
-    modal.addEventListener('close', checkClosed);
-    return () => modal.removeEventListener('close', checkClosed);
-  }, [open]);
+    modal.addEventListener('close', checkClosed)
+    return () => modal.removeEventListener('close', checkClosed)
+  }, [open])
 
   useEffect(() => {
     const fetchCars = async (): Promise<void> => {
       try {
         const res = await fetch(
           `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,price,brands(desc),models(desc),years(desc),sold,cars_images(id_images,images(image))`
-        );
-        const data = await res.json();
+        )
+        const data = await res.json()
 
         // Procesar la primera imagen base64
         const processed = data.map(car => {
-          const firstRel = car.cars_images?.[0];
-          const base64 = firstRel?.images?.image;
+          const firstRel = car.cars_images?.[0]
+          const base64 = firstRel?.images?.image
 
           return {
             ...car,
             image: base64
               ? `data:image/jpeg;base64,${base64}`
               : null
-          };
-        });
+          }
+        })
 
-        setCars(processed);
+        setCars(processed)
       } catch (err) {
-        console.error('Error cargando tus vehículos:', err);
+        console.error('Error cargando tus vehículos:', err)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-
+    }
 
     void fetchCars()
   }, [])
@@ -148,33 +147,33 @@ const PublicationManager: React.FC = () => {
   const handleSave = async (data) => {
     try {
       // 1. Convertir imágenes a base64
-      const toBase64 = (file: File) =>
-        new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(String(reader.result).split(",")[1]);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
+      const toBase64 = async (file: File) =>
+        await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(String(reader.result).split(',')[1])
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
 
       const base64Images = await Promise.all(
-        data.images.map(img => toBase64(img))
-      );
+        data.images.map(async img => await toBase64(img))
+      )
 
       // 2. Subir imágenes → /images
-      const uploadedImagesIds: number[] = [];
+      const uploadedImagesIds: number[] = []
 
       for (const b64 of base64Images) {
         const res = await fetch(IMAGES_URL, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "Prefer": "return=representation"
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
           },
           body: JSON.stringify({ image: b64 })
-        });
+        })
 
-        const json = await res.json();
-        uploadedImagesIds.push(json[0].id_images);
+        const json = await res.json()
+        uploadedImagesIds.push(json[0].id_images)
       }
 
       // 3. Crear CARRO → /cars
@@ -194,49 +193,46 @@ const PublicationManager: React.FC = () => {
         price: data.price,
         sold: false,
         id_users: 7
-      };
+      }
 
       const carRes = await fetch(CARS_URL, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "Prefer": "return=representation"
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation'
         },
         body: JSON.stringify(carPayload)
-      });
+      })
 
-      const createdCar = await carRes.json();
-      const id_cars = createdCar[0].id_cars;
+      const createdCar = await carRes.json()
+      const id_cars = createdCar[0].id_cars
 
       // 4. Relacionar imágenes con el carro
       for (const id_images of uploadedImagesIds) {
         await fetch(CAR_IMAGES_URL, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "Prefer": "return=representation"
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
           },
           body: JSON.stringify({
             id_cars,
             id_images
           })
-        });
+        })
       }
 
-      alert("Carro publicado correctamente 🎉");
-      setResetFormSignal(prev => prev + 1);
-      setOpen(false);
-
+      alert('Carro publicado correctamente 🎉')
+      setResetFormSignal(prev => prev + 1)
+      setOpen(false)
     } catch (err) {
-      console.error("Error publicando carro:", err);
-      alert("Ocurrió un error al publicar el vehículo");
+      console.error('Error publicando carro:', err)
+      alert('Ocurrió un error al publicar el vehículo')
     }
-  };
-
+  }
 
   const selectedCarInfo =
     selected != null ? cars.find((c) => c.id_cars === selected)?.models?.desc ?? '' : ''
-
 
   return (
     <>
@@ -256,11 +252,11 @@ const PublicationManager: React.FC = () => {
         {loading
           ? (
             <p style={{ color: 'white' }}>Cargando...</p>
-          )
+            )
           : cars.length === 0
             ? (
               <p style={{ color: 'white', textAlign: 'center' }}>Aún no tienes publicaciones.</p>
-            )
+              )
             : (
               <Pagination
                 items={cars}
@@ -287,7 +283,7 @@ const PublicationManager: React.FC = () => {
                   </div>
                 )}
               />
-            )}
+              )}
 
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>

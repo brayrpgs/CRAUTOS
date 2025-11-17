@@ -30,7 +30,6 @@ export const CarForm: React.FC<CarFormProps> = ({
   resetSignal,
   onSubmit
 }) => {
-
   const [tab, setTab] = useState<1 | 2 | 3>(1)
 
   const [catalogs, setCatalogs] = useState({
@@ -67,7 +66,7 @@ export const CarForm: React.FC<CarFormProps> = ({
   // CARGAR CATÁLOGOS
   // ============================
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
 
     const load = async () => {
       try {
@@ -79,10 +78,10 @@ export const CarForm: React.FC<CarFormProps> = ({
           FUEL_URL,
           DISPLACEMENT_URL,
           YEARS_URL
-        ];
+        ]
 
-        const responses = await Promise.all(urls.map(url => fetch(url)));
-        const data = await Promise.all(responses.map(r => r.json()));
+        const responses = await Promise.all(urls.map(async url => await fetch(url)))
+        const data = await Promise.all(responses.map(async r => await r.json()))
 
         if (mounted) {
           setCatalogs({
@@ -93,19 +92,19 @@ export const CarForm: React.FC<CarFormProps> = ({
             fuel: data[4],
             displacement: data[5],
             years: data[6]
-          });
+          })
         }
       } catch (err) {
-        console.error("Error cargando catálogos:", err);
+        console.error('Error cargando catálogos:', err)
       }
-    };
+    }
 
-    load();
+    load()
 
     return () => {
-      mounted = false;
-    };
-  }, []);
+      mounted = false
+    }
+  }, [])
 
   // ============================
   // RESET TOTAL DEL FORMULARIO
@@ -119,9 +118,9 @@ export const CarForm: React.FC<CarFormProps> = ({
   // CARGAR DATOS AL EDITAR
   // ============================
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
 
-    if (mode === "edit" && selected != null) {
+    if (mode === 'edit' && selected != null) {
       const car = cars.find(c => c.id_cars === selected)
       if (!car) return
 
@@ -130,8 +129,8 @@ export const CarForm: React.FC<CarFormProps> = ({
           id_brands: car.brands?.id_brands ?? 0,
           id_models: car.models?.id_models ?? 0,
           id_styles: car.styles?.id_styles ?? 0,
-          exterior_color: car.exterior_color ?? "",
-          interior_color: car.interior_color ?? "",
+          exterior_color: car.exterior_color ?? '',
+          interior_color: car.interior_color ?? '',
           id_transmission: car.transmissions?.id_transmission ?? 0,
           id_displacement: car.displacement?.id_displacements ?? 0,
           id_fuel: car.fuel?.id_fuel ?? 0,
@@ -139,7 +138,7 @@ export const CarForm: React.FC<CarFormProps> = ({
           negotiable: car.negotiable ?? false,
           number_of_doors: car.number_of_doors ?? 4,
           id_year: car.years?.id_years ?? 0,
-          price: car.price?.toString() ?? "",
+          price: car.price?.toString() ?? '',
           sold: car.sold ?? false,
           images: []
         })
@@ -148,7 +147,6 @@ export const CarForm: React.FC<CarFormProps> = ({
 
     return () => { mounted = false }
   }, [mode, selected, cars])
-
 
   // ============================
   // HANDLER UNIVERSAL
@@ -163,7 +161,7 @@ export const CarForm: React.FC<CarFormProps> = ({
   // SUBMIT (CONVERSIÓN CORRECTA)
   // ============================
   const submit = () => {
-    console.log("CATÁLOGO CILINDRAJES:", catalogs.years)
+    console.log('CATÁLOGO CILINDRAJES:', catalogs.years)
     onSubmit({
       ...form,
       price: Number(form.price) || 0
@@ -231,7 +229,7 @@ export const CarForm: React.FC<CarFormProps> = ({
           </div>
 
           {/* Inputs FULL WIDTH YA ARREGLADOS */}
-          <span className={`${styles.rowWrapper}`} style={{ display: "flex", flexDirection: "column" }}>
+          <span className={`${styles.rowWrapper}`} style={{ display: 'flex', flexDirection: 'column' }}>
             <label className={styles.rowWrapperLabel}>Color exterior</label>
             <input
               className={`glass ${styles.fullInput}`}
@@ -241,7 +239,7 @@ export const CarForm: React.FC<CarFormProps> = ({
             />
           </span>
 
-          <span className={`${styles.rowWrapper}`} style={{ display: "flex", flexDirection: "column" }}>
+          <span className={`${styles.rowWrapper}`} style={{ display: 'flex', flexDirection: 'column' }}>
             <label className={styles.rowWrapperLabel}>Color interior</label>
             <input
               className={`glass ${styles.fullInput}`}
@@ -251,8 +249,7 @@ export const CarForm: React.FC<CarFormProps> = ({
             />
           </span>
 
-
-          <span className={`${styles.rowWrapper}`} style={{ display: "flex", flexDirection: "column" }}>
+          <span className={`${styles.rowWrapper}`} style={{ display: 'flex', flexDirection: 'column' }}>
             <label>Precio</label>
             <input
               className={`glass ${styles.fullInput}`}
@@ -262,10 +259,8 @@ export const CarForm: React.FC<CarFormProps> = ({
             />
           </span>
 
-
         </>
       )}
-
 
       {/* ====================================== */}
       {/* TAB 2 — ESPECIFICACIONES */}
@@ -357,13 +352,17 @@ export const CarForm: React.FC<CarFormProps> = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
           <label>
-            <input type='checkbox' checked={form.receives}
-              onChange={e => update('receives', e.target.checked)} /> ¿Recibe vehículo?
+            <input
+              type='checkbox' checked={form.receives}
+              onChange={e => update('receives', e.target.checked)}
+            /> ¿Recibe vehículo?
           </label>
 
           <label>
-            <input type='checkbox' checked={form.negotiable}
-              onChange={e => update('negotiable', e.target.checked)} /> ¿Negociable?
+            <input
+              type='checkbox' checked={form.negotiable}
+              onChange={e => update('negotiable', e.target.checked)}
+            /> ¿Negociable?
           </label>
 
           <div>
@@ -456,7 +455,7 @@ export const CarForm: React.FC<CarFormProps> = ({
         style={{ marginTop: '1rem' }}
       >
         {mode === 'add' ? 'Publicar' : 'Guardar cambios'}
-        
+
       </button>
 
     </div>
