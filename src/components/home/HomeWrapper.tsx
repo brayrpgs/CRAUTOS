@@ -7,7 +7,7 @@ import { Modal } from '../modal/Modal'
 import { ModalContent } from '../modal/ModalContent'
 import { ModalFooter } from '../modal/ModalFooter'
 import { ModalHeader } from '../modal/ModalHeader'
-import { CarTechnicalSheet } from '../CarTechnicalSheet/CarSheet'
+import { CarTechnicalSheet } from '../CarTechnicalSheet/CarTechnicalSheet'
 
 const HomeWrapper: React.FC = () => {
   const ctx = useContext(HomeContext)
