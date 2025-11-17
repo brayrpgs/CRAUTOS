@@ -1,80 +1,81 @@
 .carousel-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    overflow: hidden;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
 .carousel-wrapper {
-    overflow: hidden;
-    border-radius: 12px;
+  overflow: hidden;
+  border-radius: 12px;
 
-    :hover {
-      cursor: pointer;
-    }
+  :hover {
+    cursor: pointer;
+  }
 }
 
 .carousel-track {
-    display: flex;
-    gap: 1rem;
-    padding: 0.5rem 0;
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  justify-content: space-evenly;
 }
 
 .carousel-card-wrapper {
-    flex: 0 0 auto;
-    width: calc((100% - 2rem) / 4);
-    max-width: calc((100% - 2rem) / 4);
-    box-sizing: border-box;
-    transition: transform 0.3s ease;
+  flex: 0 0 auto;
+  width: calc((100% - 2rem) / 4);
+  max-width: calc((100% - 2rem) / 4);
+  box-sizing: border-box;
+  transition: transform 0.3s ease;
 
-    :hover {
-      transform: scale(1.1);
-      transition: transform 0.5s ease, z-index 0.5s, opacity 0.5s;
-    }
+  :hover {
+    transform: scale(1.1);
+    transition: transform 0.5s ease, z-index 0.5s, opacity 0.5s;
+  }
 }
 
 @media (max-width: 1024px) {
-    .carousel-card-wrapper {
-      width: calc((100% - 1rem) / 2);
-      max-width: calc((100% - 1rem) / 2);
-    }
+  .carousel-card-wrapper {
+    width: calc((100% - 1rem) / 2);
+    max-width: calc((100% - 1rem) / 2);
+  }
 }
 
 @media (max-width: 640px) {
-    .carousel-card-wrapper {
-      width: 100%;
-      max-width: 100%;
-    }
+  .carousel-card-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 .carousel-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 16px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
 
-    button {
-        font-size: 25px;
-        background: rgba(255, 255, 255, 0.08);
-        color: white;
-        border: 1px solid #ccc;
-        padding: 8px 24px;
-        cursor: pointer;
-        border-radius: 14px;
-        transition: 0.3s;
-    }
+  button {
+    font-size: 25px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: 1px solid #ccc;
+    padding: 8px 24px;
+    cursor: pointer;
+    border-radius: 14px;
+    transition: 0.3s;
+  }
 
-    button:hover {
-        background: white;
-        color: black;
-    }
+  button:hover {
+    background: white;
+    color: black;
+  }
 }
 
 @media (max-width: 480px) {
-    .carousel-buttons button {
-      width: 40px;
-      height: 40px;
-      font-size: 22px;
-    }
+  .carousel-buttons button {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
 }
