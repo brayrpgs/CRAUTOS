@@ -11,13 +11,13 @@ import { Background } from "../components/background/Background";
 
 <head>
   <meta charset="utf-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content={Astro.generator} />
   <title>CRAUTOS</title>
 </head>
 
 <div class={styles.page}>
-  
   {/* HEADER */}
   <header class={styles.header}>
     <HeaderPage client:load />
@@ -25,14 +25,12 @@ import { Background } from "../components/background/Background";
 
   {/* CONTENIDO PRINCIPAL */}
   <main class={styles.main}>
-    
     <PublicationManager client:load />
-
   </main>
 
   {/* FOOTER */}
   <footer class={styles.footer}>
     <Footer client:load />
   </footer>
-  <Background client:load>
+  <Background client:load />
 </div>
