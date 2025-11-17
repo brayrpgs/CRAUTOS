@@ -171,39 +171,13 @@
 
 /* ===== Botones del modal ===== */
 
-.modalPrimaryBtn {
-  background: transparent;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-right: 0.5rem;
-  font-weight: 600;
-  transition: color 0.2s ease, background 0.2s ease;
-  outline: 1px solid white;
-  backdrop-filter: blur(50px);
+
+button.modalPrimaryBtn:hover {
+  color: greenyellow !important;
 }
 
-.modalPrimaryBtn:hover {
-  color: greenyellow;
-}
-
-.modalSecondaryBtn {
-  background: transparent;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: color 0.2s ease, background 0.2s ease;
-  outline: 1px solid white;
-  backdrop-filter: blur(50px);
-}
-
-.modalSecondaryBtn:hover {
-  color: rgba(255, 0, 0, 0.7);
+button.modalSecondaryBtn:hover {
+  color: rgba(255, 0, 0, 0.7) !important;
 }
 
 .carTitle {
@@ -230,4 +204,74 @@
   display: block;
   margin-top: .2rem;
 }
+
+.modalContent,
+dialog > div {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Cada columna debe alinear perfectamente el borde */
+.formGrid span {
+  width: 100%;
+}
+
+.uploadBox {
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px);
+  padding: 1.2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.uploadBox:hover {
+  border-color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.1);
+}
+
+.uploadText {
+  margin: 0;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.95rem;
+}
+
+.fullWidthRow {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Inputs con el mismo ancho */
+.fullInput,
+.formGrid span select,
+.formGrid span input[type="text"],
+.formGrid span input[type="number"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Asegura que TODO se alinee igual */
+.rowWrapper {
+  width: 100%;
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+  box-sizing: border-box;
+}
+
+.rowWrapperLabel {
+  margin-bottom: 1rem;
+}
+
+/* El grid ahora coincide en padding con las filas fuera */
+.formGrid {
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
 
