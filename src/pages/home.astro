@@ -2,9 +2,8 @@
 import "../styles/global/styles.css";
 import { Background } from "../components/background/Background";
 import { HeaderPage } from "../components/header/HeaderPage";
-import styles from "../styles/home/styles.module.css";
-import { Card } from "../components/card/Card";
 import { Footer } from "../components/footer/FooterCustom";
+import { HomeView } from "../components/home/Home";
 ---
 
 <!doctype html>
@@ -18,27 +17,7 @@ import { Footer } from "../components/footer/FooterCustom";
   <body>
     <Background client:load />
     <HeaderPage client:load> HOLA </HeaderPage>
-    <div class={styles.container}>
-      <div class={`${styles.child} ${styles.childFilters}`}>
-        <select id="selct">
-          <option selected="">filtros</option>
-        </select>
-        <input type="search" placeholder="busquedas" />
-      </div>
-      <div class={`${styles.child} ${styles.childContent}`}>
-        <Card image="ram1.avif" info="test" client:load />
-        <Card image="ram1.avif" client:load />
-        <Card image="ram1.avif" client:load />
-        <Card image="ram1.avif" client:load />
-        <Card image="ram1.avif" client:load />
-        <Card image="ram1.avif" client:load />
-        <Card image="ram1.avif" client:load />
-        <Card image="ram1.avif" client:load />
-        <Card image="ram1.avif" client:load />
-        <Card image="ram1.avif" client:load />
-      </div>
-      <div class={styles.child}></div>
-      <Footer></Footer>
-    </div>
+    <HomeView client:load />
+    <Footer />
   </body>
 </html>

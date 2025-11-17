@@ -15,6 +15,7 @@
   justify-items: center;
   justify-content: center;
   padding: 1rem;
+  grid-template-rows: repeat(auto-fit, 200px);
 
   div {
     height: unset;
@@ -25,4 +26,15 @@
 .childFilters {
   justify-self: end;
   padding: 1rem;
+}
+
+.searchBar {
+  margin-left: 4rem;
+}
+
+
+.fixPagination {
+  margin-block: 2rem;
+  width: fit-content;
+  margin-inline: auto;
 }
