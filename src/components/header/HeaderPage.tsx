@@ -122,8 +122,8 @@ const HeaderPage: React.FC = () => {
       </a>
 
       <div className={styles.authButtons}>
-        <button className={styles.carouselButton}>Iniciar sesión</button>
-        <button className={styles.carouselButton}>Registrarse</button>
+        <a className={styles.carouselButton} href="/login?action=signIn" >Iniciar sesión</a>
+        <a className={styles.carouselButton} href="/login?action=signUp" >Registrarse</a>
       </div>
     </>
   )

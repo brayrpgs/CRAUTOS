@@ -75,6 +75,7 @@
   transition: all 0.3s ease;
   font-weight: 500;
   white-space: nowrap;
+  text-decoration: none;
 }
 
 .carouselButton:hover {
@@ -164,7 +165,6 @@
 }
 
 .mobileNav .carouselButton {
-  width: 100%;
   font-size: 1.15rem;
   padding: 12px 20px;
   font-weight: 500;
