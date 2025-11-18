@@ -59,6 +59,20 @@ const PublicationManager: React.FC = () => {
     setTimeout(() => setMainToast(null), 3000)
   }
 
+  // ==============================================
+  // BLOQUEAR SCROLL CUANDO CUALQUIER MODAL ABRE
+  // ==============================================
+  useEffect(() => {
+    const anyModalOpen =
+      open || deleteOpen || confirmSoldOpen || editBlockedOpen
+
+    document.body.style.overflow = anyModalOpen ? 'hidden' : 'auto'
+
+    return () => {
+      document.body.style.overflow = 'auto'
+    }
+  }, [open, deleteOpen, confirmSoldOpen, editBlockedOpen])
+
   /* ============================================================
       FUNCIÓN REUTILIZABLE PARA CARGAR CARROS
   ============================================================ */
@@ -450,13 +464,13 @@ const PublicationManager: React.FC = () => {
         {loading
           ? (
             <p style={{ color: 'white' }}>Cargando...</p>
-            )
+          )
           : cars.length === 0
             ? (
               <p style={{ color: 'white', textAlign: 'center' }}>
                 Aún no tienes publicaciones.
               </p>
-              )
+            )
             : (
               <Pagination
                 items={cars}
@@ -514,7 +528,7 @@ const PublicationManager: React.FC = () => {
                   </div>
                 )}
               />
-              )}
+            )}
 
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>
