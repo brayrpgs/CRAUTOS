@@ -22,7 +22,7 @@ interface CarFromApi {
   id_cars: number
   id_users: number
   price: number
-  image: string
+  image: string | null
   brands?: { desc: string }
   models?: { desc: string }
   years?: { desc: number }
@@ -31,6 +31,10 @@ interface CarFromApi {
 }
 
 const TEMP_USER_ID = 7
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  Prefer: 'return=representation'
+} as const
 
 const PublicationManager: React.FC = () => {
   const [cars, setCars] = useState<CarFromApi[]>([])
@@ -46,15 +50,14 @@ const PublicationManager: React.FC = () => {
 
   const [mainToast, setMainToast] = useState<string | null>(null)
 
+  const [confirmSoldOpen, setConfirmSoldOpen] = useState(false)
+  const [carToSell, setCarToSell] = useState<number | null>(null)
+  const [editBlockedOpen, setEditBlockedOpen] = useState(false)
+
   const showToast = (msg: string): void => {
     setMainToast(msg)
     setTimeout(() => setMainToast(null), 3000)
   }
-
-  // ======= NUEVO =======
-  const [confirmSoldOpen, setConfirmSoldOpen] = useState(false)
-  const [carToSell, setCarToSell] = useState<number | null>(null)
-  const [editBlockedOpen, setEditBlockedOpen] = useState(false)
 
   /* ============================================================
       FUNCIÓN REUTILIZABLE PARA CARGAR CARROS
@@ -62,12 +65,17 @@ const PublicationManager: React.FC = () => {
   const fetchCars = async (): Promise<void> => {
     try {
       const res = await fetch(
-        `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,id_brands,id_models,id_styles,exterior_color,interior_color,id_transmission,id_displacement,id_fuel,receives,negotiable,number_of_doors,id_year,price,id_audit,sold,brands(desc),models(desc),years(desc),cars_images(id_images,images(image))`
+        `${CARS_URL}?id_users=eq.${TEMP_USER_ID}` +
+        '&select=id_cars,id_users,id_brands,id_models,id_styles,exterior_color,interior_color,' +
+        'id_transmission,id_displacement,id_fuel,receives,negotiable,number_of_doors,' +
+        'id_year,price,id_audit,sold,' +
+        'brands(desc),models(desc),years(desc),' +
+        'cars_images(id_images,images(image))'
       )
 
       const data = await res.json()
 
-      const processed = data.map(car => {
+      const processed: CarFromApi[] = data.map((car: any) => {
         const firstRel = car.cars_images?.[0]
         const base64 = firstRel?.images?.image ?? null
 
@@ -76,6 +84,7 @@ const PublicationManager: React.FC = () => {
           image: base64 ? `data:image/jpeg;base64,${base64}` : null
         }
       })
+
       setCars(processed)
     } catch (err) {
       console.error('Error cargando tus vehículos:', err)
@@ -89,75 +98,65 @@ const PublicationManager: React.FC = () => {
   }, [])
 
   /* ============================================================
-      Sincronizar cierre modal principal
+      Helper genérico para sincronizar cierre de modales <dialog>
   ============================================================ */
-  useEffect(() => {
-    const modal = document.getElementById('publicacion-modal') as HTMLDialogElement | null
+  const setupDialogCloseSync = (
+    id: string,
+    isOpen: boolean,
+    onClose: () => void
+  ): void => {
+    const modal = document.getElementById(id) as HTMLDialogElement | null
     if (modal == null) return
 
     const checkClosed = (): void => {
-      if (!modal.open && open) {
-        setOpen(false)
-        setSelected(null)
-        setResetFormSignal(prev => prev + 1)
+      if (!modal.open && isOpen) {
+        onClose()
       }
     }
 
     modal.addEventListener('close', checkClosed)
+    // cleanup
     return () => modal.removeEventListener('close', checkClosed)
+  }
+
+  /* ============================================================
+      Sincronizar cierre modal principal
+  ============================================================ */
+  useEffect(() => {
+    return setupDialogCloseSync('publicacion-modal', open, () => {
+      setOpen(false)
+      setSelected(null)
+      setResetFormSignal(prev => prev + 1)
+    })
   }, [open])
 
   /* ============================================================
       Modal de eliminar
   ============================================================ */
   useEffect(() => {
-    const modal = document.getElementById('delete-car-modal') as HTMLDialogElement | null
-    if (modal == null) return
-
-    const checkClosed = (): void => {
-      if (!modal.open && deleteOpen) {
-        setDeleteOpen(false)
-        setSelected(null)
-      }
-    }
-
-    modal.addEventListener('close', checkClosed)
-    return () => modal.removeEventListener('close', checkClosed)
+    return setupDialogCloseSync('delete-car-modal', deleteOpen, () => {
+      setDeleteOpen(false)
+      setSelected(null)
+    })
   }, [deleteOpen])
 
   /* ============================================================
       Modal de confirmar venta
   ============================================================ */
   useEffect(() => {
-    const modal = document.getElementById('confirm-sold-modal') as HTMLDialogElement | null
-    if (modal == null) return
-
-    const checkClosed = (): void => {
-      if (!modal.open && confirmSoldOpen) {
-        setConfirmSoldOpen(false)
-        setCarToSell(null)
-      }
-    }
-
-    modal.addEventListener('close', checkClosed)
-    return () => modal.removeEventListener('close', checkClosed)
+    return setupDialogCloseSync('confirm-sold-modal', confirmSoldOpen, () => {
+      setConfirmSoldOpen(false)
+      setCarToSell(null)
+    })
   }, [confirmSoldOpen])
 
   /* ============================================================
       Modal bloquear edición
   ============================================================ */
   useEffect(() => {
-    const modal = document.getElementById('edit-blocked-modal') as HTMLDialogElement | null
-    if (modal == null) return
-
-    const checkClosed = (): void => {
-      if (!modal.open && editBlockedOpen) {
-        setEditBlockedOpen(false)
-      }
-    }
-
-    modal.addEventListener('close', checkClosed)
-    return () => modal.removeEventListener('close', checkClosed)
+    return setupDialogCloseSync('edit-blocked-modal', editBlockedOpen, () => {
+      setEditBlockedOpen(false)
+    })
   }, [editBlockedOpen])
 
   /* ============================================================
@@ -166,10 +165,7 @@ const PublicationManager: React.FC = () => {
   const openAddModal = (): void => {
     setMode('add')
     setSelected(null)
-
-    // limpiar el form al abrir "Nuevo"
     setResetFormSignal(prev => prev + 1)
-
     setOpen(true)
   }
 
@@ -201,30 +197,44 @@ const PublicationManager: React.FC = () => {
     if (selected == null) return
 
     try {
+      // relaciones imágenes-carro
       const relRes = await fetch(
         `${CAR_IMAGES_URL}?id_cars=eq.${selected}&select=id_images`
       )
       const relData = await relRes.json()
+      const imageIds: number[] = relData.map((r: any) => r.id_images)
 
-      const imageIds = relData.map(r => r.id_images)
+      // obtener audit_id desde cars
+      const carRes = await fetch(
+        `${CARS_URL}?id_cars=eq.${selected}&select=id_audit`
+      )
+      const carData = await carRes.json()
+      const audit_id = carData[0]?.id_audit
 
-      const carRes = await fetch(`${CARS_URL}?id_cars=eq.${selected}&select=id_audit`);
-      const carData = await carRes.json();
-      const audit_id = carData[0]?.id_audit;
-
+      // borrar relaciones car_images
       await fetch(`${CAR_IMAGES_URL}?id_cars=eq.${selected}`, {
         method: 'DELETE'
       })
 
+      // borrar imágenes reales
       for (const id of imageIds) {
         await fetch(`${IMAGES_URL}?id_images=eq.${id}`, { method: 'DELETE' })
       }
 
-      await fetch(`${FAVORITE_CAR_URL}?id_cars=eq.${selected}`, { method: 'DELETE' })
+      // borrar favoritos
+      await fetch(`${FAVORITE_CAR_URL}?id_cars=eq.${selected}`, {
+        method: 'DELETE'
+      })
 
+      // borrar carro (primero, por FK)
       await fetch(`${CARS_URL}?id_cars=eq.${selected}`, { method: 'DELETE' })
 
-      await fetch(`${AUDIT_URL}?id_audit=eq.${audit_id}`, { method: 'DELETE' });
+      // ahora sí, borrar audit
+      if (audit_id != null) {
+        await fetch(`${AUDIT_URL}?id_audit=eq.${audit_id}`, {
+          method: 'DELETE'
+        })
+      }
 
       await fetchCars()
       showToast('¡Vehículo eliminado exitosamente!')
@@ -243,10 +253,7 @@ const PublicationManager: React.FC = () => {
     try {
       await fetch(`${CARS_URL}?id_cars=eq.${id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Prefer: 'return=representation'
-        },
+        headers: JSON_HEADERS,
         body: JSON.stringify({ sold: true })
       })
 
@@ -261,7 +268,7 @@ const PublicationManager: React.FC = () => {
   /* ============================================================
       Guardar vehículo (ADD / EDIT)
   ============================================================ */
-  const handleSave = async (data): Promise<void> => {
+  const handleSave = async (data: any): Promise<void> => {
     try {
       const toBase64 = async (file: File) =>
         await new Promise<string>((resolve, reject) => {
@@ -275,16 +282,13 @@ const PublicationManager: React.FC = () => {
 
       if (data.newImages.length > 0) {
         const base64Images = await Promise.all(
-          data.newImages.map(async f => await toBase64(f))
+          data.newImages.map(async (f: File) => await toBase64(f))
         )
 
         for (const b64 of base64Images) {
           const res = await fetch(IMAGES_URL, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Prefer: 'return=representation'
-            },
+            headers: JSON_HEADERS,
             body: JSON.stringify({ image: b64 })
           })
 
@@ -295,19 +299,14 @@ const PublicationManager: React.FC = () => {
 
       /* ======================== AÑADIR ======================== */
       if (mode === 'add') {
-
-        // 1. Crear AUDIT vacío
+        // 1. Crear AUDIT vacío (campo por defecto en DB)
         const auditRes = await fetch(AUDIT_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation'
-          },
+          headers: JSON_HEADERS,
           body: JSON.stringify({})
-        });
-
-        const auditJson = await auditRes.json();
-        const id_audit = auditJson[0].id_audit;
+        })
+        const auditJson = await auditRes.json()
+        const id_audit = auditJson[0].id_audit
 
         // 2. Crear el carro con el audit_id
         const carPayload = {
@@ -326,57 +325,50 @@ const PublicationManager: React.FC = () => {
           price: data.price,
           sold: false,
           id_users: TEMP_USER_ID,
-          id_audit // <= AQUÍ
-        };
+          id_audit
+        }
 
         const carRes = await fetch(CARS_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation'
-          },
+          headers: JSON_HEADERS,
           body: JSON.stringify(carPayload)
-        });
+        })
 
-        const created = await carRes.json();
-        const id_cars = created[0].id_cars;
+        const created = await carRes.json()
+        const id_cars = created[0].id_cars
 
         // 3. Relacionar imágenes
         for (const idImg of newImageIds) {
           await fetch(CAR_IMAGES_URL, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Prefer: 'return=representation'
-            },
+            headers: JSON_HEADERS,
             body: JSON.stringify({ id_cars, id_images: idImg })
-          });
+          })
         }
 
-        await fetchCars();
-        showToast('¡Vehículo agregado exitosamente!');
-        setOpen(false);
-        return;
+        await fetchCars()
+        showToast('¡Vehículo agregado exitosamente!')
+        setOpen(false)
+        return
       }
 
       /* ======================== EDITAR ======================== */
-      const carAuditRes = await fetch(`${CARS_URL}?id_cars=eq.${selected}&select=id_audit`);
-      const carAuditData = await carAuditRes.json();
-      const audit_id = carAuditData[0]?.id_audit;
-      const now = new Date().toISOString();
+      const carAuditRes = await fetch(
+        `${CARS_URL}?id_cars=eq.${selected}&select=id_audit`
+      )
+      const carAuditData = await carAuditRes.json()
+      const audit_id = carAuditData[0]?.id_audit
+      const now = new Date().toISOString()
 
       // 1. Actualizar AUDIT (updated_at)
       if (audit_id) {
         await fetch(`${AUDIT_URL}?id_audit=eq.${audit_id}`, {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation'
-          },
+          headers: JSON_HEADERS,
           body: JSON.stringify({
             updated_at: now
           })
-        });
+        })
       }
 
       // 2. Actualizar el carro
@@ -395,29 +387,25 @@ const PublicationManager: React.FC = () => {
         id_year: data.id_year,
         price: data.price,
         sold: data.sold
-      };
+      }
 
       await fetch(`${CARS_URL}?id_cars=eq.${selected}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Prefer: 'return=representation'
-        },
+        headers: JSON_HEADERS,
         body: JSON.stringify(updatePayload)
-      });
+      })
 
+      // borrar imágenes marcadas
       for (const idImg of data.imagesToDelete) {
         await fetch(`${CAR_IMAGES_URL}?id_images=eq.${idImg}`, { method: 'DELETE' })
         await fetch(`${IMAGES_URL}?id_images=eq.${idImg}`, { method: 'DELETE' })
       }
 
+      // asociar nuevas imágenes
       for (const idImg of newImageIds) {
         await fetch(CAR_IMAGES_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation'
-          },
+          headers: JSON_HEADERS,
           body: JSON.stringify({ id_cars: selected, id_images: idImg })
         })
       }
@@ -431,7 +419,9 @@ const PublicationManager: React.FC = () => {
   }
 
   const selectedCarInfo =
-    selected != null ? cars.find(c => c.id_cars === selected)?.models?.desc ?? '' : ''
+    selected != null
+      ? cars.find(c => c.id_cars === selected)?.models?.desc ?? ''
+      : ''
 
   return (
     <>
@@ -460,13 +450,13 @@ const PublicationManager: React.FC = () => {
         {loading
           ? (
             <p style={{ color: 'white' }}>Cargando...</p>
-          )
+            )
           : cars.length === 0
             ? (
               <p style={{ color: 'white', textAlign: 'center' }}>
                 Aún no tienes publicaciones.
               </p>
-            )
+              )
             : (
               <Pagination
                 items={cars}
@@ -480,7 +470,6 @@ const PublicationManager: React.FC = () => {
                       image={car.image}
                       info={`${car.brands?.desc ?? ''} ${car.models?.desc ?? ''} ${car.years?.desc ?? ''} — ₡${car.price.toLocaleString('es-CR')}`}
                     >
-
                       {car.sold && (
                         <div className={styles.soldDiagonal}>VENDIDO</div>
                       )}
@@ -525,7 +514,7 @@ const PublicationManager: React.FC = () => {
                   </div>
                 )}
               />
-            )}
+              )}
 
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>
