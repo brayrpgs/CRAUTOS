@@ -1,70 +1,81 @@
 .carousel-container {
-    width: 100%;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
-.carousel-stack {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    margin: auto;
-    overflow: hidden;
+.carousel-wrapper {
+  overflow: hidden;
+  border-radius: 12px;
+
+  :hover {
+    cursor: pointer;
+  }
 }
 
-.slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 60%;
-    height: 100%;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: transform 0.7s ease, z-index 0.5s, opacity 0.5s;
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  justify-content: space-evenly;
+}
 
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 10px;
-    }
+.carousel-card-wrapper {
+  flex: 0 0 auto;
+  width: calc((100% - 2rem) / 4);
+  max-width: calc((100% - 2rem) / 4);
+  box-sizing: border-box;
+  transition: transform 0.3s ease;
 
+  :hover {
+    transform: scale(1.1);
+    transition: transform 0.5s ease, z-index 0.5s, opacity 0.5s;
+  }
+}
+
+@media (max-width: 1024px) {
+  .carousel-card-wrapper {
+    width: calc((100% - 1rem) / 2);
+    max-width: calc((100% - 1rem) / 2);
+  }
+}
+
+@media (max-width: 640px) {
+  .carousel-card-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 .carousel-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
 
-    button {
-        font-size: 25px;
-        background: #fff;
-        border: 1px solid #ccc;
-        padding: 8px 24px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: 0.3s;
-    }
+  button {
+    font-size: 25px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: 1px solid #ccc;
+    padding: 8px 24px;
+    cursor: pointer;
+    border-radius: 14px;
+    transition: 0.3s;
+  }
 
-    button:hover {
-        background: #eee;
-    }
-}
-
-
-@media (max-width: 768px) {
-    .slide {
-        width: 70%;
-    }
-
-    .carousel-buttons button {
-        font-size: 14px;
-        padding: 6px 12px;
-    }
+  button:hover {
+    background: white;
+    color: black;
+  }
 }
 
 @media (max-width: 480px) {
-    .slide {
-        width: 80%;
-    }
+  .carousel-buttons button {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
 }
