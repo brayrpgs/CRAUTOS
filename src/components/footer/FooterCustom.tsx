@@ -31,11 +31,11 @@ const Footer: React.FC = () => {
           <div className='contact-items'>
             <div className='contact-item'>
               <TelephoneIcon />
-              <span>+506 2222-3333</span>
+              <span>+506 83150283</span>
             </div>
             <div className='contact-item'>
               <EmailIcon />
-              <span>info@crautos.com</span>
+              <span>crautosuna2025@gmail.com</span>
             </div>
           </div>
         </div>

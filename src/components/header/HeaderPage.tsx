@@ -1,7 +1,7 @@
 import type React from 'react'
 import { useState, useEffect, useRef } from 'react'
 import styles from '../../styles/header/styles.module.css'
-import Logo from '../logo/Logo';
+import Logo from '../logo/Logo'
 
 const HeaderPage: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -9,7 +9,13 @@ const HeaderPage: React.FC = () => {
   const [, forceUpdate] = useState({})
   const panelRef = useRef<HTMLDivElement>(null)
 
-  /* TODO: MEJORAR PARA DETECTAR DE MEJOR MANERA (DINAMICAMENTE) */
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
+  /* Detectar mobile dinámicamente */
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1000)
     checkMobile()
@@ -17,25 +23,25 @@ const HeaderPage: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  /* TODO: MEJORAR PARA DETECTAR EN CUALQUIER TIPO DE CASO Y SIN TANTA VUELTA */
+  /* Forzar actualización de navegación */
   useEffect(() => {
-    const update = () => forceUpdate({})
-    
+    const update = (): void => forceUpdate({})
+
     window.addEventListener('popstate', update)
     document.addEventListener('astro:page-load', update)
-    
-    const handleClick = (e: MouseEvent) => {
+
+    const handleClick = (e: MouseEvent): void => {
       const target = e.target as HTMLElement
       const link = target.closest('a')
-      if (link && link.href) {
+      if ((link != null) && link.href) {
         setTimeout(update, 100)
       }
     }
-    
+
     document.addEventListener('click', handleClick, true)
-    
+
     const interval = setInterval(update, 200)
-    
+
     return () => {
       window.removeEventListener('popstate', update)
       document.removeEventListener('astro:page-load', update)
@@ -44,9 +50,10 @@ const HeaderPage: React.FC = () => {
     }
   }, [])
 
+  /* Cerrar menú móvil al hacer click fuera */
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isMobileMenuOpen && panelRef.current && !panelRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: MouseEvent): void => {
+      if (isMobileMenuOpen && (panelRef.current != null) && !panelRef.current.contains(event.target as Node)) {
         setIsMobileMenuOpen(false)
       }
     }
@@ -62,21 +69,25 @@ const HeaderPage: React.FC = () => {
     }
   }, [isMobileMenuOpen])
 
+  /* ===============================
+        NAV ACTIVE (sin mismatch)
+     =============================== */
   const isActive = (path: string): boolean => {
-    if (typeof window === 'undefined') return false
-    
+    if (!hydrated) return false // 💥 FIX: evita hydration mismatch
+
     let currentPath = window.location.pathname
+
     if (currentPath === '/index' || currentPath === '/index.html') {
       currentPath = '/'
     }
+
     currentPath = currentPath.replace(/\/$/, '') || '/'
-    
-    let normalizedPath = path.replace(/\/$/, '') || '/'
-    
+    const normalizedPath = path.replace(/\/$/, '') || '/'
+
     return currentPath === normalizedPath
   }
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string): void => {
     if (isActive(path)) {
       e.preventDefault()
     } else {
@@ -86,27 +97,30 @@ const HeaderPage: React.FC = () => {
 
   const navItems = (
     <>
-      <a 
-        href="/" 
+      <a
+        href='/'
         className={`${styles.navLink} ${isActive('/') ? styles.navLinkActive : ''}`}
         onClick={(e) => handleLinkClick(e, '/')}
       >
         Inicio
       </a>
-      <a 
-        href="/contact" 
+
+      <a
+        href='/contact'
         className={`${styles.navLink} ${isActive('/contact') ? styles.navLinkActive : ''}`}
         onClick={(e) => handleLinkClick(e, '/contact')}
       >
         Contáctenos
       </a>
-      <a 
-        href="/home" 
+
+      <a
+        href='/home'
         className={`${styles.navLink} ${isActive('/home') ? styles.navLinkActive : ''}`}
         onClick={(e) => handleLinkClick(e, '/home')}
       >
         Ver autos
       </a>
+
       <div className={styles.authButtons}>
         <button className={styles.carouselButton}>Iniciar sesión</button>
         <button className={styles.carouselButton}>Registrarse</button>
@@ -127,7 +141,7 @@ const HeaderPage: React.FC = () => {
           <button
             className={styles.mobileMenuToggle}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Abrir menú"
+            aria-label='Abrir menú'
           >
             {isMobile && '☰'}
           </button>
@@ -149,7 +163,7 @@ const HeaderPage: React.FC = () => {
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export { HeaderPage };
+export { HeaderPage }
