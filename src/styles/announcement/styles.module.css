@@ -514,3 +514,93 @@ dialog>div {
     max-width: 100% !important;
   }
 }
+
+/* ===================================================== */
+/* ========== BOTÓN "VENDIDO" + BADGE ============ */
+/* ===================================================== */
+
+.soldButton {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.6rem;
+
+  padding: 0.35rem 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  border: none;
+  border-radius: 8px;
+
+  background: rgba(0, 200, 80, 0.85);
+  color: white;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+  z-index: 11;
+}
+
+.soldButton:hover {
+  background: rgba(0, 255, 110, 1);
+  transform: scale(1.05);
+}
+
+.soldBadge {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.6rem;
+
+  padding: 0.35rem 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  background: rgba(200, 0, 0, 0.85);
+  color: white;
+  border-radius: 8px;
+
+  backdrop-filter: blur(6px);
+  z-index: 11;
+}
+
+.cardSold {
+  filter: grayscale(100%) brightness(0.55);
+  transition: 0.3s ease;
+}
+
+.cardSold img {
+  filter: grayscale(100%) brightness(0.6);
+}
+
+/* ===================================================== */
+/*       SELLO DIAGONAL PREMIUM - "VENDIDO"              */
+/* ===================================================== */
+
+.soldDiagonal {
+  position: absolute;
+  top: 12px;
+  left: -40px;
+  z-index: 20;
+
+  transform: rotate(-35deg);
+  padding: 0.4rem 2.2rem;
+
+  background: rgba(200, 0, 0, 0.85);
+  color: white;
+
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+
+  border-radius: 6px;
+  text-shadow: 0px 2px 5px rgba(0,0,0,0.45);
+
+  box-shadow:
+    0 0 10px rgba(0,0,0,0.4),
+    0 0 15px rgba(255,0,0,0.35);
+
+  pointer-events: none;
+}
+
+/* cuando está vendido, vuelve la card gris */
+.cardSold {
+  filter: grayscale(1) brightness(0.6);
+}

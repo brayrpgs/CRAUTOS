@@ -42,13 +42,17 @@ const PublicationManager: React.FC = () => {
 
   const [resetFormSignal, setResetFormSignal] = useState(0)
 
-  // ======= TOAST GLOBAL =======
   const [mainToast, setMainToast] = useState<string | null>(null)
 
   const showToast = (msg: string): void => {
     setMainToast(msg)
     setTimeout(() => setMainToast(null), 3000)
   }
+
+  // ======= NUEVO =======
+  const [confirmSoldOpen, setConfirmSoldOpen] = useState(false)
+  const [carToSell, setCarToSell] = useState<number | null>(null)
+  const [editBlockedOpen, setEditBlockedOpen] = useState(false)
 
   /* ============================================================
       FUNCIÓN REUTILIZABLE PARA CARGAR CARROS
@@ -121,15 +125,61 @@ const PublicationManager: React.FC = () => {
   }, [deleteOpen])
 
   /* ============================================================
+      Modal de confirmar venta
+  ============================================================ */
+  useEffect(() => {
+    const modal = document.getElementById('confirm-sold-modal') as HTMLDialogElement | null
+    if (modal == null) return
+
+    const checkClosed = (): void => {
+      if (!modal.open && confirmSoldOpen) {
+        setConfirmSoldOpen(false)
+        setCarToSell(null)
+      }
+    }
+
+    modal.addEventListener('close', checkClosed)
+    return () => modal.removeEventListener('close', checkClosed)
+  }, [confirmSoldOpen])
+
+  /* ============================================================
+      Modal bloquear edición
+  ============================================================ */
+  useEffect(() => {
+    const modal = document.getElementById('edit-blocked-modal') as HTMLDialogElement | null
+    if (modal == null) return
+
+    const checkClosed = (): void => {
+      if (!modal.open && editBlockedOpen) {
+        setEditBlockedOpen(false)
+      }
+    }
+
+    modal.addEventListener('close', checkClosed)
+    return () => modal.removeEventListener('close', checkClosed)
+  }, [editBlockedOpen])
+
+  /* ============================================================
       Abrir modales
   ============================================================ */
   const openAddModal = (): void => {
     setMode('add')
     setSelected(null)
+
+    // 🔥 FIX: limpiar el form SIEMPRE al abrir "Nuevo"
+    setResetFormSignal(prev => prev + 1)
+
     setOpen(true)
   }
 
   const openEditModal = (id: number): void => {
+    const car = cars.find(c => c.id_cars === id)
+
+    if (car?.sold) {
+      setEditBlockedOpen(true)
+      return
+    }
+
     setMode('edit')
     setSelected(id)
     setOpen(true)
@@ -176,6 +226,28 @@ const PublicationManager: React.FC = () => {
     } finally {
       setDeleteOpen(false)
       setSelected(null)
+    }
+  }
+
+  /* ============================================================
+      NUEVO: Marcar como vendido
+  ============================================================ */
+  const markAsSold = async (id: number): Promise<void> => {
+    try {
+      await fetch(`${CARS_URL}?id_cars=eq.${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation'
+        },
+        body: JSON.stringify({ sold: true })
+      })
+
+      await fetchCars()
+      showToast('¡Vehículo marcado como vendido!')
+    } catch (err) {
+      console.error('Error marcando como vendido:', err)
+      showToast('Error al marcar como vendido.')
     }
   }
 
@@ -260,7 +332,6 @@ const PublicationManager: React.FC = () => {
         await fetchCars()
         showToast('¡Vehículo agregado exitosamente!')
         setOpen(false)
-        setResetFormSignal(prev => prev + 1)
         return
       }
 
@@ -310,7 +381,6 @@ const PublicationManager: React.FC = () => {
       await fetchCars()
       showToast('¡Vehículo editado exitosamente!')
       setOpen(false)
-      setResetFormSignal(prev => prev + 1)
     } catch (err) {
       console.error('Error guardando vehículo:', err)
     }
@@ -321,7 +391,9 @@ const PublicationManager: React.FC = () => {
 
   return (
     <>
-      {(open || deleteOpen) && <div className={styles.overlay} />}
+      {(open || deleteOpen || confirmSoldOpen || editBlockedOpen) && (
+        <div className={styles.overlay} />
+      )}
 
       {/* ==== TOAST GLOBAL ==== */}
       {mainToast && (
@@ -357,13 +429,37 @@ const PublicationManager: React.FC = () => {
                 itemsPerPage={10}
                 renderItem={(car) => (
                   <div
-                    className={styles.cardWrapper}
+                    className={`${styles.cardWrapper} ${car.sold ? styles.cardSold : ''}`}
                     onClick={() => openEditModal(car.id_cars)}
                   >
                     <Card
                       image={car.image}
                       info={`${car.brands?.desc ?? ''} ${car.models?.desc ?? ''} ${car.years?.desc ?? ''} — ₡${car.price.toLocaleString('es-CR')}`}
                     >
+
+                      {car.sold && (
+                        <div className={styles.soldDiagonal}>VENDIDO</div>
+                      )}
+
+                      {!car.sold && (
+                        <button
+                          className={styles.soldButton}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setCarToSell(car.id_cars)
+                            setConfirmSoldOpen(true)
+                          }}
+                        >
+                          Marcar como vendido
+                        </button>
+                      )}
+
+                      {car.sold && (
+                        <div className={styles.soldBadge}>
+                          VENDIDO
+                        </div>
+                      )}
+
                       <button
                         className={styles.cardClose}
                         onClick={(e) => {
@@ -436,6 +532,65 @@ const PublicationManager: React.FC = () => {
             </div>
           </ModalFooter>
         </Modal>
+
+        {/* === MODAL CONFIRMAR VENTA === */}
+        <Modal open={confirmSoldOpen} setOpen={setConfirmSoldOpen} id='confirm-sold-modal'>
+          <ModalHeader>
+            <h2 style={{ color: 'white' }}>Confirmar venta</h2>
+          </ModalHeader>
+
+          <ModalContent>
+            <p style={{ color: 'white' }}>
+              ¿Seguro que deseas marcar este vehículo como vendido?
+            </p>
+          </ModalContent>
+
+          <ModalFooter>
+            <div style={{ display: 'flex', gap: '0.7rem' }}>
+              <button
+                className={`glass ${styles.modalPrimaryBtn}`}
+                onClick={async () => {
+                  if (carToSell == null) return
+                  await markAsSold(carToSell)
+                  setConfirmSoldOpen(false)
+                }}
+              >
+                Sí, marcar como vendido
+              </button>
+
+              <button
+                className={`glass ${styles.modalSecondaryBtn}`}
+                onClick={() => setConfirmSoldOpen(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </ModalFooter>
+        </Modal>
+
+        {/* === MODAL BLOQUEAR EDICIÓN === */}
+        <Modal open={editBlockedOpen} setOpen={setEditBlockedOpen} id='edit-blocked-modal'>
+          <ModalHeader>
+            <h2 style={{ color: 'white' }}>Edición no permitida</h2>
+          </ModalHeader>
+
+          <ModalContent>
+            <p style={{ color: 'white' }}>
+              No puedes editar este vehículo porque ya fue marcado como vendido.
+            </p>
+          </ModalContent>
+
+          <ModalFooter>
+            <button
+              className='glass'
+              style={{ width: '100%' }}
+              onClick={() => setEditBlockedOpen(false)}
+            >
+              Entendido
+            </button>
+          </ModalFooter>
+        </Modal>
+
       </section>
     </>
   )
