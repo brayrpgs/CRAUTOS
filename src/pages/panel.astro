@@ -1,0 +1,29 @@
+---
+import { HeaderPage } from "../components/header/HeaderPage";
+import { Footer as FooterCustom } from "../components/footer/FooterCustom";
+import styles from "../styles/panel/styles.module.css";
+import "../styles/global/styles.css";
+import { Background } from "../components/background/Background";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>panel</title>
+  </head>
+  <body>
+    <Background client:load />
+    <HeaderPage client:load />
+    <div class={styles.container}>
+      <a class={`glass ${styles.navigate}`} href="/profile"><span class={styles.anchor}>&#9997;{'Editar perfil'.toUpperCase()}</span></a>
+      <a class={`glass ${styles.navigate}`} href="/announcement"><span class={styles.anchor}>&#128681;{'mis anuncios'.toUpperCase()}</span></a>
+      <a class={`glass ${styles.navigate}`} href="/favorite"><span class={styles.anchor}>&#11088;{'mis favoritos'.toUpperCase()}</span></a>
+      <a class={`glass ${styles.navigate}`} href="#"><span class={styles.anchor}>&#10060;{'eliminar cuenta'.toUpperCase()}</span></a>
+    </div>
+    <FooterCustom client:load />
+  </body>
+</html>
