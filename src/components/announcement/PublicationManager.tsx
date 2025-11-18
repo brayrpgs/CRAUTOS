@@ -390,7 +390,7 @@ const PublicationManager: React.FC = () => {
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>
           <ModalHeader>
-            <h2 style={{ color: 'white' }}>
+            <h2 className={styles.titleH2}>
               {mode === 'add' ? 'Nueva publicación' : `Editar ${selectedCarInfo}`}
             </h2>
           </ModalHeader>

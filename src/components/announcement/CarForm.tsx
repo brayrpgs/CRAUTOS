@@ -270,10 +270,10 @@ export const CarForm: React.FC<CarFormProps> = ({
   // UI
   // ======================================================================
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+    <div className={styles.carFormWrapper} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
 
       {/* TABS */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '.8rem' }}>
+      <div className={styles.tabsWrapper}>
         <button type='button' className={`glass ${tab === 1 ? styles.activeTab : ''}`} onClick={() => setTab(1)}>Información</button>
         <button type='button' className={`glass ${tab === 2 ? styles.activeTab : ''}`} onClick={() => setTab(2)}>Especificaciones</button>
         <button type='button' className={`glass ${tab === 3 ? styles.activeTab : ''}`} onClick={() => setTab(3)}>Opciones & Fotos</button>
