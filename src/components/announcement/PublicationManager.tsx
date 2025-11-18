@@ -9,10 +9,14 @@ import { Card } from '../card/Card'
 import { Pagination } from '../pagination/Pagination'
 
 import styles from '../../styles/announcement/styles.module.css'
-import { CAR_IMAGES_URL, CARS_URL, IMAGES_URL } from '../../common/common'
+import {
+  CAR_IMAGES_URL,
+  CARS_URL,
+  IMAGES_URL,
+  FAVORITE_CAR_URL
+} from '../../common/common'
 import { CarForm } from './CarForm'
 
-// Tipo de respuesta del backend
 interface CarFromApi {
   id_cars: number
   id_users: number
@@ -24,7 +28,7 @@ interface CarFromApi {
   sold: boolean
 }
 
-const TEMP_USER_ID = 7 // luego vendrá por contexto
+const TEMP_USER_ID = 7
 
 const PublicationManager: React.FC = () => {
   const [cars, setCars] = useState<CarFromApi[]>([])
@@ -38,11 +42,55 @@ const PublicationManager: React.FC = () => {
 
   const [resetFormSignal, setResetFormSignal] = useState(0)
 
+  // ======= TOAST GLOBAL =======
+  const [mainToast, setMainToast] = useState<string | null>(null)
+
+  const showToast = (msg: string): void => {
+    setMainToast(msg)
+    setTimeout(() => setMainToast(null), 3000)
+  }
+
+  /* ============================================================
+      FUNCIÓN REUTILIZABLE PARA CARGAR CARROS
+  ============================================================ */
+  const fetchCars = async (): Promise<void> => {
+    try {
+      const res = await fetch(
+        `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,id_brands,id_models,id_styles,exterior_color,interior_color,id_transmission,id_displacement,id_fuel,receives,negotiable,number_of_doors,id_year,price,sold,brands(desc),models(desc),years(desc),cars_images(id_images,images(image))`
+      )
+
+      const data = await res.json()
+
+      const processed = data.map(car => {
+        const firstRel = car.cars_images?.[0]
+        const base64 = firstRel?.images?.image ?? null
+
+        return {
+          ...car,
+          image: base64 ? `data:image/jpeg;base64,${base64}` : null
+        }
+      })
+
+      setCars(processed)
+    } catch (err) {
+      console.error('Error cargando tus vehículos:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void fetchCars()
+  }, [])
+
+  /* ============================================================
+      Sincronizar cierre modal principal
+  ============================================================ */
   useEffect(() => {
     const modal = document.getElementById('publicacion-modal') as HTMLDialogElement | null
     if (modal == null) return
 
-    const checkClosed = () => {
+    const checkClosed = (): void => {
       if (!modal.open && open) {
         setOpen(false)
         setSelected(null)
@@ -54,43 +102,9 @@ const PublicationManager: React.FC = () => {
     return () => modal.removeEventListener('close', checkClosed)
   }, [open])
 
-  useEffect(() => {
-    const fetchCars = async (): Promise<void> => {
-      try {
-        const res = await fetch(
-          `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,id_brands,id_models,id_styles,exterior_color,interior_color,id_transmission,id_displacement,id_fuel,receives,negotiable,number_of_doors,id_year,price,sold,brands(desc),models(desc),years(desc),cars_images(id_images,images(image))`
-        )
-
-        const data = await res.json()
-
-        // Procesar la primera imagen base64
-        const processed = data.map(car => {
-          const firstRel = car.cars_images?.[0]
-          const base64 = firstRel?.images?.image
-
-          return {
-            ...car,
-            image: base64
-              ? `data:image/jpeg;base64,${base64}`
-              : null
-          }
-        })
-
-        setCars(processed)
-      } catch (err) {
-        console.error('Error cargando tus vehículos:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-
-    void fetchCars()
-  }, [])
-
-  /* =============================
-        Sincronizar modal
-  ============================== */
+  /* ============================================================
+      Modal de eliminar
+  ============================================================ */
   useEffect(() => {
     const modal = document.getElementById('delete-car-modal') as HTMLDialogElement | null
     if (modal == null) return
@@ -106,9 +120,9 @@ const PublicationManager: React.FC = () => {
     return () => modal.removeEventListener('close', checkClosed)
   }, [deleteOpen])
 
-  /* =============================
-        Abrir modal
-  ============================== */
+  /* ============================================================
+      Abrir modales
+  ============================================================ */
   const openAddModal = (): void => {
     setMode('add')
     setSelected(null)
@@ -121,93 +135,87 @@ const PublicationManager: React.FC = () => {
     setOpen(true)
   }
 
-  /* =============================
-        Eliminar vehículo
-  ============================== */
+  /* ============================================================
+      Confirmar borrar
+  ============================================================ */
   const confirmDelete = (id: number): void => {
     setSelected(id)
     setDeleteOpen(true)
   }
 
+  /* ============================================================
+      Eliminar carro
+  ============================================================ */
   const deleteCar = async (): Promise<void> => {
-    if (selected == null) return;
+    if (selected == null) return
 
     try {
-      // 1. Obtener relaciones cars_images → ids de imágenes
       const relRes = await fetch(
         `${CAR_IMAGES_URL}?id_cars=eq.${selected}&select=id_images`
-      );
-      const relData = await relRes.json();
+      )
+      const relData = await relRes.json()
 
-      const imageIds = relData.map(r => r.id_images);
+      const imageIds = relData.map(r => r.id_images)
 
-      // 2. Eliminar relaciones cars_images
       await fetch(`${CAR_IMAGES_URL}?id_cars=eq.${selected}`, {
         method: 'DELETE'
-      });
+      })
 
-      // 3. Eliminar imágenes físicas (tabla images)
       for (const id of imageIds) {
-        await fetch(`${IMAGES_URL}?id_images=eq.${id}`, {
-          method: 'DELETE'
-        });
+        await fetch(`${IMAGES_URL}?id_images=eq.${id}`, { method: 'DELETE' })
       }
 
-      // 4. Finalmente eliminar el carro
-      await fetch(`${CARS_URL}?id_cars=eq.${selected}`, {
-        method: 'DELETE'
-      });
+      await fetch(`${FAVORITE_CAR_URL}?id_cars=eq.${selected}`, { method: 'DELETE' })
 
-      // Actualizar frontend
-      setCars(prev => prev.filter(c => c.id_cars !== selected));
+      await fetch(`${CARS_URL}?id_cars=eq.${selected}`, { method: 'DELETE' })
 
+      await fetchCars()
+      showToast('¡Vehículo eliminado exitosamente!')
     } catch (error) {
-      console.error("Error eliminando vehículo:", error);
+      console.error('Error eliminando vehículo:', error)
     } finally {
-      setDeleteOpen(false);
-      setSelected(null);
+      setDeleteOpen(false)
+      setSelected(null)
     }
-  };
+  }
 
-  const handleSave = async (data) => {
+  /* ============================================================
+      Guardar vehículo (ADD / EDIT)
+  ============================================================ */
+  const handleSave = async (data): Promise<void> => {
     try {
-      /* ==================================================
-         A. CREAR NUEVAS IMÁGENES (solo si hay newImages)
-      ================================================== */
       const toBase64 = async (file: File) =>
         await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(String(reader.result).split(",")[1]);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
+          const reader = new FileReader()
+          reader.onload = () => resolve(String(reader.result).split(',')[1])
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
 
-      let newImageIds: number[] = [];
+      const newImageIds: number[] = []
 
       if (data.newImages.length > 0) {
         const base64Images = await Promise.all(
-          data.newImages.map(async (f) => await toBase64(f))
-        );
+          data.newImages.map(async f => await toBase64(f))
+        )
 
         for (const b64 of base64Images) {
           const res = await fetch(IMAGES_URL, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
-              Prefer: "return=representation",
+              'Content-Type': 'application/json',
+              Prefer: 'return=representation'
             },
-            body: JSON.stringify({ image: b64 }),
-          });
+            body: JSON.stringify({ image: b64 })
+          })
 
-          const json = await res.json();
-          newImageIds.push(json[0].id_images);
+          const json = await res.json()
+          newImageIds.push(json[0].id_images)
         }
       }
 
-      /* ==================================================
-         B. SI ES "ADD" → CREAR CARRO Y RELACIONAR IMÁGENES
-      ================================================== */
-      if (mode === "add") {
+      /* ======================== AÑADIR ======================== */
+      if (mode === 'add') {
         const carPayload = {
           id_brands: data.id_brands,
           id_models: data.id_models,
@@ -223,42 +231,40 @@ const PublicationManager: React.FC = () => {
           id_year: data.id_year,
           price: data.price,
           sold: false,
-          id_users: 7,
-        };
-
-        const carRes = await fetch(CARS_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Prefer: "return=representation",
-          },
-          body: JSON.stringify(carPayload),
-        });
-
-        const createdCar = await carRes.json();
-        const id_cars = createdCar[0].id_cars;
-
-        // Relacionar imágenes nuevas
-        for (const id_images of newImageIds) {
-          await fetch(CAR_IMAGES_URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Prefer: "return=representation",
-            },
-            body: JSON.stringify({ id_cars, id_images }),
-          });
+          id_users: TEMP_USER_ID
         }
 
-        alert("Carro publicado correctamente 🎉");
-        setResetFormSignal((p) => p + 1);
-        setOpen(false);
-        return;
+        const carRes = await fetch(CARS_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify(carPayload)
+        })
+
+        const created = await carRes.json()
+        const id_cars = created[0].id_cars
+
+        for (const idImg of newImageIds) {
+          await fetch(CAR_IMAGES_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Prefer: 'return=representation'
+            },
+            body: JSON.stringify({ id_cars, id_images: idImg })
+          })
+        }
+
+        await fetchCars()
+        showToast('¡Vehículo agregado exitosamente!')
+        setOpen(false)
+        setResetFormSignal(prev => prev + 1)
+        return
       }
 
-      /* ==================================================
-         C. SI ES "EDIT" → ACTUALIZAR CARRO
-      ================================================== */
+      /* ======================== EDITAR ======================== */
       const updatePayload = {
         id_brands: data.id_brands,
         id_models: data.id_models,
@@ -273,60 +279,56 @@ const PublicationManager: React.FC = () => {
         number_of_doors: data.number_of_doors,
         id_year: data.id_year,
         price: data.price,
-        sold: data.sold,
-      };
+        sold: data.sold
+      }
 
       await fetch(`${CARS_URL}?id_cars=eq.${selected}`, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
-          Prefer: "return=representation",
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation'
         },
-        body: JSON.stringify(updatePayload),
-      });
+        body: JSON.stringify(updatePayload)
+      })
 
-      /* ==================================================
-         D. ELIMINAR IMÁGENES BORRADAS
-      ================================================== */
       for (const idImg of data.imagesToDelete) {
-        await fetch(`${CAR_IMAGES_URL}?id_images=eq.${idImg}`, {
-          method: "DELETE",
-        });
+        await fetch(`${CAR_IMAGES_URL}?id_images=eq.${idImg}`, { method: 'DELETE' })
+        await fetch(`${IMAGES_URL}?id_images=eq.${idImg}`, { method: 'DELETE' })
       }
 
-      /* ==================================================
-         E. RELACIONAR NUEVAS IMÁGENES SUBIDAS
-      ================================================== */
       for (const idImg of newImageIds) {
         await fetch(CAR_IMAGES_URL, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            Prefer: "return=representation",
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
           },
-          body: JSON.stringify({
-            id_cars: selected,
-            id_images: idImg,
-          }),
-        });
+          body: JSON.stringify({ id_cars: selected, id_images: idImg })
+        })
       }
 
-      alert("Vehículo actualizado correctamente ✔");
-      setResetFormSignal((p) => p + 1);
-      setOpen(false);
+      await fetchCars()
+      showToast('¡Vehículo editado exitosamente!')
+      setOpen(false)
+      setResetFormSignal(prev => prev + 1)
     } catch (err) {
-      console.error("Error guardando vehículo:", err);
-      alert("Ocurrió un error al guardar el vehículo.");
+      console.error('Error guardando vehículo:', err)
     }
-  };
-
+  }
 
   const selectedCarInfo =
-    selected != null ? cars.find((c) => c.id_cars === selected)?.models?.desc ?? '' : ''
+    selected != null ? cars.find(c => c.id_cars === selected)?.models?.desc ?? '' : ''
 
   return (
     <>
       {(open || deleteOpen) && <div className={styles.overlay} />}
+
+      {/* ==== TOAST GLOBAL ==== */}
+      {mainToast && (
+        <div className={styles.globalToast}>
+          {mainToast}
+        </div>
+      )}
 
       <section className={styles.box}>
         <div className={styles.boxHeader}>
@@ -342,11 +344,13 @@ const PublicationManager: React.FC = () => {
         {loading
           ? (
             <p style={{ color: 'white' }}>Cargando...</p>
-          )
+            )
           : cars.length === 0
             ? (
-              <p style={{ color: 'white', textAlign: 'center' }}>Aún no tienes publicaciones.</p>
-            )
+              <p style={{ color: 'white', textAlign: 'center' }}>
+                Aún no tienes publicaciones.
+              </p>
+              )
             : (
               <Pagination
                 items={cars}
@@ -367,13 +371,21 @@ const PublicationManager: React.FC = () => {
                           confirmDelete(car.id_cars)
                         }}
                       >
-                        x
+                        <svg
+                          width='18'
+                          height='18'
+                          viewBox='0 0 24 24'
+                          fill='black'
+                          xmlns='http://www.w3.org/2000/svg'
+                        >
+                          <path d='M3 6h18v2H3V6zm2 3h14l-1.2 12.1c-.1 1.1-1 1.9-2.1 1.9H8.3c-1.1 0-2-.8-2.1-1.9L5 9zm5 2v8h2v-8H8zm4 0v8h2v-8h-2zM9 4V2h6v2h5v2H4V4h5z' />
+                        </svg>
                       </button>
                     </Card>
                   </div>
                 )}
               />
-            )}
+              )}
 
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>

@@ -31,7 +31,6 @@ export const CarForm: React.FC<CarFormProps> = ({
   resetSignal,
   onSubmit
 }) => {
-
   const [tab, setTab] = useState<1 | 2 | 3>(1)
 
   const [catalogs, setCatalogs] = useState({
@@ -61,11 +60,12 @@ export const CarForm: React.FC<CarFormProps> = ({
     sold: false,
 
     // NUEVO
-    existingImages: [] as { id_images: number; base64: string }[],
+    existingImages: [] as Array<{ id_images: number, base64: string }>,
     newImages: [] as File[]
   }
 
   const [form, setForm] = useState<any>(initialForm)
+  const [toast, setToast] = useState<string | null>(null)
 
   // ============================
   // CARGAR CATÁLOGOS
@@ -73,7 +73,7 @@ export const CarForm: React.FC<CarFormProps> = ({
   useEffect(() => {
     let mounted = true
 
-    const load = async () => {
+    const load = async (): Promise<void> => {
       try {
         const urls = [
           BRANDS_URL,
@@ -85,8 +85,8 @@ export const CarForm: React.FC<CarFormProps> = ({
           YEARS_URL
         ]
 
-        const responses = await Promise.all(urls.map(url => fetch(url)))
-        const data = await Promise.all(responses.map(r => r.json()))
+        const responses = await Promise.all(urls.map(async url => await fetch(url)))
+        const data = await Promise.all(responses.map(async r => await r.json()))
 
         if (mounted) {
           setCatalogs({
@@ -104,7 +104,7 @@ export const CarForm: React.FC<CarFormProps> = ({
       }
     }
 
-    load()
+    void load()
     return () => { mounted = false }
   }, [])
 
@@ -134,7 +134,7 @@ export const CarForm: React.FC<CarFormProps> = ({
     if (!catalogsLoaded) return
 
     const car = cars.find(c => c.id_cars === selected)
-    if (!car) return
+    if (car == null) return
 
     setForm({
       id_brands: car.id_brands ?? 0,
@@ -161,42 +161,97 @@ export const CarForm: React.FC<CarFormProps> = ({
         id_images: img.id_images,
         base64: img.images?.image
           ? `data:image/jpeg;base64,${img.images?.image}`
-          : ""
+          : ''
       })) ?? [],
 
       newImages: []
     })
-
   }, [mode, selected, cars, catalogs])
 
   // ============================
   // HANDLER UNIVERSAL
   // ============================
-  const update = (field: string, value: any) => {
+  const update = (field: string, value: any): void => {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
   const filteredModels = catalogs.models
 
+  const validateForm = () => {
+    const errors: string[] = []
+
+    const lettersRegex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$/
+
+    // Marca
+    if (!form.id_brands) errors.push('Debe seleccionar una marca.')
+
+    // Modelo
+    if (!form.id_models) errors.push('Debe seleccionar un modelo.')
+
+    // Estilo
+    if (!form.id_styles) errors.push('Debe seleccionar un estilo.')
+
+    // Transmisión
+    if (!form.id_transmission) errors.push('Debe seleccionar una transmisión.')
+
+    // Cilindraje
+    if (!form.id_displacement) errors.push('Debe seleccionar el cilindraje.')
+
+    // Combustible
+    if (!form.id_fuel) errors.push('Debe seleccionar el tipo de combustible.')
+
+    // Año
+    if (!form.id_year) errors.push('Debe seleccionar el año del vehículo.')
+
+    // Color exterior
+    if (!form.exterior_color.trim()) errors.push('Debe ingresar un color exterior.')
+    else if (!lettersRegex.test(form.exterior_color)) { errors.push('El color exterior solo puede contener letras.') }
+
+    // Color interior
+    if (!form.interior_color.trim()) errors.push('Debe ingresar un color interior.')
+    else if (!lettersRegex.test(form.interior_color)) { errors.push('El color interior solo puede contener letras.') }
+
+    // Precio
+    if (!form.price.toString().trim()) errors.push('Debe ingresar el precio.')
+    else if (isNaN(Number(form.price))) { errors.push('El precio debe ser un número.') }
+
+    // Imágenes mínimas
+    const totalImages = form.existingImages.length + form.newImages.length
+    if (totalImages === 0) { errors.push('Debe agregar al menos una imagen del vehículo.') }
+
+    return errors
+  }
+
   // ============================
   // SUBMIT
   // ============================
-  const submit = () => {
+  const submit = (): void => {
+    const errors = validateForm()
+
+    if (errors.length > 0) {
+      // Reiniciar el toast instantáneamente
+      setToast(null)
+
+      // Mostrar el nuevo toast después de un tick
+      setTimeout(() => {
+        setToast(errors[0])
+      }, 10)
+
+      // Ocultarlo luego de 3.5s
+      setTimeout(() => setToast(null), 3500)
+
+      return
+    }
+
     const originalImages = cars.find(c => c.id_cars === selected)?.cars_images || []
 
     onSubmit({
       ...form,
       price: Number(form.price) || 0,
-
-      // IDs de imágenes existentes que quedaron
       imagesToKeep: form.existingImages.map(i => i.id_images),
-
-      // IDs de imágenes eliminadas
       imagesToDelete: originalImages
         .filter(img => !form.existingImages.some(e => e.id_images === img.id_images))
         .map(img => img.id_images),
-
-      // Nuevas imágenes
       newImages: form.newImages
     })
   }
@@ -273,7 +328,8 @@ export const CarForm: React.FC<CarFormProps> = ({
 
           <span className={styles.rowWrapper}>
             <label>Color exterior</label>
-            <input className={`glass ${styles.fullInput}`}
+            <input
+              className={`glass ${styles.fullInput}`}
               value={form.exterior_color}
               onChange={e => update('exterior_color', e.target.value)}
             />
@@ -281,7 +337,8 @@ export const CarForm: React.FC<CarFormProps> = ({
 
           <span className={styles.rowWrapper}>
             <label>Color interior</label>
-            <input className={`glass ${styles.fullInput}`}
+            <input
+              className={`glass ${styles.fullInput}`}
               value={form.interior_color}
               onChange={e => update('interior_color', e.target.value)}
             />
@@ -289,7 +346,8 @@ export const CarForm: React.FC<CarFormProps> = ({
 
           <span className={styles.rowWrapper}>
             <label>Precio</label>
-            <input className={`glass ${styles.fullInput}`}
+            <input
+              className={`glass ${styles.fullInput}`}
               type='number'
               value={form.price}
               onChange={e => update('price', e.target.value)}
@@ -383,14 +441,16 @@ export const CarForm: React.FC<CarFormProps> = ({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
           <label>
-            <input type='checkbox'
+            <input
+              type='checkbox'
               checked={form.receives}
               onChange={e => update('receives', e.target.checked)}
             /> ¿Recibe vehículo?
           </label>
 
           <label>
-            <input type='checkbox'
+            <input
+              type='checkbox'
               checked={form.negotiable}
               onChange={e => update('negotiable', e.target.checked)}
             /> ¿Negociable?
@@ -412,8 +472,7 @@ export const CarForm: React.FC<CarFormProps> = ({
                       onClick={() =>
                         update('existingImages',
                           form.existingImages.filter((_, idx) => idx !== i)
-                        )
-                      }
+                        )}
                     >
                       ✕
                     </button>
@@ -463,8 +522,7 @@ export const CarForm: React.FC<CarFormProps> = ({
                       onClick={() =>
                         update('newImages',
                           form.newImages.filter((_, idx) => idx !== i)
-                        )
-                      }
+                        )}
                     >
                       ✕
                     </button>
@@ -473,6 +531,12 @@ export const CarForm: React.FC<CarFormProps> = ({
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className={styles.toastError}>
+          {toast}
         </div>
       )}
 
