@@ -1,17 +1,14 @@
 /* ===================================================== */
 /*        CARD ESTILO ANUNCIO (GLASSMORPHISM PRO)        */
 /* ===================================================== */
-
 .container-card {
   position: relative;
-  width: 280px;
   height: 360px;
   display: flex;
   flex-direction: column;
   cursor: pointer;
   border-radius: 1rem;
   position: relative;
-  width: 280px;
   height: 360px;
   display: flex;
   flex-direction: column;
