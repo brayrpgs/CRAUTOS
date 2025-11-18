@@ -13,7 +13,8 @@ import {
   CAR_IMAGES_URL,
   CARS_URL,
   IMAGES_URL,
-  FAVORITE_CAR_URL
+  FAVORITE_CAR_URL,
+  AUDIT_URL
 } from '../../common/common'
 import { CarForm } from './CarForm'
 
@@ -25,6 +26,7 @@ interface CarFromApi {
   brands?: { desc: string }
   models?: { desc: string }
   years?: { desc: number }
+  id_audit: number
   sold: boolean
 }
 
@@ -60,7 +62,7 @@ const PublicationManager: React.FC = () => {
   const fetchCars = async (): Promise<void> => {
     try {
       const res = await fetch(
-        `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,id_brands,id_models,id_styles,exterior_color,interior_color,id_transmission,id_displacement,id_fuel,receives,negotiable,number_of_doors,id_year,price,sold,brands(desc),models(desc),years(desc),cars_images(id_images,images(image))`
+        `${CARS_URL}?id_users=eq.${TEMP_USER_ID}&select=id_cars,id_users,id_brands,id_models,id_styles,exterior_color,interior_color,id_transmission,id_displacement,id_fuel,receives,negotiable,number_of_doors,id_year,price,id_audit,sold,brands(desc),models(desc),years(desc),cars_images(id_images,images(image))`
       )
 
       const data = await res.json()
@@ -74,7 +76,6 @@ const PublicationManager: React.FC = () => {
           image: base64 ? `data:image/jpeg;base64,${base64}` : null
         }
       })
-
       setCars(processed)
     } catch (err) {
       console.error('Error cargando tus vehículos:', err)
@@ -166,7 +167,7 @@ const PublicationManager: React.FC = () => {
     setMode('add')
     setSelected(null)
 
-    // 🔥 FIX: limpiar el form SIEMPRE al abrir "Nuevo"
+    // limpiar el form al abrir "Nuevo"
     setResetFormSignal(prev => prev + 1)
 
     setOpen(true)
@@ -207,6 +208,10 @@ const PublicationManager: React.FC = () => {
 
       const imageIds = relData.map(r => r.id_images)
 
+      const carRes = await fetch(`${CARS_URL}?id_cars=eq.${selected}&select=id_audit`);
+      const carData = await carRes.json();
+      const audit_id = carData[0]?.id_audit;
+
       await fetch(`${CAR_IMAGES_URL}?id_cars=eq.${selected}`, {
         method: 'DELETE'
       })
@@ -218,6 +223,8 @@ const PublicationManager: React.FC = () => {
       await fetch(`${FAVORITE_CAR_URL}?id_cars=eq.${selected}`, { method: 'DELETE' })
 
       await fetch(`${CARS_URL}?id_cars=eq.${selected}`, { method: 'DELETE' })
+
+      await fetch(`${AUDIT_URL}?id_audit=eq.${audit_id}`, { method: 'DELETE' });
 
       await fetchCars()
       showToast('¡Vehículo eliminado exitosamente!')
@@ -288,6 +295,21 @@ const PublicationManager: React.FC = () => {
 
       /* ======================== AÑADIR ======================== */
       if (mode === 'add') {
+
+        // 1. Crear AUDIT vacío
+        const auditRes = await fetch(AUDIT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({})
+        });
+
+        const auditJson = await auditRes.json();
+        const id_audit = auditJson[0].id_audit;
+
+        // 2. Crear el carro con el audit_id
         const carPayload = {
           id_brands: data.id_brands,
           id_models: data.id_models,
@@ -303,8 +325,9 @@ const PublicationManager: React.FC = () => {
           id_year: data.id_year,
           price: data.price,
           sold: false,
-          id_users: TEMP_USER_ID
-        }
+          id_users: TEMP_USER_ID,
+          id_audit // <= AQUÍ
+        };
 
         const carRes = await fetch(CARS_URL, {
           method: 'POST',
@@ -313,11 +336,12 @@ const PublicationManager: React.FC = () => {
             Prefer: 'return=representation'
           },
           body: JSON.stringify(carPayload)
-        })
+        });
 
-        const created = await carRes.json()
-        const id_cars = created[0].id_cars
+        const created = await carRes.json();
+        const id_cars = created[0].id_cars;
 
+        // 3. Relacionar imágenes
         for (const idImg of newImageIds) {
           await fetch(CAR_IMAGES_URL, {
             method: 'POST',
@@ -326,16 +350,36 @@ const PublicationManager: React.FC = () => {
               Prefer: 'return=representation'
             },
             body: JSON.stringify({ id_cars, id_images: idImg })
-          })
+          });
         }
 
-        await fetchCars()
-        showToast('¡Vehículo agregado exitosamente!')
-        setOpen(false)
-        return
+        await fetchCars();
+        showToast('¡Vehículo agregado exitosamente!');
+        setOpen(false);
+        return;
       }
 
       /* ======================== EDITAR ======================== */
+      const carAuditRes = await fetch(`${CARS_URL}?id_cars=eq.${selected}&select=id_audit`);
+      const carAuditData = await carAuditRes.json();
+      const audit_id = carAuditData[0]?.id_audit;
+      const now = new Date().toISOString();
+
+      // 1. Actualizar AUDIT (updated_at)
+      if (audit_id) {
+        await fetch(`${AUDIT_URL}?id_audit=eq.${audit_id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({
+            updated_at: now
+          })
+        });
+      }
+
+      // 2. Actualizar el carro
       const updatePayload = {
         id_brands: data.id_brands,
         id_models: data.id_models,
@@ -351,7 +395,7 @@ const PublicationManager: React.FC = () => {
         id_year: data.id_year,
         price: data.price,
         sold: data.sold
-      }
+      };
 
       await fetch(`${CARS_URL}?id_cars=eq.${selected}`, {
         method: 'PATCH',
@@ -360,7 +404,7 @@ const PublicationManager: React.FC = () => {
           Prefer: 'return=representation'
         },
         body: JSON.stringify(updatePayload)
-      })
+      });
 
       for (const idImg of data.imagesToDelete) {
         await fetch(`${CAR_IMAGES_URL}?id_images=eq.${idImg}`, { method: 'DELETE' })
@@ -416,13 +460,13 @@ const PublicationManager: React.FC = () => {
         {loading
           ? (
             <p style={{ color: 'white' }}>Cargando...</p>
-            )
+          )
           : cars.length === 0
             ? (
               <p style={{ color: 'white', textAlign: 'center' }}>
                 Aún no tienes publicaciones.
               </p>
-              )
+            )
             : (
               <Pagination
                 items={cars}
@@ -481,7 +525,7 @@ const PublicationManager: React.FC = () => {
                   </div>
                 )}
               />
-              )}
+            )}
 
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>

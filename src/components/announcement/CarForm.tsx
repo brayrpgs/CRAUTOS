@@ -58,8 +58,6 @@ export const CarForm: React.FC<CarFormProps> = ({
     id_year: 0,
     price: '',
     sold: false,
-
-    // NUEVO
     existingImages: [] as Array<{ id_images: number, base64: string }>,
     newImages: [] as File[]
   }
@@ -76,13 +74,13 @@ export const CarForm: React.FC<CarFormProps> = ({
     const load = async (): Promise<void> => {
       try {
         const urls = [
-          BRANDS_URL,
-          MODELS_URL,
-          STYLES_URL,
+          `${BRANDS_URL}?order=desc.asc`,
+          `${MODELS_URL}?order=desc.asc`,
+          `${STYLES_URL}?order=desc.asc`,
           TRANSMISSIONS_URL,
-          FUEL_URL,
+          `${FUEL_URL}?order=desc.asc`,
           DISPLACEMENT_URL,
-          YEARS_URL
+          `${YEARS_URL}?order=desc.desc`
         ]
 
         const responses = await Promise.all(urls.map(async url => await fetch(url)))
