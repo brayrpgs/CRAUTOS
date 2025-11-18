@@ -171,37 +171,347 @@
 
 /* ===== Botones del modal ===== */
 
-.modalPrimaryBtn {
+
+button.modalPrimaryBtn:hover {
+  color: greenyellow !important;
+}
+
+button.modalSecondaryBtn:hover {
+  color: rgba(255, 0, 0, 0.7) !important;
+}
+
+.carTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+  display: block;
+  text-align: center;
+}
+
+.carPrice {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #e3e3e3;
+  display: block;
+  margin-top: .25rem;
+  text-align: center;
+}
+
+.carDetail {
+  font-size: 0.85rem;
+  color: #b9b9b9;
+  text-align: center;
+  display: block;
+  margin-top: .2rem;
+}
+
+.modalContent,
+dialog>div {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Cada columna debe alinear perfectamente el borde */
+.formGrid span {
+  width: 100%;
+}
+
+.fullWidthRow {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Inputs con el mismo ancho */
+.fullInput,
+.formGrid span select,
+.formGrid span input[type="text"],
+.formGrid span input[type="number"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Asegura que TODO se alinee igual */
+.rowWrapper {
+  width: 100%;
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+  box-sizing: border-box;
+}
+
+.rowWrapperLabel {
+  margin-bottom: 1rem;
+}
+
+/* El grid ahora coincide en padding con las filas fuera */
+.formGrid {
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.imagesGrid {
+  margin-top: 1rem;
+  display: grid;
+
+  grid-template-columns: repeat(5, 120px);
+
+  gap: 16px;
+
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 6px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #888 #0000;
+}
+
+.imagesGrid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.imagesGrid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
+
+.imagesGrid::-webkit-scrollbar-track {
   background: transparent;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1/1;
+
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.previewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+
+  width: 26px;
+  height: 26px;
+
+  background: rgba(255, 0, 0, 0.85);
   color: white;
   border: none;
+  border-radius: 50%;
+
   cursor: pointer;
-  margin-right: 0.5rem;
-  font-weight: 600;
-  transition: color 0.2s ease, background 0.2s ease;
-  outline: 1px solid white;
-  backdrop-filter: blur(50px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.modalPrimaryBtn:hover {
-  color: greenyellow;
+.deleteBtn:hover {
+  background: rgba(255, 40, 40, 1);
+  transform: scale(1.12);
 }
 
-.modalSecondaryBtn {
-  background: transparent;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+
+/* ========================================= */
+/* Caja de subida                            */
+/* ========================================= */
+.uploadBox {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+
+  padding: 1.2rem;
+  text-align: center;
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+.uploadBox:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.uploadText {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.toastError {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 100%;
+  max-width: 100vw;
+  /* evita scroll horizontal */
+  overflow: hidden;
+
+  background: #ff3b3b;
+  /* sólido y elegante */
+
+  padding: 14px 20px;
+  text-align: center;
+
   color: white;
-  border: none;
-  cursor: pointer;
+  font-size: 1rem;
   font-weight: 600;
-  transition: color 0.2s ease, background 0.2s ease;
-  outline: 1px solid white;
-  backdrop-filter: blur(50px);
+
+  z-index: 999999;
+
+  box-sizing: border-box;
+  /* evita sobresalir */
+
+  animation: slideDown 0.35s ease-out;
 }
 
-.modalSecondaryBtn:hover {
-  color: rgba(255, 0, 0, 0.7);
+/* Animación suave */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.globalToast {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: #171717;
+  padding: 14px 22px;
+
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+
+  border-radius: 10px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
+
+  z-index: 999999;
+
+  animation: toastSlide 0.35s ease-out;
+}
+
+@keyframes toastSlide {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.cardClose:hover svg {
+  fill: #ff4d4d;
+  transition: 0.2s ease;
+}
+
+/* ======================================================= */
+/* ========   TABS EN FILAS EN MÓVIL  (REAL FIX) ========= */
+/* ======================================================= */
+
+.titleH2 {
+  color: white;
+}
+
+.tabsWrapper {
+  display: flex;
+  justify-content: center;
+  gap: .8rem;
+}
+
+/* Móvil */
+@media (max-width: 600px) {
+  
+  .titleH2 {
+    font-size: 1.2rem;
+  }
+
+  .tabsWrapper {
+    flex-direction: column !important;
+    width: 95% !important;
+    margin: 0 auto !important;
+    gap: 0.45rem !important;
+  }
+
+  .tabsWrapper button.glass {
+    width: 100% !important;
+    padding: 0.4rem !important;
+    font-size: 0.82rem !important;
+    text-align: center;
+    border-radius: 10px !important;
+  }
+
+  /* título del modal */
+  :global(.header h2) {
+    font-size: 1rem !important;
+    line-height: 1.15rem !important;
+  }
+
+  .imagesGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+
+    width: 100% !important;
+    padding-right: 0 !important;
+  }
+
+  .imageWrapper {
+    width: 100% !important;
+    aspect-ratio: 1/1 !important;
+    /* cuadradas */
+  }
+
+  .previewImg {
+    object-fit: cover !important;
+  }
+
+  .deleteBtn {
+    width: 24px !important;
+    height: 24px !important;
+    top: 6px !important;
+    right: 6px !important;
+  }
+
+  .modalContent > div {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Para el contenedor DIRECTO del CarForm */
+  .carFormWrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }

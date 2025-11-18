@@ -74,3 +74,42 @@
     opacity: 1;
   }
 }
+
+/* ============================= */
+/*   RESPONSIVE SOLO PARA MÓVIL  */
+/* ============================= */
+/* ======================================= */
+/*   FIX REAL PARA <dialog> EN MÓVIL       */
+/* ======================================= */
+
+@media (max-width: 600px) {
+
+  .container {
+    position: fixed !important;
+    inset: 0 !important;             /* ocupa toda la pantalla */
+    margin: auto !important;         /* ahora sí centra */
+    
+    /* Bordes seguros para que NO se corte */
+    padding: 1.2rem !important;
+    max-width: 92% !important;       /* evita corte horizontal */
+    max-height: 92vh !important;     /* evita corte vertical */
+    overflow-y: auto !important;     /* scroll interno si hace falta */
+
+    border-radius: 1rem !important;
+    box-sizing: border-box !important;
+  }
+
+  /* título del modal */
+  .header h2 {
+    font-size: 1rem !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  dialog.container {
+    min-width: 90vw !important;   
+    max-width: 90vw !important;
+  }
+
+}
+

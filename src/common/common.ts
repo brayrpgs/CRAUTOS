@@ -1,0 +1,18 @@
+export const BASE_API_URL = 'http://localhost:3001'
+
+export const BRANDS_URL = `${BASE_API_URL}/brands`
+export const USERS_URL = `${BASE_API_URL}/users`
+export const FEEDBACK_URL = `${BASE_API_URL}/feedback`
+export const IMAGES_URL = `${BASE_API_URL}/images`
+export const TRANSMISSIONS_URL = `${BASE_API_URL}/transmissions`
+export const FUEL_URL = `${BASE_API_URL}/fuel`
+export const FAVORITE_CAR_URL = `${BASE_API_URL}/wishlist`
+export const CARS_URL = `${BASE_API_URL}/cars`
+export const CAR_CATEGORIES_URL = `${BASE_API_URL}/car_category`
+export const STYLES_URL = `${BASE_API_URL}/styles`
+export const CAR_IMAGES_URL = `${BASE_API_URL}/cars_images`
+export const MODELS_URL = `${BASE_API_URL}/models`
+export const AUDIT_URL = `${BASE_API_URL}/audit`
+export const YEARS_URL = `${BASE_API_URL}/years`
+export const DISPLACEMENT_URL = `${BASE_API_URL}/displacements`
+export const CAR_CATEGORY_CARS_URL = `${BASE_API_URL}/car_category_car`
