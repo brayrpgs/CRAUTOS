@@ -1,19 +1,21 @@
 ---
+import "../styles/global/styles.css";
 import { Background } from "../components/background/Background";
 import { HeaderPage } from "../components/header/HeaderPage";
-import "../styles/global/styles.css";
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
+    <title>Playground</title>
   </head>
   <body>
+    <h1>Este es un playground para test!</h1>
     <Background client:load />
-    <HeaderPage client:load> HOLA </HeaderPage>
+    <HeaderPage>
+      <button type="reset">close</button>
+    </HeaderPage>
   </body>
 </html>

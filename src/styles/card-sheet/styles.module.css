@@ -1,40 +1,17 @@
 .container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
+  column-gap: 1rem;
   justify-items: stretch;
   align-items: center;
   justify-content: center;
   align-content: center;
-  padding: 1rem;
-  font-size: 0.7rem;
 }
 
 .actionsContainer {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
   gap: 1rem;
   justify-content: space-evenly;
-  grid-template-columns: repeat(auto-fit, minmax(10ch, 17ch));
-  font-size: xx-small;
-  margin-block-start: 1rem;
-}
-
-div.carousel-card-wrapper {
-  flex-shrink: 1;
-}
-
-.details {
-  overflow: hidden;
-  transition: all 1s ease;
-  interpolate-size: allow-keywords;
-}
-
-.details:not([open]) {
-  height: 1lh;
-  transition: all 1s ease;
-}
-
-.details[open] {
-  height: auto;
-  transition: all 1s ease;
 }

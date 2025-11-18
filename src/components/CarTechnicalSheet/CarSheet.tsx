@@ -41,19 +41,17 @@ export const CarTechnicalSheet: React.FC<CarTechnicalSheetProps> = ({ id }) => {
         </div>
       </ModalContent>
       <ModalFooter>
-        <details className={`${styles.details}`}>
-          <summary>Mas opciones</summary>
-          <div className={styles.actionsContainer}>
-            <button className='glass'>Ver Vendedor</button>
-            <button className='glass'>Agregar a Favoritos</button>
-            <button className='glass'>Ver Vendedor</button>
-            <button className='glass'>Compartir Whatsapp</button>
-            <button className='glass'>Compartir facebook</button>
-            <button className='glass'>Descargar ficha tecnica</button>
-            <button className='glass'>Contactar al vendedor(correo)</button>
-            <button className='glass'>Contactar al vendedor(Whatsapp)</button>
-          </div>
-        </details>
+        <div className={styles.actionsContainer}>
+          <button className='glass'>Ver Vendedor</button>
+          <button className='glass'>Agregar a Favoritos</button>
+          <button className='glass'>Ver Vendedor</button>
+          <button className='glass'>Compartir Whatsapp</button>
+          <button className='glass'>Compartir facebook</button>
+          <button className='glass'>Descargar ficha tecnica</button>
+          <button className='glass'>Contactar al vendedor(correo)</button>
+          <button className='glass'>Contactar al vendedor(Whatsapp)</button>
+        </div>
+
       </ModalFooter>
     </Modal>
   )
