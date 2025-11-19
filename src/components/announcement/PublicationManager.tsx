@@ -191,6 +191,13 @@ const PublicationManager: React.FC = () => {
       return
     }
 
+    const car = cars.find(c => c.id_cars === id)
+
+    if (car?.sold) {
+      setEditBlockedOpen(true)
+      return
+    }
+
     setMode('edit')
     setSelected(id)
     setOpen(true)
@@ -442,6 +449,9 @@ const PublicationManager: React.FC = () => {
       {(open || deleteOpen || confirmSoldOpen || editBlockedOpen) && (
         <div className={styles.overlay} />
       )}
+      {(open || deleteOpen || confirmSoldOpen || editBlockedOpen) && (
+        <div className={styles.overlay} />
+      )}
 
       {/* ==== TOAST GLOBAL ==== */}
       {mainToast && (
@@ -477,6 +487,7 @@ const PublicationManager: React.FC = () => {
                 itemsPerPage={10}
                 renderItem={(car) => (
                   <div
+                    className={`${styles.cardWrapper} ${car.sold ? styles.cardSold : ''}`}
                     className={`${styles.cardWrapper} ${car.sold ? styles.cardSold : ''}`}
                     onClick={() => openEditModal(car.id_cars)}
                   >
@@ -581,6 +592,65 @@ const PublicationManager: React.FC = () => {
             </div>
           </ModalFooter>
         </Modal>
+
+        {/* === MODAL CONFIRMAR VENTA === */}
+        <Modal open={confirmSoldOpen} setOpen={setConfirmSoldOpen} id='confirm-sold-modal'>
+          <ModalHeader>
+            <h2 style={{ color: 'white' }}>Confirmar venta</h2>
+          </ModalHeader>
+
+          <ModalContent>
+            <p style={{ color: 'white' }}>
+              ¿Seguro que deseas marcar este vehículo como vendido?
+            </p>
+          </ModalContent>
+
+          <ModalFooter>
+            <div style={{ display: 'flex', gap: '0.7rem' }}>
+              <button
+                className={`glass ${styles.modalPrimaryBtn}`}
+                onClick={async () => {
+                  if (carToSell == null) return
+                  await markAsSold(carToSell)
+                  setConfirmSoldOpen(false)
+                }}
+              >
+                Sí, marcar como vendido
+              </button>
+
+              <button
+                className={`glass ${styles.modalSecondaryBtn}`}
+                onClick={() => setConfirmSoldOpen(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </ModalFooter>
+        </Modal>
+
+        {/* === MODAL BLOQUEAR EDICIÓN === */}
+        <Modal open={editBlockedOpen} setOpen={setEditBlockedOpen} id='edit-blocked-modal'>
+          <ModalHeader>
+            <h2 style={{ color: 'white' }}>Edición no permitida</h2>
+          </ModalHeader>
+
+          <ModalContent>
+            <p style={{ color: 'white' }}>
+              No puedes editar este vehículo porque ya fue marcado como vendido.
+            </p>
+          </ModalContent>
+
+          <ModalFooter>
+            <button
+              className='glass'
+              style={{ width: '100%' }}
+              onClick={() => setEditBlockedOpen(false)}
+            >
+              Entendido
+            </button>
+          </ModalFooter>
+        </Modal>
+
 
         {/* === MODAL CONFIRMAR VENTA === */}
         <Modal open={confirmSoldOpen} setOpen={setConfirmSoldOpen} id='confirm-sold-modal'>
