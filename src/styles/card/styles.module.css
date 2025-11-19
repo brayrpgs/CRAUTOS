@@ -92,15 +92,14 @@
 /* ===================================================== */
 
 .info {
-  width: auto;
-  height: 28%;
-
   display: flex;
-  align-items: center;
+  flex-direction: column; 
+  align-items: center;  
   justify-content: center;
 
   padding: 0.8rem;
   text-align: center;
+  white-space: pre-line;
 
   font-size: 1rem;
   font-weight: 700;

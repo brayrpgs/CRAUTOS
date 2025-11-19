@@ -521,7 +521,7 @@ dialog>div {
 
 .soldButton {
   position: absolute;
-  bottom: 0.6rem;
+  bottom: 0.3rem;
   right: 0.6rem;
 
   padding: 0.35rem 0.7rem;
@@ -546,7 +546,7 @@ dialog>div {
 
 .soldBadge {
   position: absolute;
-  bottom: 0.6rem;
+  bottom: 0.3rem;
   right: 0.6rem;
 
   padding: 0.35rem 0.7rem;
@@ -604,3 +604,43 @@ dialog>div {
 .cardSold {
   filter: grayscale(1) brightness(0.6);
 }
+
+.numberInput {
+  width: 100%;
+  padding: 0.8rem 1rem;
+
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: white;
+  text-align: right; /* ⭐ Los millones quedan alineados a la derecha */
+  letter-spacing: 0.4px;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0.7rem;
+
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(10px);
+
+  transition: all 0.25s ease;
+}
+
+/* Eliminar las flechas del input number */
+.numberInput::-webkit-inner-spin-button,
+.numberInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Efecto cuando el usuario enfoca el input */
+.numberInput:focus {
+  outline: none;
+  border-color: white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.17);
+}
+
+/* Mejor apariencia cuando pasa el mouse */
+.numberInput:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
