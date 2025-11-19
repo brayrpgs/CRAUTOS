@@ -464,13 +464,13 @@ const PublicationManager: React.FC = () => {
         {loading
           ? (
             <p style={{ color: 'white' }}>Cargando...</p>
-          )
+            )
           : cars.length === 0
             ? (
               <p style={{ color: 'white', textAlign: 'center' }}>
                 Aún no tienes publicaciones.
               </p>
-            )
+              )
             : (
               <Pagination
                 items={cars}
@@ -528,7 +528,7 @@ const PublicationManager: React.FC = () => {
                   </div>
                 )}
               />
-            )}
+              )}
 
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>
