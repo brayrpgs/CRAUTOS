@@ -1,9 +1,7 @@
 ---
 import { HeaderPage } from "../components/header/HeaderPage";
 import { Footer } from "../components/footer/FooterCustom";
-
 import { FavoriteCarsManager } from "../components/favorites/FavoriteCarsManager";
-
 import "../styles/global/styles.css";
 import styles from "../styles/announcement/styles.module.css";
 import { Background } from "../components/background/Background";
@@ -14,25 +12,48 @@ import { Background } from "../components/background/Background";
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content={Astro.generator} />
-  <title>CRAUTOS</title>
+  <title>Mis Favoritos</title>
 </head>
 
-<div class={styles.page}>
-  {/* HEADER */}
-  <header class={styles.header}>
-    <HeaderPage client:load />
-  </header>
+<!-- PROTECCIÓN SIN PARPADEO -->
+<style>
+  #protected-content {
+    display: none; /* Oculto hasta validar rol */
+  }
+</style>
 
-  {/* CONTENIDO PRINCIPAL */}
-  <main class={styles.main}>
+<script>
+  import { getLoggedUserRole } from "../utils/GetUserUtils";
 
-    <FavoriteCarsManager client:load />
+  const role = getLoggedUserRole();
 
-  </main>
+  // Rol válido: 1 = admin, 2 = usuario logueado
+  if (role === 1 || role === 2) {
+    const container = document.getElementById("protected-content");
+    if (container) container.style.display = "block";
+  } else {
+    window.location.href = "/";
+  }
+</script>
 
-  {/* FOOTER */}
-  <footer class={styles.footer}>
-    <Footer client:load />
-  </footer>
-  <Background client:load>
+<!-- CONTENIDO PROTEGIDO -->
+<div id="protected-content">
+  <div class={styles.page}>
+    {/* HEADER */}
+    <header class={styles.header}>
+      <HeaderPage client:load />
+    </header>
+
+    {/* CONTENIDO PRINCIPAL */}
+    <main class={styles.main}>
+      <FavoriteCarsManager client:load />
+    </main>
+
+    {/* FOOTER */}
+    <footer class={styles.footer}>
+      <Footer client:load />
+    </footer>
+    
+    <Background client:load />
+  </div>
 </div>
