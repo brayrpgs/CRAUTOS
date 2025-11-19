@@ -17,6 +17,7 @@ import {
   AUDIT_URL
 } from '../../common/common'
 import { CarForm } from './CarForm'
+import { getLoggedUserId } from '../../utils/GetUserUtils'
 
 interface CarFromApi {
   id_cars: number
@@ -30,7 +31,8 @@ interface CarFromApi {
   sold: boolean
 }
 
-const TEMP_USER_ID = 1
+const UserLoguedId = getLoggedUserId()
+
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
   Prefer: 'return=representation'
@@ -79,7 +81,7 @@ const PublicationManager: React.FC = () => {
   const fetchCars = async (): Promise<void> => {
     try {
       const res = await fetch(
-        `${CARS_URL}?id_users=eq.${TEMP_USER_ID}` +
+        `${CARS_URL}?id_users=eq.${String(UserLoguedId)}` +
         '&select=id_cars,id_users,id_brands,id_models,id_styles,exterior_color,interior_color,' +
         'id_transmission,id_displacement,id_fuel,receives,negotiable,number_of_doors,' +
         'id_year,price,id_audit,sold,' +
@@ -338,7 +340,7 @@ const PublicationManager: React.FC = () => {
           id_year: data.id_year,
           price: data.price,
           sold: false,
-          id_users: TEMP_USER_ID,
+          id_users: UserLoguedId,
           id_audit
         }
 

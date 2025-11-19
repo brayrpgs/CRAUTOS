@@ -7,6 +7,7 @@ import { Modal } from '../modal/Modal'
 import { ModalHeader } from '../modal/ModalHeader'
 import { ModalContent } from '../modal/ModalContent'
 import { ModalFooter } from '../modal/ModalFooter'
+import { getLoggedUserId } from '../../utils/GetUserUtils'
 
 // Wishlist
 interface WishlistItem {
@@ -36,7 +37,7 @@ interface FavoriteCar {
   sold: boolean
 }
 
-const TEMP_USER_ID = 2
+const UserLoguedId = getLoggedUserId()
 
 const FavoriteCarsManager: React.FC = () => {
   const [favorites, setFavorites] = useState<FavoriteCar[]>([])
@@ -71,7 +72,7 @@ const FavoriteCarsManager: React.FC = () => {
   useEffect(() => {
     const loadFavorites = async (): Promise<void> => {
       try {
-        const wishlistRes = await fetch(`${FAVORITE_CAR_URL}?id_users=eq.${TEMP_USER_ID}`)
+        const wishlistRes = await fetch(`${FAVORITE_CAR_URL}?id_users=eq.${String(UserLoguedId)}`)
         const wishlist: WishlistItem[] = await wishlistRes.json()
 
         const favoriteIds = wishlist.map(w => w.id_cars)
@@ -91,7 +92,7 @@ const FavoriteCarsManager: React.FC = () => {
 
         const processed: FavoriteCar[] = cars
           .filter(car => favoriteIds.includes(car.id_cars))
-          .filter(car => car.id_users !== TEMP_USER_ID)
+          .filter(car => car.id_users !== UserLoguedId)
           .map(car => {
             const firstImage = car.cars_images?.[0]?.images?.image ?? null
             const image = firstImage
@@ -136,7 +137,7 @@ const FavoriteCarsManager: React.FC = () => {
 
     try {
       await fetch(
-        `${FAVORITE_CAR_URL}?id_users=eq.${TEMP_USER_ID}&id_cars=eq.${carToDelete}`,
+        `${FAVORITE_CAR_URL}?id_users=eq.${String(UserLoguedId)}&id_cars=eq.${carToDelete}`,
         { method: 'DELETE' }
       )
 

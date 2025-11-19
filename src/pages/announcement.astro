@@ -1,9 +1,7 @@
 ---
 import { HeaderPage } from "../components/header/HeaderPage";
 import { Footer } from "../components/footer/FooterCustom";
-
 import { PublicationManager } from "../components/announcement/PublicationManager.jsx";
-
 import styles from "../styles/announcement/styles.module.css";
 import "../styles/global/styles.css";
 import { Background } from "../components/background/Background";
@@ -14,23 +12,44 @@ import { Background } from "../components/background/Background";
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="generator" content={Astro.generator} />
-  <title>anuncios</title>
+  <title>Publicaciones</title>
 </head>
 
-<div class={styles.page}>
-  {/* HEADER */}
-  <header class={styles.header}>
-    <HeaderPage client:load />
-  </header>
+<!-- PROTECCIÓN SIN PARPADEO -->
+<style>
+  #protected-content {
+    display: none; /* Oculto hasta validar rol */
+  }
+</style>
 
-  {/* CONTENIDO PRINCIPAL */}
-  <main class={styles.main}>
-    <PublicationManager client:load />
-  </main>
+<script>
+  import { getLoggedUserRole } from "../utils/GetUserUtils";
 
-  {/* FOOTER */}
-  <footer class={styles.footer}>
-    <Footer client:load />
-  </footer>
-  <Background client:load />
+  const role = getLoggedUserRole();
+
+  if (role === 1 || role === 2) {
+    const container = document.getElementById("protected-content");
+    if (container) container.style.display = "block";
+  } else {
+    window.location.href = "/";
+  }
+</script>
+
+<!-- CONTENIDO PROTEGIDO -->
+<div id="protected-content">
+  <div class={styles.page}>
+    <header class={styles.header}>
+      <HeaderPage client:load />
+    </header>
+
+    <main class={styles.main}>
+      <PublicationManager client:load />
+    </main>
+
+    <footer class={styles.footer}>
+      <Footer client:load />
+    </footer>
+
+    <Background client:load />
+  </div>
 </div>
