@@ -385,7 +385,7 @@ export const CarForm: React.FC<CarFormProps> = ({
               <option value={0}>Seleccione</option>
               {catalogs.displacement.map((d) => (
                 <option key={d.id_displacements} value={d.id_displacements}>
-                  {d.desc}
+                  {d.desc === 'Otro' ? d.desc : `${d.desc} L`}
                 </option>
               ))}
             </select>

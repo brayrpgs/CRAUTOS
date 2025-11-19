@@ -30,7 +30,7 @@ interface CarFromApi {
   sold: boolean
 }
 
-const TEMP_USER_ID = 7
+const TEMP_USER_ID = 1
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
   Prefer: 'return=representation'
