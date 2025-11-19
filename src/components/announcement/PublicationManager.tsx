@@ -191,13 +191,6 @@ const PublicationManager: React.FC = () => {
       return
     }
 
-    const car = cars.find(c => c.id_cars === id)
-
-    if (car?.sold) {
-      setEditBlockedOpen(true)
-      return
-    }
-
     setMode('edit')
     setSelected(id)
     setOpen(true)
