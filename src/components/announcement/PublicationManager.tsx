@@ -464,13 +464,13 @@ const PublicationManager: React.FC = () => {
         {loading
           ? (
             <p style={{ color: 'white' }}>Cargando...</p>
-            )
+          )
           : cars.length === 0
             ? (
               <p style={{ color: 'white', textAlign: 'center' }}>
                 Aún no tienes publicaciones.
               </p>
-              )
+            )
             : (
               <Pagination
                 items={cars}
@@ -482,7 +482,9 @@ const PublicationManager: React.FC = () => {
                   >
                     <Card
                       image={car.image}
-                      info={`${car.brands?.desc ?? ''} ${car.models?.desc ?? ''} ${car.years?.desc ?? ''} — ₡${car.price.toLocaleString('es-CR')}`}
+                      info={
+                        `${car.brands?.desc ?? ''} ${car.models?.desc ?? ''} ${car.years?.desc ?? ''}\n₡${car.price.toLocaleString('es-CR')}`
+                      }
                     >
                       {car.sold && (
                         <div className={styles.soldDiagonal}>VENDIDO</div>
@@ -528,7 +530,7 @@ const PublicationManager: React.FC = () => {
                   </div>
                 )}
               />
-              )}
+            )}
 
         {/* === MODAL ADD / EDIT === */}
         <Modal open={open} id='publicacion-modal'>

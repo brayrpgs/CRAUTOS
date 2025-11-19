@@ -20,20 +20,23 @@ interface CarFromApi {
   id_cars: number
   id_users: number
   price: number
+  sold: boolean
   brands?: { desc: string }
   models?: { desc: string }
   years?: { desc: number }
   cars_images?: Array<{ id_images: number; images: { image: string } }>
 }
 
+// Favoritos procesados
 interface FavoriteCar {
   id: number
   image: string
   info: string
   price: number
+  sold: boolean
 }
 
-const TEMP_USER_ID = 4
+const TEMP_USER_ID = 2
 
 const FavoriteCarsManager: React.FC = () => {
   const [favorites, setFavorites] = useState<FavoriteCar[]>([])
@@ -45,7 +48,7 @@ const FavoriteCarsManager: React.FC = () => {
   const [toast, setToast] = useState<string | null>(null)
 
   /* ===========================================
-       SINCRONIZAR MODAL
+       Sincronizar modal
   ============================================ */
   useEffect(() => {
     const modal = document.getElementById('confirm-delete-modal') as HTMLDialogElement | null
@@ -63,7 +66,7 @@ const FavoriteCarsManager: React.FC = () => {
   }, [open])
 
   /* ===========================================
-        Cargar favoritos con imágenes base64
+        Cargar favoritos + vehículos
   ============================================ */
   useEffect(() => {
     const loadFavorites = async (): Promise<void> => {
@@ -79,8 +82,9 @@ const FavoriteCarsManager: React.FC = () => {
           return
         }
 
+        // *** IMPORTANTE: ahora incluye sold ***
         const carsRes = await fetch(
-          `${CARS_URL}?select=id_cars,id_users,price,brands(desc),models(desc),years(desc),cars_images(id_images,images(image))`
+          `${CARS_URL}?select=id_cars,id_users,price,sold,brands(desc),models(desc),years(desc),cars_images(id_images,images(image))`
         )
 
         const cars: CarFromApi[] = await carsRes.json()
@@ -98,6 +102,7 @@ const FavoriteCarsManager: React.FC = () => {
               id: car.id_cars,
               image,
               price: car.price,
+              sold: car.sold,
               info: `${car.brands?.desc ?? ''} ${car.models?.desc ?? ''} ${car.years?.desc ?? ''}`
             }
           })
@@ -114,7 +119,7 @@ const FavoriteCarsManager: React.FC = () => {
   }, [])
 
   /* ===========================================
-        Lógica de eliminación
+        Lógica eliminar favorito
   ============================================ */
   const confirmDelete = (carId: number): void => {
     setCarToDelete(carId)
@@ -137,7 +142,6 @@ const FavoriteCarsManager: React.FC = () => {
 
       setFavorites(prev => prev.filter(c => c.id !== carToDelete))
 
-      // === Toast global ===
       setToast(null)
       setTimeout(() => setToast('Eliminado de favoritos'), 20)
       setTimeout(() => setToast(null), 3500)
@@ -149,14 +153,24 @@ const FavoriteCarsManager: React.FC = () => {
   }
 
   /* ===========================================
-        Render
+        Render de tarjeta
   ============================================ */
   const renderFavoriteCard = (car: FavoriteCar): React.ReactNode => (
-    <div className={styles.cardWrapperFav}>
+    <div
+      className={`${styles.cardWrapperFav} ${car.sold ? styles.cardSold : ''}`}
+    >
       <Card
         image={car.image}
-        info={`${car.info} — ₡${car.price.toLocaleString('es-CR')}`}
+        info={`${car.info}\n₡${car.price.toLocaleString('es-CR')}`}
       >
+        {/* Etiquetas de vendido */}
+        {car.sold && (
+          <>
+            <div className={styles.soldDiagonal}>VENDIDO</div>
+            <div className={styles.soldBadge}>VENDIDO</div>
+          </>
+        )}
+
         <button
           className={styles.favoriteButton}
           onClick={() => confirmDelete(car.id)}
@@ -167,9 +181,9 @@ const FavoriteCarsManager: React.FC = () => {
     </div>
   )
 
+
   return (
     <section className={styles.box}>
-      {/* === TOAST GLOBAL === */}
       {toast && <div className={styles.globalToast}>{toast}</div>}
 
       <div className={styles.boxHeader}>
@@ -188,9 +202,9 @@ const FavoriteCarsManager: React.FC = () => {
               renderItem={renderFavoriteCard}
               itemsPerPage={10}
             />
-            )}
+          )}
 
-      {/* ===== MODAL ===== */}
+      {/* MODAL */}
       <Modal open={open} id='confirm-delete-modal'>
         <ModalHeader>
           <h2 style={{ color: 'white' }}>Eliminar favorito</h2>
