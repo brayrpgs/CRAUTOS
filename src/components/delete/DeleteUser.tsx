@@ -59,7 +59,9 @@ const DeleteUser: React.FC = () => {
   const deleteUser = async (): Promise<void> => {
     try {
       // 1. obtener carros del usuario
-      const carRes = await fetch(`${CARS_URL}?id_users=eq.${UserLoguedId}&select=id_cars,id_audit`)
+      const carRes = await fetch(
+        `${CARS_URL}?id_users=eq.${UserLoguedId}&select=id_cars,id_audit`
+      )
       const cars = await carRes.json()
 
       for (const car of cars) {
@@ -75,7 +77,7 @@ const DeleteUser: React.FC = () => {
         // borrar car_images
         await fetch(`${CAR_IMAGES_URL}?id_cars=eq.${carId}`, { method: 'DELETE' })
 
-        // borrar imágenes reales
+        // borrar imágenes reales de los carros
         for (const id of carImageIds) {
           await fetch(`${IMAGES_URL}?id_images=eq.${id}`, { method: 'DELETE' })
         }
@@ -86,22 +88,29 @@ const DeleteUser: React.FC = () => {
         // borrar carro
         await fetch(`${CARS_URL}?id_cars=eq.${carId}`, { method: 'DELETE' })
 
-        // borrar auditoría
+        // borrar auditoría del carro
         if (car.id_audit != null) {
           await fetch(`${AUDIT_URL}?id_audit=eq.${car.id_audit}`, { method: 'DELETE' })
         }
       }
 
-      // 3. borrar auditorias propias del usuario
-      const userAuditRes = await fetch(
-        `${USERS_URL}?id_user=eq.${UserLoguedId}&select=id_audit`
+      // 3. obtener datos del usuario (audit + imagen propia)
+      const userRes = await fetch(
+        `${USERS_URL}?id_user=eq.${UserLoguedId}&select=id_audit,id_images`
       )
-      const userAuditData = await userAuditRes.json()
+      const userData = await userRes.json()
 
-      const userAuditId = userAuditData[0]?.id_audit
+      const userAuditId = userData[0]?.id_audit
+      const userImageId = userData[0]?.id_images
 
+      // 3.1 borrar auditoría propia del usuario
       if (userAuditId != null) {
         await fetch(`${AUDIT_URL}?id_audit=eq.${userAuditId}`, { method: 'DELETE' })
+      }
+
+      // 3.2 borrar imagen asociada al usuario (foto de perfil, etc.)
+      if (userImageId != null) {
+        await fetch(`${IMAGES_URL}?id_images=eq.${userImageId}`, { method: 'DELETE' })
       }
 
       // 4. borrar usuario
@@ -115,7 +124,6 @@ const DeleteUser: React.FC = () => {
       // cerrar sesión
       localStorage.clear()
       window.location.href = '/'
-      
     } catch (error) {
       console.error('Error eliminando usuario:', error)
       showToast('Error al intentar eliminar el usuario')
