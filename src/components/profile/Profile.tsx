@@ -34,6 +34,22 @@ export const Profile: React.FC = () => {
     }
   }
 
+  // Leer si viene como perfil incompleto despues de iniciar sesion o crear cuenta
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const perfilIncompleto = params.get('perfilIncompleto')
+
+    if (perfilIncompleto === 'true') {
+      setError('⚠️ Por favor completa tu información antes de continuar ⚠️')
+      refToast.current?.classList.add(styles.showToast)
+
+      setTimeout(() => {
+        refToast.current?.classList.remove(styles.showToast)
+      }, 5000)
+    }
+  }, [])
+
+
   // funcion para actualizar los datos del usuario
   const handleUpdateProfile = async (): Promise<void> => {
     try {
@@ -320,7 +336,7 @@ export const Profile: React.FC = () => {
   )
 }
 
-async function fileToBase64 (file: File): Promise<string> {
+async function fileToBase64(file: File): Promise<string> {
   return await new Promise((resolve, reject) => {
     const reader = new FileReader()
 
