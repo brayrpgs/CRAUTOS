@@ -238,7 +238,7 @@ const HomeWrapper: React.FC = () => {
       </div>
       <div className={`${styles.child} ${styles.childContent}`}>
         {ctx?.items.map(car => (
-          <Card image={car.cars_images[0].images.image} info={`${car.brands.desc}-`} key={crypto.randomUUID()} />
+          <Card image={car.cars_images[0].images.image} info={`${car.brands.desc}-${car.styles.desc}-$${car.price}`} key={crypto.randomUUID()} />
         ))}
       </div>
       <div className={`${stylePagination.controls} ${styles.fixPagination}`}>
