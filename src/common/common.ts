@@ -1,4 +1,5 @@
 export const BASE_API_URL = 'http://localhost:3001'
+export const BASE_AUTH_URL = 'http://localhost:3000'
 
 export const BRANDS_URL = `${BASE_API_URL}/brands`
 export const USERS_URL = `${BASE_API_URL}/users`
@@ -16,3 +17,4 @@ export const AUDIT_URL = `${BASE_API_URL}/audit`
 export const YEARS_URL = `${BASE_API_URL}/years`
 export const DISPLACEMENT_URL = `${BASE_API_URL}/displacements`
 export const CAR_CATEGORY_CARS_URL = `${BASE_API_URL}/car_category_car`
+export const LOGIN_URL = `${BASE_AUTH_URL}/auth/login`
