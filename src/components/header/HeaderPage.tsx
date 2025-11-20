@@ -2,6 +2,9 @@ import type React from 'react'
 import { useState, useEffect, useRef } from 'react'
 import styles from '../../styles/header/styles.module.css'
 import Logo from '../logo/Logo'
+import { isUserLogged, getLoggedUser } from '../../utils/GetUserUtils'
+import { USERS_URL } from '../../common/common'
+import type { user } from '../../models/user'
 
 const HeaderPage: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -11,9 +14,39 @@ const HeaderPage: React.FC = () => {
 
   const [hydrated, setHydrated] = useState(false)
 
+  const [userData, setUserData] = useState<user | null>(null)
+  const [image, setImage] = useState<string>()
+  const [avatarOpen, setAvatarOpen] = useState(false)
+  const avatarRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     setHydrated(true)
+
+    // cargar usuario logueado
+    if (isUserLogged()) {
+      const loggedUser = getLoggedUser()
+      if (!loggedUser) return
+      fetchUserData(loggedUser.id_user)
+    }
   }, [])
+
+  const fetchUserData = async (idUser: number): Promise<void> => {
+    try {
+      const response = await fetch(`${USERS_URL}?id_user=eq.${idUser}&select=*,images(*)`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Range-Unit': 'items'
+        }
+      })
+      const data = await response.json() as user[]
+      setUserData(data[0])
+      setImage(data[0]?.images?.image)
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+    }
+  }
 
   /* Detectar mobile dinámicamente */
   useEffect(() => {
@@ -69,6 +102,17 @@ const HeaderPage: React.FC = () => {
     }
   }, [isMobileMenuOpen])
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (avatarOpen && avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setAvatarOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [avatarOpen])
+
   /* ===============================
         NAV ACTIVE (sin mismatch)
      =============================== */
@@ -95,6 +139,39 @@ const HeaderPage: React.FC = () => {
     }
   }
 
+  /* =============================
+    LOGOUT
+  ============================= */
+  const handleLogout = (): void => {
+    localStorage.removeItem('User_Token')
+    setUserData(null)
+    window.location.href = '/'
+  }
+
+  /* =============================
+    AVATAR DROPDOWN
+  ============================= */
+  const avatarMenu = (
+    <div className={styles.avatarContainer} ref={avatarRef}>
+      <img
+        src={image ?? 'avatar.png'}
+        alt="avatar"
+        className={styles.avatarImg}
+        onClick={() => setAvatarOpen(!avatarOpen)}
+      />
+
+      {avatarOpen && (
+        <div className={styles.avatarDropdown}>
+          <a href="/panel">Panel</a>
+          <button onClick={handleLogout}>Cerrar sesión</button>
+        </div>
+      )}
+    </div>
+  )
+
+  /* =============================
+      NAV ITEMS
+  ============================= */
   const navItems = (
     <>
       <a
@@ -122,8 +199,14 @@ const HeaderPage: React.FC = () => {
       </a>
 
       <div className={styles.authButtons}>
-        <button className={styles.carouselButton}>Iniciar sesión</button>
-        <button className={styles.carouselButton}>Registrarse</button>
+        {!userData ? (
+          <>
+            <a className={styles.carouselButton} href="/login?action=signIn">Iniciar sesión</a>
+            <a className={styles.carouselButton} href="/login?action=signUp">Registrarse</a>
+          </>
+        ) : (
+          avatarMenu
+        )}
       </div>
     </>
   )
