@@ -3,9 +3,9 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev --host",
+    "dev": "astro dev --host --max-http-header-size=32768",
     "build": "astro build",
-    "preview": "astro build && astro preview --host",
+    "preview": "astro build && astro preview --host --max-http-header-size=32768",
     "astro": "astro"
   },
   "dependencies": {

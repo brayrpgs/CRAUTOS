@@ -7,20 +7,24 @@
   color: grey;
 }
 
-.childContent {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, calc(100vw / 6)));
+.childContent  {
+    display: flex;
+  grid-template-rows: 100px;
   gap: 2rem;
-  align-items: center;
-  justify-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
   justify-content: center;
-  padding: 1rem;
-
-  div {
-    height: unset;
-    width: unset;
-  }
+  align-items: center;
+  margin: 2rem;
 }
+
+.childContent > * {
+  flex: 1 1 calc(20% - 2rem);
+  min-width: 200px;
+  max-height: 100px;
+}     
+
 
 .childFilters {
   justify-self: end;
