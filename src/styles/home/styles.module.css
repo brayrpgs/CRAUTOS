@@ -7,8 +7,8 @@
   color: grey;
 }
 
-.childContent  {
-    display: flex;
+.childContent {
+  display: flex;
   grid-template-rows: 100px;
   gap: 2rem;
   flex-direction: row;
@@ -19,20 +19,26 @@
   margin: 2rem;
 }
 
-.childContent > * {
+.childContent>* {
   flex: 1 1 calc(20% - 2rem);
   min-width: 200px;
-  max-height: 100px;
-}     
+  max-height: 200px;
+}
 
 
 .childFilters {
   justify-self: end;
-  padding-inline: 5rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }
 
 .searchBar {
-  margin-left: 4rem;
+  margin-inline: 2rem;
 }
 
 
