@@ -58,7 +58,17 @@ const DeleteUser: React.FC = () => {
   ============================================================ */
   const deleteUser = async (): Promise<void> => {
     try {
-      // 1. obtener carros del usuario
+      /* ============================================================
+         0. BORRAR WISHLIST DONDE APARECE EL USUARIO
+         (antes de tocar users)
+      ============================================================ */
+      await fetch(`${FAVORITE_CAR_URL}?id_users=eq.${UserLoguedId}`, {
+        method: 'DELETE'
+      })
+
+      /* ============================================================
+         1. OBTENER CARROS DEL USUARIO
+      ============================================================ */
       const carRes = await fetch(
         `${CARS_URL}?id_users=eq.${UserLoguedId}&select=id_cars,id_audit`
       )
@@ -67,34 +77,42 @@ const DeleteUser: React.FC = () => {
       for (const car of cars) {
         const carId = car.id_cars
 
-        // 2. obtener imágenes relacionadas
+        // 1.1 obtener imágenes relacionadas al carro
         const relRes = await fetch(
           `${CAR_IMAGES_URL}?id_cars=eq.${carId}&select=id_images`
         )
         const relData = await relRes.json()
         const carImageIds: number[] = relData.map((r: any) => r.id_images)
 
-        // borrar car_images
-        await fetch(`${CAR_IMAGES_URL}?id_cars=eq.${carId}`, { method: 'DELETE' })
+        // 1.2 borrar relaciones car_images
+        await fetch(`${CAR_IMAGES_URL}?id_cars=eq.${carId}`, {
+          method: 'DELETE'
+        })
 
-        // borrar imágenes reales de los carros
+        // 1.3 borrar favoritos que tenían este carro (por si quedara alguno)
+        await fetch(`${FAVORITE_CAR_URL}?id_cars=eq.${carId}`, {
+          method: 'DELETE'
+        })
+
+        // 1.4 borrar imágenes reales de los carros
         for (const id of carImageIds) {
           await fetch(`${IMAGES_URL}?id_images=eq.${id}`, { method: 'DELETE' })
         }
 
-        // borrar favoritos que tenían este carro
-        await fetch(`${FAVORITE_CAR_URL}?id_cars=eq.${carId}`, { method: 'DELETE' })
-
-        // borrar carro
+        // 1.5 borrar carro
         await fetch(`${CARS_URL}?id_cars=eq.${carId}`, { method: 'DELETE' })
 
-        // borrar auditoría del carro
+        // 1.6 borrar auditoría del carro
         if (car.id_audit != null) {
-          await fetch(`${AUDIT_URL}?id_audit=eq.${car.id_audit}`, { method: 'DELETE' })
+          await fetch(`${AUDIT_URL}?id_audit=eq.${car.id_audit}`, {
+            method: 'DELETE'
+          })
         }
       }
 
-      // 3. obtener datos del usuario (audit + imagen propia)
+      /* ============================================================
+         2. OBTENER DATOS DEL USUARIO (AUDIT + IMAGEN PROPIA)
+      ============================================================ */
       const userRes = await fetch(
         `${USERS_URL}?id_user=eq.${UserLoguedId}&select=id_audit,id_images`
       )
@@ -103,17 +121,37 @@ const DeleteUser: React.FC = () => {
       const userAuditId = userData[0]?.id_audit
       const userImageId = userData[0]?.id_images
 
-      // 3.1 borrar auditoría propia del usuario
-      if (userAuditId != null) {
-        await fetch(`${AUDIT_URL}?id_audit=eq.${userAuditId}`, { method: 'DELETE' })
-      }
+      /* ============================================================
+         3. LIMPIAR FKs EN USERS (PASO CLAVE)
+         - poner id_images y id_audit en NULL antes de borrar de esas tablas
+      ============================================================ */
+      await fetch(`${USERS_URL}?id_user=eq.${UserLoguedId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_images: null, id_audit: null })
+      })
 
-      // 3.2 borrar imagen asociada al usuario (foto de perfil, etc.)
+      /* ============================================================
+         4. BORRAR IMAGEN DEL USUARIO (YA NO ESTÁ REFERENCIADA)
+      ============================================================ */
       if (userImageId != null) {
-        await fetch(`${IMAGES_URL}?id_images=eq.${userImageId}`, { method: 'DELETE' })
+        await fetch(`${IMAGES_URL}?id_images=eq.${userImageId}`, {
+          method: 'DELETE'
+        })
       }
 
-      // 4. borrar usuario
+      /* ============================================================
+         5. BORRAR AUDITORÍA DEL USUARIO (YA NO ESTÁ REFERENCIADA)
+      ============================================================ */
+      if (userAuditId != null) {
+        await fetch(`${AUDIT_URL}?id_audit=eq.${userAuditId}`, {
+          method: 'DELETE'
+        })
+      }
+
+      /* ============================================================
+         6. BORRAR USUARIO
+      ============================================================ */
       await fetch(`${USERS_URL}?id_user=eq.${UserLoguedId}`, {
         method: 'DELETE'
       })
@@ -121,14 +159,16 @@ const DeleteUser: React.FC = () => {
       showToast('Tu cuenta ha sido eliminada correctamente')
       setOpen(false)
 
-      // cerrar sesión
+      // cerrar sesión y redirigir (cuando lo vuelvas a activar)
       localStorage.clear()
       window.location.href = '/'
+
     } catch (error) {
       console.error('Error eliminando usuario:', error)
       showToast('Error al intentar eliminar el usuario')
     }
   }
+
 
   return (
     <>
