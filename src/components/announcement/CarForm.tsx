@@ -173,9 +173,7 @@ export const CarForm: React.FC<CarFormProps> = ({
       // CARGAR IMÁGENES EXISTENTES
       existingImages: car.cars_images?.map(img => ({
         id_images: img.id_images,
-        base64: img.images?.image
-          ? `data:image/jpeg;base64,${img.images?.image}`
-          : ''
+        base64: img.images?.image ?? ''
       })) ?? [],
 
       newImages: []

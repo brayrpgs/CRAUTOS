@@ -97,7 +97,7 @@ const PublicationManager: React.FC = () => {
 
         return {
           ...car,
-          image: base64 ? `data:image/jpeg;base64,${base64}` : null
+          image: base64
         }
       })
 
@@ -289,7 +289,7 @@ const PublicationManager: React.FC = () => {
       const toBase64 = async (file: File) =>
         await new Promise<string>((resolve, reject) => {
           const reader = new FileReader()
-          reader.onload = () => resolve(String(reader.result).split(',')[1])
+          reader.onload = () => resolve(String(reader.result)) 
           reader.onerror = reject
           reader.readAsDataURL(file)
         })
