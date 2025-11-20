@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HomeContext } from './HomeContext'
+import { CARS_URL } from '../../common/common'
 interface HomeProviderProps {
   children: React.ReactNode
 }
@@ -10,8 +11,10 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [items, setItems] = useState<any[]>([])
   const [page, setPage] = useState<number>(1)
 
-  /** */
+  // Provide the context values to children components
+  useEffect(() => {
 
+  }, [page])
   return (
     <HomeContext.Provider
       value={

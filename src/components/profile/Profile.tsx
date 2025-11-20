@@ -5,6 +5,7 @@ import { AUDIT_URL, IMAGES_URL, USERS_URL } from '../../common/common'
 import Rol from '../../enums/Rol'
 import type { audit } from '../../models/audit'
 import { getLoggedUser, type TokenPayload } from '../../utils/GetUserUtils'
+import type { images } from '../../models/images'
 
 export const Profile: React.FC = () => {
   const [user, setUser] = React.useState<user>()
@@ -78,16 +79,18 @@ export const Profile: React.FC = () => {
           setChanged(!changed)
         }
         const auditUpdated = await requestCreateAudit.json() as audit[]
-        setUser({
-          ...user,
-          id_audit: auditUpdated[0].id_audit
-        })
+        const userUpdated = user
+        if (userUpdated !== undefined) {
+          userUpdated.id_audit = auditUpdated[0].id_audit
+          userUpdated.audit = auditUpdated[0]
+        }
+        setUser(userUpdated)
       }
 
       // actualizar auditoria de la imagen
-      if (user?.images?.id_audit !== null) {
+      if (user?.images?.id_audit !== undefined) {
         const requestUpdateAudit = await fetch(
-          `${AUDIT_URL}?id_audit=eq.${user?.images?.id_audit as number}`,
+          `${AUDIT_URL}?id_audit=eq.${user?.images?.id_audit}`,
           {
             method: 'PATCH',
             headers: {
@@ -128,15 +131,17 @@ export const Profile: React.FC = () => {
         }
         const auditImageCreated = await requestCreateAudit.json() as audit[]
         const updatedUser = user
-        if (updatedUser.images !== undefined && updatedUser.images !== null) {
+        if (updatedUser?.images !== undefined && updatedUser.images !== null) {
           updatedUser.images.id_audit = auditImageCreated[0].id_audit
           updatedUser.images.audit = auditImageCreated[0]
           setUser(updatedUser)
         }
       }
+
       // actualizar la imagen en el endpoint de images
-      const requestUpdateImage = await fetch(
-        `${IMAGES_URL}?id_images=eq.${user?.images?.id_images as number}`,
+      if (user?.images?.id_images !== undefined) {
+        const requestUpdateImage = await fetch(
+        `${IMAGES_URL}?id_images=eq.${user?.images?.id_images}`,
         {
           method: 'PATCH',
           headers: {
@@ -145,20 +150,46 @@ export const Profile: React.FC = () => {
             Prefer: 'return=representation'
           },
           body: JSON.stringify({
-            image: user?.images?.image as string,
+            image: user?.images?.image,
             id_audit: user?.images?.id_audit as number
           })
         }
-      )
-      if (!requestUpdateImage.ok) {
-        console.error('not updated image user')
-        setChanged(!changed)
+        )
+        if (!requestUpdateImage.ok) {
+          console.error('not updated image user')
+          setChanged(!changed)
+        }
+        const imageData = await requestUpdateImage.json() as images[]
+        const userUpdated = user
+        userUpdated.images = imageData[0]
+        userUpdated.id_images = imageData[0].id_images
+        setUser(userUpdated)
+      } else {
+        const requestUpdateImage = await fetch(
+        `${IMAGES_URL}`,
+        {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({
+            image: user?.images?.image,
+            id_audit: user?.images?.id_audit as number
+          })
+        }
+        )
+        if (!requestUpdateImage.ok) {
+          console.error('not updated image user')
+          setChanged(!changed)
+        }
+        const imageData = await requestUpdateImage.json() as images[]
+        const userUpdated = user as user
+        userUpdated.images = imageData[0]
+        userUpdated.id_images = imageData[0].id_images
+        setUser(userUpdated)
       }
-      const imageData = await requestUpdateImage.json()
-      setUser({
-        ...user as user,
-        images: imageData
-      })
       // actualizar los datos del usuario
       delete user?.images
       delete user?.audit
@@ -201,10 +232,9 @@ export const Profile: React.FC = () => {
       }
       if (user !== undefined) {
         const userWithUpdatedImage = user
-        if (userWithUpdatedImage.images === null || userWithUpdatedImage.images === undefined) {
-          userWithUpdatedImage.images = null
-        } else {
-          userWithUpdatedImage.images.image = image
+        userWithUpdatedImage.images = {
+          image,
+          audit: {}
         }
         setUser(userWithUpdatedImage)
         setImage(image)

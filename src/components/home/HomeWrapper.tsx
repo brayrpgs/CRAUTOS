@@ -17,6 +17,7 @@ const HomeWrapper: React.FC = () => {
   const [yearFrom, setYearFrom] = useState<number>(2005)
   const [yearTo, setYearTo] = useState<number>(2018)
   const [idSelected, setIdSelected] = useState(0)
+
   useEffect(() => {
   }, [ctx?.stateModal, idSelected])
   return (
