@@ -95,9 +95,7 @@ const FavoriteCarsManager: React.FC = () => {
           .filter(car => car.id_users !== UserLoguedId)
           .map(car => {
             const firstImage = car.cars_images?.[0]?.images?.image ?? null
-            const image = firstImage
-              ? `data:image/jpeg;base64,${firstImage}`
-              : '/ram1.avif'
+            const image = firstImage ?? '/ram1.avif'
 
             return {
               id: car.id_cars,
