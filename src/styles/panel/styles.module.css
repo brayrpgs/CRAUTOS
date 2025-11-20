@@ -79,3 +79,31 @@ body {
 main {
   flex: 1;
 }
+
+@media (min-width: 2560px) {
+  .panelGrid {
+    width: 75%;
+    margin-top: 4.5rem;
+    margin-bottom: 4.5rem;
+    gap: 3.5rem;
+  }
+
+  .panelCard {
+    padding: 3rem;
+    border-radius: 1.4rem;
+  }
+
+  .icon {
+    font-size: 4.2rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .panelCard h3 {
+    font-size: 2rem !important;
+    margin-bottom: 0.8rem;
+  }
+
+  .panelCard p {
+    font-size: 1.8rem !important;
+  }
+}

@@ -288,3 +288,86 @@
     width: 8rem;
   }
 }
+
+/* ============================== */
+/*         HEADER 4K UHD          */
+/* ============================== */
+@media (min-width: 2560px) {
+
+  .header {
+    padding: 2.5rem;
+    margin-bottom: 4rem;
+    border-radius: 1rem;
+  }
+
+  .headerContainer {
+    max-width: 2400px;
+    padding: 0 3rem;
+  }
+
+  /* NAV DESKTOP */
+  .desktopNav {
+    gap: 4rem;
+  }
+
+  .navLink {
+    font-size: 1.65rem;
+    padding: 1rem 0;
+  }
+
+  .navLinkActive::after {
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  /* BOTONES DERECHO */
+  .authButtons {
+    gap: 2rem;
+  }
+
+  .carouselButton {
+    font-size: 1.5rem;
+    padding: 14px 36px;
+    border-radius: 18px;
+  }
+
+  /* AVATAR */
+  .avatarImg {
+    width: 70px;
+    height: 70px;
+    border-width: 3px;
+  }
+
+  .avatarDropdown {
+    top: 80px;
+    padding: 1.2rem;
+    gap: 1.2rem;
+  }
+
+  .avatarDropdown a,
+  .avatarDropdown button {
+    font-size: 1.4rem;
+    padding: 14px;
+  }
+
+  /* TOGGLE MOBILE EN 4K (cuando se usa) */
+  .mobileMenuToggle {
+    font-size: 3rem;
+    padding: 1rem;
+  }
+
+  .sidePanel {
+    padding: 3rem 2rem;
+    max-width: 480px;
+  }
+
+  .mobileNav .navLink {
+    font-size: 2rem;
+    padding: 1.2rem 0;
+  }
+
+  .mobileNav .carouselButton {
+    font-size: 1.6rem;
+    padding: 1rem 2rem;
+  }
+}

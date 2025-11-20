@@ -232,18 +232,9 @@
   display: flex;
 }
 
-/* ============================ */
-/*      SOPORTE PARA 4K         */
-/*    (Pantallas ≥ 2560px)      */
-/* ============================ */
-
 /* ============================= */
 /*   OPTIMIZACIÓN ESPECIAL 4K    */
 /* ============================= */
-
-/* ============================ */
-/*      OPTIMIZACIÓN PARA 4K     */
-/* ============================ */
 @media (min-width: 2560px) {
 
   /* Card más grande y cómodo */
@@ -261,14 +252,14 @@
 
   /* Avatar más grande */
   .avatar {
-    width: 180px;
-    height: 180px;
+    width: 250px;
+    height: 250px;
     outline-width: 4px;
   }
 
   .roleBadge {
     margin-top: 1rem;
-    font-size: 1.1rem;
+    font-size: 2rem !important;
     padding: 0.5rem 1.4rem;
   }
 
