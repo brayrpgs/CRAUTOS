@@ -6,7 +6,7 @@ interface CarouselProps {
   images?: string[]
   cards?: Array<{
     id: number
-    image: string
+    image?: string
     info: string
   }> // Array of cards with image URLs and info
   autoPlay?: boolean // Whether the carousel should advance automatically
@@ -143,8 +143,7 @@ const Carousel: React.FC<CarouselProps> = ({
                 key={card.id}
                 className='carousel-card-wrapper'
                 onClick={() => {
-                  /* ENVIAR A FICHA TECNICA DEL AUTO */
-                  alert(`EN UN FUTURO VAS A SER ENVIADO A FICHA TECNICA DEL VEHICULO: ${card.id}`)
+                  window.location.href=`/home?idSelected=${card.id}`
                 }}
               >
                 <Card image={card.image} info={card.info} />
