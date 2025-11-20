@@ -1,23 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from '../../styles/profile/styles.module.css'
 import type { user } from '../../models/user'
 import { AUDIT_URL, IMAGES_URL, USERS_URL } from '../../common/common'
 import Rol from '../../enums/Rol'
 import type { audit } from '../../models/audit'
+import { getLoggedUser, type TokenPayload } from '../../utils/GetUserUtils'
 
-interface ProfileProps {
-  id?: number
-}
-export const Profile: React.FC<ProfileProps> = ({ id = 3 }) => {
+export const Profile: React.FC = () => {
   const [user, setUser] = React.useState<user>()
   const [image, setImage] = React.useState<string>()
   const [error, setError] = React.useState<string>()
   const [changed, setChanged] = React.useState<boolean>(false)
   const refToast = React.useRef<HTMLDivElement>(null)
   const refUploadImage = React.useRef<HTMLInputElement>(null)
+  const [id, setId] = useState(0)
 
   // aca la logica con el id para traer los datos del usuario
-  const fetchUserData = async (idUser: number = 3): Promise<void> => {
+  const fetchUserData = async (idUser: number): Promise<void> => {
     try {
       const response = await fetch(`${USERS_URL}?id_user=eq.${idUser}&select=*,audit(*),images(*)`, {
         method: 'GET',
@@ -214,8 +213,12 @@ export const Profile: React.FC<ProfileProps> = ({ id = 3 }) => {
   }
 
   useEffect(() => {
-    void fetchUserData(id)
-  }, [changed])
+    // optener el user
+    const userFromToken: TokenPayload = getLoggedUser() as TokenPayload
+    if (userFromToken == null) window.location.href = '/'
+    setId(userFromToken.id_user)
+    void fetchUserData(userFromToken.id_user)
+  }, [changed, id])
   return (
     <div className={styles.containerView}>
       <div className={`glass ${styles.toast}`} ref={refToast}>
@@ -317,7 +320,7 @@ export const Profile: React.FC<ProfileProps> = ({ id = 3 }) => {
   )
 }
 
-async function fileToBase64(file: File): Promise<string> {
+async function fileToBase64 (file: File): Promise<string> {
   return await new Promise((resolve, reject) => {
     const reader = new FileReader()
 
