@@ -1,0 +1,342 @@
+/* ============================
+   WRAPPER
+============================ */
+.loginWrapper {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginWrapper::before {
+  content: '';
+  height: 100vh;
+  pointer-events: none;
+}
+
+/* ============================
+   CARD
+============================ */
+.loginCard {
+  width: 420px;
+  max-width: 95%;
+  border-radius: 16px;
+  padding: 2.4rem;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.35);
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 2rem auto;
+}
+
+.loginCard>div:first-child {
+  padding-bottom: 1.5rem;
+}
+
+.loginCard,
+.loginCard * {
+  box-sizing: border-box;
+}
+
+/* ============================
+   SWITCHER
+============================ */
+.loginModeSwitcher {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  max-width: 330px;
+  margin: 0 auto 2rem auto;
+  padding: 6px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.45);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.45);
+}
+
+.switchSlider {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: calc(50% - 6px);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2b6be6, #1d4ed8);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28);
+  transition: transform 360ms cubic-bezier(.22, .9, .36, 1);
+  z-index: 1;
+  left: 6px;
+}
+
+.sliderSignIn {
+  transform: translateX(0);
+}
+
+.sliderSignUp {
+  transform: translateX(calc(100% + 12px));
+}
+
+.switchBtn {
+  flex: 1;
+  padding: 0.6rem 0;
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 2;
+  text-align: center;
+}
+
+.switchBtnActive {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+@media (max-width: 340px) {
+  .loginModeSwitcher {
+    flex-direction: column;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .switchSlider {
+    height: calc(50% - 4px);
+    width: calc(100% - 8px);
+    top: 4px;
+    left: 4px;
+  }
+
+  .sliderSignIn {
+    transform: translateY(0);
+  }
+
+  .sliderSignUp {
+    transform: translateY(calc(100% + 8px));
+  }
+
+  .switchBtn {
+    padding: 0.6rem 0;
+  }
+}
+
+/* ============================
+   FORMS CONTAINER
+============================ */
+.formsContainer {
+  position: relative;
+  min-height: 300px;
+  margin-bottom: 1.2rem;
+}
+
+.formPanel {
+  width: 100%;
+  transition: all 0.35s ease;
+}
+
+.formVisible {
+  display: block;
+  opacity: 1;
+  animation: fadeIn 0.35s ease forwards;
+}
+
+.formHidden {
+  display: none;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================
+   INPUTS
+============================ */
+.formInput {
+  width: 100%;
+  margin-bottom: 1.1rem;
+  position: relative;
+}
+
+.inputWrapper {
+  position: relative;
+  display: block;
+}
+
+.formInput input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.8rem 2.7rem 0.8rem 0.9rem;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+}
+
+.formInput input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  outline: none;
+}
+
+.eyeToggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  cursor: pointer;
+  user-select: none;
+  color: #94a3b8;
+  transition: 0.2s;
+}
+
+.eyeToggle:hover {
+  color: white;
+}
+
+.errorText {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: #ff7b7b;
+  font-weight: 500;
+}
+
+/* ============================
+   SUBMIT BUTTON
+============================ */
+.submitBtn {
+  width: 100%;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  padding: 8px 24px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.submitBtn:hover {
+  background: white;
+  color: black;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.35);
+}
+
+.carouselButton {
+  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  border: 1px solid #ccc;
+  padding: 8px 24px;
+  cursor: pointer;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.carouselButton:hover {
+  background: white;
+  color: black;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================
+   DIVIDER
+============================ */
+.divider {
+  text-align: center;
+  margin: 1.8rem 0 1.4rem 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  position: relative;
+  padding: 0 12px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 30%;
+  height: 1px;
+  background: #334155;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+/* ============================
+   GOOGLE BUTTON
+============================ */
+.googleBtn {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #ffffff;
+  color: black;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.googleBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(255, 255, 255, 0.2);
+}
+
+.googleIcon {
+  width: 22px;
+  height: 22px;
+}
+
+.errorBanner {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 14px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
