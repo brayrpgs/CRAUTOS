@@ -6,6 +6,10 @@ interface HomeContextProps<T> {
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>
   stateModal: boolean
   setStateModal: React.Dispatch<React.SetStateAction<boolean>>
+  carSelected?: T
+  setCarSelected?: React.Dispatch<React.SetStateAction<T | undefined>>
+  openSheet?: boolean
+  setOpenSheet?: React.Dispatch<React.SetStateAction<boolean>>
   items: T[]
   setItems: React.Dispatch<React.SetStateAction<T[]>>
   page: number
