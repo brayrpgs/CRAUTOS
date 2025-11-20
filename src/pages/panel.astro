@@ -4,6 +4,7 @@ import { Footer as FooterCustom } from "../components/footer/FooterCustom";
 import styles from "../styles/panel/styles.module.css";
 import "../styles/global/styles.css";
 import { Background } from "../components/background/Background";
+import { DeleteUser } from "../components/delete/DeleteUser";
 ---
 
 <!doctype html>
@@ -22,7 +23,7 @@ import { Background } from "../components/background/Background";
       <a class={`glass ${styles.navigate}`} href="/profile"><span class={styles.anchor}>&#9997;{'Editar perfil'.toUpperCase()}</span></a>
       <a class={`glass ${styles.navigate}`} href="/announcement"><span class={styles.anchor}>&#128681;{'mis anuncios'.toUpperCase()}</span></a>
       <a class={`glass ${styles.navigate}`} href="/favorite"><span class={styles.anchor}>&#11088;{'mis favoritos'.toUpperCase()}</span></a>
-      <a class={`glass ${styles.navigate}`} href="#"><span class={styles.anchor}>&#10060;{'eliminar cuenta'.toUpperCase()}</span></a>
+      <DeleteUser client:load />
     </div>
     <FooterCustom client:load />
   </body>
