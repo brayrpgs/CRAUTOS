@@ -14,17 +14,39 @@ import { DeleteUser } from "../components/delete/DeleteUser";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <title>panel</title>
+    <title>Panel de control</title>
   </head>
   <body>
     <Background client:load />
     <HeaderPage client:load />
-    <div class={styles.container}>
-      <a class={`glass ${styles.navigate}`} href="/profile"><span class={styles.anchor}>&#9997;{'Editar perfil'.toUpperCase()}</span></a>
-      <a class={`glass ${styles.navigate}`} href="/announcement"><span class={styles.anchor}>&#128681;{'mis anuncios'.toUpperCase()}</span></a>
-      <a class={`glass ${styles.navigate}`} href="/favorite"><span class={styles.anchor}>&#11088;{'mis favoritos'.toUpperCase()}</span></a>
-      <DeleteUser client:load />
-    </div>
+    <main>
+      <div class={styles.panelGrid}>
+        <a href="/profile" class={styles.panelCard}>
+          <div class={styles.icon}>👤</div>
+          <h3>Editar perfil</h3>
+          <p>Actualiza tus datos y preferencias</p>
+        </a>
+
+        <a href="/announcement" class={styles.panelCard}>
+          <div class={styles.icon}>🚗</div>
+          <h3>Mis anuncios</h3>
+          <p>Gestiona tus publicaciones fácilmente</p>
+        </a>
+
+        <a href="/favorite" class={styles.panelCard}>
+          <div class={styles.icon}>⭐</div>
+          <h3>Mis favoritos</h3>
+          <p>Encuentra tus vehículos guardados</p>
+        </a>
+
+        <div class={`${styles.panelCard} ${styles.panelCardDanger}`}>
+          <div class={styles.icon}>❌</div>
+          <h3>Eliminar cuenta</h3>
+          <p>Esta acción no se puede deshacer</p>
+          <DeleteUser client:load />
+        </div>
+      </div>
+    </main>
     <FooterCustom client:load />
   </body>
 </html>

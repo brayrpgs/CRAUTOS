@@ -42,7 +42,7 @@ function getUserFromToken (token: string): TokenResult {
   } catch (error) {
     return {
       ok: false,
-      message: 'Token inválido o no decodificable'
+      message: 'Token inválido o expirado'
     }
   }
 }

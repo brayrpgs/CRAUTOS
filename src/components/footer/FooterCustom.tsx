@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
           </>
 
           <div className='footer-copy'>
-            <p>© 2025 CrAutos. Todos los derechos reservados.</p>
+            <p>© 2025 CRAUTOS. Todos los derechos reservados.</p>
             <p className='small'>Plataforma autorizada para la compra y venta de vehículos</p>
           </div>
         </div>
@@ -43,17 +43,29 @@ const Footer: React.FC = () => {
         <div className='footer-social'>
           <h3>SÍGUENOS EN</h3>
           <div className='social-buttons'>
-            <button className='social-btn'>
+            <button
+              type='button'
+              className='social-btn'
+              onClick={() => window.open('https://facebook.com/CRAUTOS_UNA_2025', '_blank')}
+            >
               <FacebookIcon />
               Síguenos en Facebook
             </button>
 
-            <button className='social-btn'>
+            <button
+              type='button'
+              className='social-btn'
+              onClick={() => window.open('https://instagram.com/CRAUTOS_UNA_2025', '_blank')}
+            >
               <InstagramIcon />
               Síguenos en Instagram
             </button>
 
-            <button className='social-btn'>
+            <button
+              type='button'
+              className='social-btn'
+              onClick={() => window.open('https://tiktok.com/@CRAUTOS_UNA_2025', '_blank')}
+            >
               <TiktokIcon />
               Síguenos en TikTok
             </button>

@@ -1,103 +1,313 @@
-.containerView {
+/* WRAPPER GENERAL */
+.wrapper {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: center;
-  outline: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 1rem;
-  width: fit-content;
-  padding-inline: 2rem;
-  margin: 10% auto;
+  justify-content: center;
+  padding: 2rem 1.5rem !important;
+  box-sizing: border-box;
 }
 
-.containerProfile {
-  display: flex;
+.main {
   width: 100%;
+  display: flex;
   justify-content: center;
   align-items: flex-start;
-  flex-direction: column;
-  flex-wrap: nowrap;
+  padding: 2rem 0;   /* espacio idéntico arriba y abajo */
+  box-sizing: border-box;
 }
 
-
-.containerPassword {
-  display: flex;
+/* CARD PRINCIPAL */
+.card {
+  width: 100%;
+  max-width: 980px;
+  padding: 3rem;
+  border-radius: 1.5rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.headProfile {
-  width: 95%;
+/* TÍTULO */
+.title {
   text-align: center;
-  color: white;
-  border-block: 1px white solid;
-  margin-block: 1rem;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2rem;
 }
 
-.itemsProfile {
-  color: white;
-  display: grid;
-  justify-content: center;
+/* SECCIÓN AVATAR */
+.avatarBox {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding-block: 1rem;
-  align-content: center;
-  justify-items: start;
-  grid-template-columns: 1fr;
+  margin-bottom: 2.5rem;
 }
 
-.itemsTitle {
-  text-align: start;
-  margin-block: .5rem;
-  width: unset !important;
-}
-
-.itemsData {
-  background-color: rgba(255, 255, 255, 0.25);
-  width: unset !important;
-}
-
-.profilePhoto {
-  width: clamp(100px, 50vw, 200px);
-  ;
-  margin: auto;
-  border-radius: 100%;
-  outline: 2px rgb(255 255 255 / 25%) solid;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
+.avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  outline: 3px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
+  object-fit: cover;
 }
 
-.containerProfilePhoto {
+/* BADGE DE ROL */
+.roleBadge {
+  margin-top: 0.8rem;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  display: inline-block;
+}
+
+/* GRID DEL FORMULARIO */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.8rem 2rem;        /* Mismos márgenes laterales */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.item {
+  display: flex;
   flex-direction: column;
 }
 
-.containerResposive {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-content: center;
-  justify-content: center;
-  align-items: center;
-  column-gap: 5rem;
+.label {
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
 }
 
+.input {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.6rem;
+  background: rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
+}
+
+/* CONTENEDOR DEL BOTÓN */
+.buttonBox {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* BOTÓN IGUAL AL ANCHO DEL GRID */
+.button {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  border-radius: 0.6rem;
+  background: rgba(255, 255, 255, 0.15);
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  text-align: center;
+  transition: 0.25s;
+  box-sizing: border-box;
+}
+
+.button:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* TOAST */
 .toast {
   position: fixed !important;
-  top: 0 !important;
-  display: none;
+  top: 15px !important;
+  padding: .7rem 1.2rem;
+  border-radius: .6rem;
+  font-weight: bold;
 }
 
 .showToast {
   display: block !important;
-  animation: showToastAnimation 0.5s forwards !important;
+  animation: showToastAnimation 0.4s forwards;
 }
 
 @keyframes showToastAnimation {
-  from {
-    opacity: 0;
-    transform: translateY(0);
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0px); }
+}
+
+/* MOBILE */
+@media (max-width: 700px) {
+  .wrapper {
+    padding: 3.5rem 1rem;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(80px);
+  .card {
+    padding: 2rem 1.2rem;
+    border-radius: 1rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .buttonBox {
+    justify-content: center;
   }
 }
+
+/* ============================ */
+/*    NUEVO TOAST TIPO GLOBAL   */
+/* ============================ */
+
+.profileToast {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: #171717;
+  padding: 14px 22px;
+
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+
+  border-radius: 10px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
+
+  z-index: 999999;
+
+  opacity: 0;
+  pointer-events: none;
+
+  animation: toastProfileIn 0.35s ease-out forwards;
+}
+
+@keyframes toastProfileIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0px);
+  }
+}
+
+.profileToastHide {
+  animation: toastProfileOut 0.35s ease-in forwards;
+}
+
+@keyframes toastProfileOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0px);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+}
+
+:global(body) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+:global(main) {
+  flex: 1;
+  display: flex;
+}
+
+/* ============================ */
+/*      SOPORTE PARA 4K         */
+/*    (Pantallas ≥ 2560px)      */
+/* ============================ */
+
+/* ============================= */
+/*   OPTIMIZACIÓN ESPECIAL 4K    */
+/* ============================= */
+
+/* ============================ */
+/*      OPTIMIZACIÓN PARA 4K     */
+/* ============================ */
+@media (min-width: 2560px) {
+
+  /* Card más grande y cómodo */
+  .card {
+    max-width: 1600px;
+    padding: 4.5rem 5rem;
+    border-radius: 2rem;
+  }
+
+  /* Título más grande */
+  .title {
+    font-size: 2.6rem;
+    margin-bottom: 3rem;
+  }
+
+  /* Avatar más grande */
+  .avatar {
+    width: 180px;
+    height: 180px;
+    outline-width: 4px;
+  }
+
+  .roleBadge {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    padding: 0.5rem 1.4rem;
+  }
+
+  /* Inputs más grandes y más separados */
+  .grid {
+    gap: 2.5rem 3rem;
+  }
+
+  .label {
+    font-size: 2rem;
+  }
+
+  .input {
+    font-size: 2rem !important;
+    padding: 0.85rem 1.1rem;
+    border-radius: 0.8rem;
+  }
+
+  /* Botón más grande */
+  .button {
+    font-size: 2rem !important;
+    padding: 1.2rem 2rem;
+    border-radius: 0.8rem;
+  }
+
+  /* Toast más agradable en 4K */
+  .profileToast {
+    font-size: 2rem;
+    padding: 1.2rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Wrapper mayor para respirar */
+  .wrapper {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+}
+
+
+
