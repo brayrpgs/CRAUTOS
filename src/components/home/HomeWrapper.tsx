@@ -17,7 +17,6 @@ const HomeWrapper: React.FC = () => {
   const [yearFrom, setYearFrom] = useState<number>(2005)
   const [yearTo, setYearTo] = useState<number>(2018)
   const [idSelected, setIdSelected] = useState(0)
-
   useEffect(() => {
   }, [ctx?.stateModal, idSelected])
   return (
@@ -238,16 +237,9 @@ const HomeWrapper: React.FC = () => {
         />
       </div>
       <div className={`${styles.child} ${styles.childContent}`}>
-        <Card image='ram1.avif' info='test' />
-        <Card image='ram1.avif' />
-        <Card image='ram1.avif' />
-        <Card image='ram1.avif' />
-        <Card image='ram1.avif' />
-        <Card image='ram1.avif' />
-        <Card image='ram1.avif' />
-        <Card image='ram1.avif' />
-        <Card image='ram1.avif' />
-        <Card image='ram1.avif' />
+        {ctx?.items.map(car => (
+          <Card image={car.cars_images[0].images.image} info={`${car.brands.desc}-`} key={crypto.randomUUID()} />
+        ))}
       </div>
       <div className={`${stylePagination.controls} ${styles.fixPagination}`}>
         <button disabled className={stylePagination.btn}>←</button>
