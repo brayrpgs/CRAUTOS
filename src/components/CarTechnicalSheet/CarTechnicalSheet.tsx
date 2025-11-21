@@ -17,7 +17,7 @@ export const CarTechnicalSheet: React.FC = () => {
   return (
     <Modal open={ctx.openSheet} id='modalSheet' setOpen={ctx.setOpenSheet}>
       <ModalHeader>
-        {car.brands.desc} – {car.styles.desc}
+        {car.brands.desc} - {car.styles.desc}
       </ModalHeader>
 
       <ModalContent>

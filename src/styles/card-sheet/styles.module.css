@@ -5,14 +5,13 @@
   margin-top: 2rem;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  /* Ahora 2 columnas */
   gap: 2rem 3rem;
   width: 100%;
   padding: 1rem 2rem;
 }
 
 /* BLOQUES INTERNOS */
-.columnsGrid>div {
+.columnsGrid > div {
   background: rgba(255, 255, 255, 0.08);
   padding: 1.4rem 1.6rem;
   border-radius: 1rem;
@@ -46,12 +45,12 @@
 }
 
 /* ============================================
-   INFORMACIÓN DEL VENDEDOR (EN RECUADRO)
+   INFORMACIÓN DEL VENDEDOR
    ============================================ */
 .sellerCardInline {
   display: flex;
   flex-direction: column;
-  gap: .4rem;
+  gap: .6rem;
   color: #fff;
 }
 
@@ -64,29 +63,26 @@
 .sellerButtonsInline a {
   flex: 1;
   padding: .65rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255,255,255,0.15);
   border-radius: .6rem;
   text-align: center;
   font-size: .85rem;
+  color: white !important;
+  text-decoration: none !important;
+}
+
+.sellerButtonsInline a:hover {
+  background: rgba(255,255,255,0.25);
 }
 
 /* ============================================
-   RESPONSIVE
+   BOTONES DE MÁS OPCIONES
    ============================================ */
-@media (max-width: 1050px) {
-  .columnsGrid {
-    grid-template-columns: 1fr;
-    /* Se apila solo en pantallas pequeñas */
-  }
-}
-
 .actionsContainer {
   display: flex;
   flex-wrap: wrap;
-  /* Permite que pasen a otra fila */
   gap: 1.2rem;
-  /* ← ESPACIO ENTRE BOTONES */
-  justify-content: flex-start;
+  justify-content: center;
   padding: 1rem 0;
 }
 
@@ -96,97 +92,61 @@
   border-radius: 0.8rem;
   font-size: 0.9rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
   color: white;
   min-width: 11rem;
-  /* Botones igualados visualmente */
 }
 
-/* Hover */
 .actionsContainer button:hover,
 .actionsContainer a:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255,255,255,0.25);
 }
 
-/* RESPONSIVE */
-@media (max-width: 700px) {
-  .actionsContainer {
-    justify-content: center;
-  }
-
-  .actionsContainer button,
-  .actionsContainer a {
-    min-width: 100%;
-  }
-}
-
-/* Enlaces del vendedor → blancos y sin subrayado */
-.sellerButtonsInline a {
-  color: white !important;
-  text-decoration: none !important;
-}
-
-/* Hover más elegante */
-.sellerButtonsInline a:hover {
-  background: rgba(255, 255, 255, 0.25);
-  color: white !important;
-}
-
-@media (max-width: 700px) {
-
-  /* Grid principal en UNA sola columna */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1050px) {
   .columnsGrid {
     grid-template-columns: 1fr;
-    padding: 0;
-    /* ← QUITA EL PADDING QUE EMPUJABA TODO */
   }
+}
 
-  /* Cada tarjeta debe estar centrada con márgenes */
-  .columnsGrid>div {
-    width: 100%;
-    max-width: 330px;
-    /* ← ANCHO CONTROLADO */
-    margin: 0 auto 1.5rem auto;
-    /* ← CENTRADO REAL */
-    padding: 1.4rem 1.6rem;
-  }
+/* ============================================
+   FIX REAL: CENTRAR LAS TARJETAS EN MOVIL
+   ============================================ */
+/* ============================================
+   FIX REAL Y DEFINITIVO — EVITAR QUE SE SALGA
+   ============================================ */
 
-  /* Contenedor del vendedor */
+@media (max-width: 700px) {
+
+  /* Fuerza a que NINGUNA card pueda medir más que la pantalla */
+  .columnsGrid > div,
   .sellerCardInline {
-    width: 100%;
-    max-width: 330px;
-    /* ← MISMO ANCHO QUE LAS OTRAS CARDS */
-    margin: 0 auto;
+    width: 100% !important;
+    max-width: 90% !important;  /* ← AJUSTA AL 90% DE LA PANTALLA */
+    margin: 0 auto 1.5rem auto !important;
+    box-sizing: border-box !important;
   }
 
-  /* Botones del vendedor */
-  .sellerButtonsInline {
-    justify-content: center;
+  /* Evitar que el contenido interno fuerce el crecimiento */
+  .columnsGrid > div *,
+  .sellerCardInline * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    word-wrap: break-word !important;
   }
 
-  .sellerButtonsInline a {
-    width: 100%;
-    max-width: 150px;
-    /* ← PARA QUE NO SEAN GIGANTES */
-    margin-inline: auto;
+  /* Títulos que estaban muy grandes */
+  .columnsGrid h3 {
+    font-size: 1.1rem !important;
+    text-align: center !important;
   }
 
-  /* BOTONES DE "MÁS OPCIONES" */
-  .actionsContainer {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    justify-content: center;
-  }
-
-  .actionsContainer button,
-  .actionsContainer a {
-    width: 100%;
-    max-width: 330px;
-    /* ← MISMO ANCHO QUE LAS TARJETAS */
-    margin-left: auto;
-    margin-right: auto;
+  /* Dos columnas → una sola columna en móvil */
+  .twoColumnList {
+    grid-template-columns: 1fr !important;
   }
 }
