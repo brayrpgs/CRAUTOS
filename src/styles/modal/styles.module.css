@@ -1,6 +1,6 @@
 .container {
   background-color: transparent;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px);
   outline: snow solid 1px;
   border: none;
   border-radius: 1rem;

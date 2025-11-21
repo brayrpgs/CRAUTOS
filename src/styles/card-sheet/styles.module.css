@@ -1,40 +1,192 @@
-.container {
+/* ============================================
+   GRID PRINCIPAL COMPACTO (2x2)
+   ============================================ */
+.columnsGrid {
+  margin-top: 2rem;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
+  /* Ahora 2 columnas */
+  gap: 2rem 3rem;
+  width: 100%;
+  padding: 1rem 2rem;
+}
+
+/* BLOQUES INTERNOS */
+.columnsGrid>div {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1.4rem 1.6rem;
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* TITULOS */
+.columnsGrid h3 {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+
+/* LISTAS EN DOS COLUMNAS */
+.twoColumnList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem 1.5rem;
+}
+
+.twoColumnList p {
+  margin: 0;
+  font-size: .9rem;
+  color: #e9e9e9;
+}
+
+.twoColumnList strong {
+  color: white;
+}
+
+/* ============================================
+   INFORMACIÓN DEL VENDEDOR (EN RECUADRO)
+   ============================================ */
+.sellerCardInline {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  color: #fff;
+}
+
+.sellerButtonsInline {
+  margin-top: .9rem;
+  display: flex;
   gap: 1rem;
-  justify-items: stretch;
-  align-items: center;
-  justify-content: center;
-  align-content: center;
-  padding: 1rem;
-  font-size: 0.7rem;
+}
+
+.sellerButtonsInline a {
+  flex: 1;
+  padding: .65rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: .6rem;
+  text-align: center;
+  font-size: .85rem;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1050px) {
+  .columnsGrid {
+    grid-template-columns: 1fr;
+    /* Se apila solo en pantallas pequeñas */
+  }
 }
 
 .actionsContainer {
-  display: grid;
-  gap: 1rem;
-  justify-content: space-evenly;
-  grid-template-columns: repeat(auto-fit, minmax(10ch, 17ch));
-  font-size: xx-small;
-  margin-block-start: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  /* Permite que pasen a otra fila */
+  gap: 1.2rem;
+  /* ← ESPACIO ENTRE BOTONES */
+  justify-content: flex-start;
+  padding: 1rem 0;
 }
 
-div.carousel-card-wrapper {
-  flex-shrink: 1;
+.actionsContainer button,
+.actionsContainer a {
+  padding: 0.75rem 1.4rem;
+  border-radius: 0.8rem;
+  font-size: 0.9rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  min-width: 11rem;
+  /* Botones igualados visualmente */
 }
 
-.details {
-  overflow: hidden;
-  transition: all 1s ease;
-  interpolate-size: allow-keywords;
+/* Hover */
+.actionsContainer button:hover,
+.actionsContainer a:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
-.details:not([open]) {
-  height: 1lh;
-  transition: all 1s ease;
+/* RESPONSIVE */
+@media (max-width: 700px) {
+  .actionsContainer {
+    justify-content: center;
+  }
+
+  .actionsContainer button,
+  .actionsContainer a {
+    min-width: 100%;
+  }
 }
 
-.details[open] {
-  height: auto;
-  transition: all 1s ease;
+/* Enlaces del vendedor → blancos y sin subrayado */
+.sellerButtonsInline a {
+  color: white !important;
+  text-decoration: none !important;
+}
+
+/* Hover más elegante */
+.sellerButtonsInline a:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: white !important;
+}
+
+@media (max-width: 700px) {
+
+  /* Grid principal en UNA sola columna */
+  .columnsGrid {
+    grid-template-columns: 1fr;
+    padding: 0;
+    /* ← QUITA EL PADDING QUE EMPUJABA TODO */
+  }
+
+  /* Cada tarjeta debe estar centrada con márgenes */
+  .columnsGrid>div {
+    width: 100%;
+    max-width: 330px;
+    /* ← ANCHO CONTROLADO */
+    margin: 0 auto 1.5rem auto;
+    /* ← CENTRADO REAL */
+    padding: 1.4rem 1.6rem;
+  }
+
+  /* Contenedor del vendedor */
+  .sellerCardInline {
+    width: 100%;
+    max-width: 330px;
+    /* ← MISMO ANCHO QUE LAS OTRAS CARDS */
+    margin: 0 auto;
+  }
+
+  /* Botones del vendedor */
+  .sellerButtonsInline {
+    justify-content: center;
+  }
+
+  .sellerButtonsInline a {
+    width: 100%;
+    max-width: 150px;
+    /* ← PARA QUE NO SEAN GIGANTES */
+    margin-inline: auto;
+  }
+
+  /* BOTONES DE "MÁS OPCIONES" */
+  .actionsContainer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    justify-content: center;
+  }
+
+  .actionsContainer button,
+  .actionsContainer a {
+    width: 100%;
+    max-width: 330px;
+    /* ← MISMO ANCHO QUE LAS TARJETAS */
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
