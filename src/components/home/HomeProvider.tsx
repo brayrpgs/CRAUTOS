@@ -16,6 +16,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [totalPages, setTotalPages] = useState<number>(0)
   const [carSelected, setCarSelected] = useState<Cars | undefined>(undefined)
   const [openSheet, setOpenSheet] = useState<boolean>(false)
+  const [carSelectedById, setCarSelectedById] = useState<number>(0)
 
   // fetch all cars
   const fetchData = async (): Promise<void> => {
@@ -182,14 +183,37 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
     setItems(data)
   }
 
+  const fetchCarById = async (id: number): Promise<void> => {
+    try {
+      const response = await fetch(`${CARS_URL}?id_cars=eq.${id}&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))`, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json'
+        }
+      })
+      if (!response.ok) return
+      const data = (await response.json() as Cars[])
+      setTotalPages(1)
+      setItems(data)
+    } catch (error) {
+      console.error('Error cargando auto por ID', error)
+    }
+  }
+
   // Provide the context values to children components
   useEffect(() => {
-    if (searchQuery === '') {
+    if (searchQuery === '' && carSelectedById === undefined) {
       void fetchData()
-    } else if (searchQuery !== '') {
+    } else if (searchQuery !== '' && carSelectedById === undefined) {
       void fetchSearch()
     }
-  }, [page, searchQuery])
+  }, [page, searchQuery, carSelectedById])
+
+  useEffect(() => {
+    if (carSelectedById !== 0) {
+      void fetchCarById(carSelectedById)
+    }
+  }, [carSelectedById])
 
   return (
     <HomeContext.Provider
@@ -207,7 +231,9 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
           carSelected,
           setCarSelected,
           openSheet,
-          setOpenSheet
+          setOpenSheet,
+          carSelectedById,
+          setCarSelectedById
         }
       }
     >
