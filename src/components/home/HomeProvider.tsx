@@ -17,6 +17,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [carSelected, setCarSelected] = useState<Cars | undefined>(undefined)
   const [openSheet, setOpenSheet] = useState<boolean>(false)
   const [carSelectedById, setCarSelectedById] = useState<number>(0)
+  const [aux, setAux] = useState<boolean>(false)
 
   // fetch all cars
   const fetchData = async (): Promise<void> => {
@@ -202,18 +203,25 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
 
   // Provide the context values to children components
   useEffect(() => {
-    if (searchQuery === '' && carSelectedById === undefined) {
-      void fetchData()
-    } else if (searchQuery !== '' && carSelectedById === undefined) {
-      void fetchSearch()
+    const exec = async (): Promise<void> => {
+      if (searchQuery === '' && carSelectedById === 0) {
+        setAux(true)
+        await fetchData()
+        setAux(false)
+      }
+      if (searchQuery !== '' && carSelectedById === 0) {
+        setAux(true)
+        await fetchSearch()
+        setAux(false)
+      }
+      if (carSelectedById !== 0) {
+        setAux(true)
+        await fetchCarById(carSelectedById)
+        setAux(false)
+      }
     }
-  }, [page, searchQuery, carSelectedById])
-
-  useEffect(() => {
-    if (carSelectedById !== 0) {
-      void fetchCarById(carSelectedById)
-    }
-  }, [carSelectedById])
+    void exec()
+  }, [page, searchQuery, carSelectedById, aux])
 
   return (
     <HomeContext.Provider
