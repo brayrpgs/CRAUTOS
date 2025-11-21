@@ -1,5 +1,6 @@
 export const BASE_API_URL = 'http://localhost:3001'
 export const BASE_AUTH_URL = 'http://localhost:3000'
+export const BASE_APP_URL = 'http://38.10.22.15'
 
 export const BRANDS_URL = `${BASE_API_URL}/brands`
 export const USERS_URL = `${BASE_API_URL}/users`
