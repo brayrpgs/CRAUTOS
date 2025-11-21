@@ -298,6 +298,8 @@ export const CarForm: React.FC<CarFormProps> = ({
             <span>
               <label>Marca</label>
               <select
+                id='ma'
+                name='ma'
                 className='glass'
                 value={form.id_brands}
                 onChange={e => update('id_brands', Number(e.target.value))}
@@ -310,8 +312,10 @@ export const CarForm: React.FC<CarFormProps> = ({
             </span>
 
             <span>
-              <label>Modelo</label>
+              <label htmlFor='mo'>Modelo</label>
               <select
+                id='mo'
+                name='mo'
                 className='glass'
                 value={form.id_models}
                 onChange={e => update('id_models', Number(e.target.value))}
@@ -324,8 +328,10 @@ export const CarForm: React.FC<CarFormProps> = ({
             </span>
 
             <span>
-              <label>Estilo</label>
+              <label htmlFor='es'>Estilo</label>
               <select
+                id='es'
+                name='es'
                 className='glass'
                 value={form.id_styles}
                 onChange={e => update('id_styles', Number(e.target.value))}
@@ -339,8 +345,10 @@ export const CarForm: React.FC<CarFormProps> = ({
           </div>
 
           <span className={styles.rowWrapper}>
-            <label>Color exterior</label>
+            <label htmlFor='ce'>Color exterior</label>
             <input
+              id='ce'
+              name='ce'
               className={`glass ${styles.fullInput}`}
               value={form.exterior_color}
               onChange={e => update('exterior_color', e.target.value)}
@@ -348,8 +356,10 @@ export const CarForm: React.FC<CarFormProps> = ({
           </span>
 
           <span className={styles.rowWrapper}>
-            <label>Color interior</label>
+            <label htmlFor='ci'>Color interior</label>
             <input
+              id='ci'
+              name='ci'
               className={`glass ${styles.fullInput}`}
               value={form.interior_color}
               onChange={e => update('interior_color', e.target.value)}
@@ -357,8 +367,10 @@ export const CarForm: React.FC<CarFormProps> = ({
           </span>
 
           <span className={styles.rowWrapper}>
-            <label>Precio</label>
+            <label htmlFor='pr'>Precio</label>
             <input
+              id='pr'
+              name='pr'
               className={`glass ${styles.fullInput} ${styles.numberInput}`}
               type='text'
               inputMode='numeric'

@@ -132,6 +132,8 @@ const ContactForm: React.FC = () => {
 
         <div className={styles.textareaWrapper}>
           <textarea
+            id='ta'
+            name='ta'
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder='Escriba su mensaje...'

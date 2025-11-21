@@ -494,7 +494,7 @@ export const CarTechnicalSheet: React.FC = () => {
               className='glass'
               target='_blank'
               rel='noreferrer'
-              href={`https://wa.me/?text=${encodeURIComponent(`http://localhost:4321/home?car=${car.id_cars}`)}`}
+              href={`https://wa.me/?text=${encodeURIComponent(`${BASE_APP_URL}/home?car=${car.id_cars}`)}`}
             >
               Compartir WhatsApp
             </a>

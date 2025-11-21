@@ -270,8 +270,10 @@ export const Profile: React.FC = () => {
         {/* Formulario */}
         <div className={styles.grid}>
           <div className={styles.item}>
-            <label className={styles.label}>Nombre</label>
+            <label htmlFor='na' className={styles.label}>Nombre</label>
             <input
+              id='na'
+              name='na'
               className={`glass ${styles.input}`}
               value={user?.name ?? ''}
               onInput={e => setUser({ ...user!, name: e.currentTarget.value })}
@@ -279,8 +281,10 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label className={styles.label}>Apellidos</label>
+            <label htmlFor='ln' className={styles.label}>Apellidos</label>
             <input
+              id='ln'
+              name='ln'
               className={`glass ${styles.input}`}
               value={user?.last_name ?? ''}
               onInput={e => setUser({ ...user!, last_name: e.currentTarget.value })}
@@ -288,8 +292,10 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label className={styles.label}>Teléfono</label>
+            <label htmlFor='ph' className={styles.label}>Teléfono</label>
             <input
+              id='ph'
+              name='ph'
               className={`glass ${styles.input}`}
               value={user?.phone ?? ''}
               onInput={e => setUser({ ...user!, phone: e.currentTarget.value })}
@@ -297,8 +303,10 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label className={styles.label}>Email</label>
+            <label htmlFor='em' className={styles.label}>Email</label>
             <input
+              id='em'
+              name='em'
               className={`glass ${styles.input}`}
               value={user?.email ?? ''}
               onInput={e => setUser({ ...user!, email: e.currentTarget.value })}
@@ -306,8 +314,10 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label className={styles.label}>Cédula</label>
+            <label htmlFor='ced' className={styles.label}>Cédula</label>
             <input
+              id='ced'
+              name='ced'
               className={`glass ${styles.input}`}
               value={user?.idcard ?? ''}
               onInput={e => setUser({ ...user!, idcard: e.currentTarget.value })}
@@ -315,8 +325,10 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label className={styles.label}>Edad</label>
+            <label htmlFor='ag' className={styles.label}>Edad</label>
             <input
+              id='ag'
+              name='ag'
               className={`glass ${styles.input}`}
               value={user?.age ?? ''}
               onInput={e => setUser({ ...user!, age: Number(e.currentTarget.value) })}
