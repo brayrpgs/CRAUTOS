@@ -5,48 +5,34 @@ import { Footer as FooterCustom } from "../components/footer/FooterCustom";
 import styles from "../styles/panel/styles.module.css";
 import { Background } from "../components/background/Background";
 import { DeleteUser } from "../components/delete/DeleteUser";
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Panel de control</title>
-  </head>
-  <body>
-    <Background client:load />
-    <HeaderPage client:load />
-    <main>
-      <div class={styles.panelGrid}>
-        <a href="/profile" class={styles.panelCard}>
-          <div class={styles.icon}>🧙🏻</div>
-          <h3>Editar perfil</h3>
-          <p>Actualiza tus datos y preferencias</p>
-        </a>
+<MainLayout title="Panel">
+  <div class={styles.panelGrid}>
+    <a href="/profile" class={styles.panelCard}>
+      <div class={styles.icon}>🧙🏻</div>
+      <h3>Editar perfil</h3>
+      <p>Actualiza tus datos y preferencias</p>
+    </a>
 
-        <a href="/announcement" class={styles.panelCard}>
-          <div class={styles.icon}>🚗</div>
-          <h3>Mis anuncios</h3>
-          <p>Gestiona tus publicaciones fácilmente</p>
-        </a>
+    <a href="/announcement" class={styles.panelCard}>
+      <div class={styles.icon}>🚗</div>
+      <h3>Mis anuncios</h3>
+      <p>Gestiona tus publicaciones fácilmente</p>
+    </a>
 
-        <a href="/favorite" class={styles.panelCard}>
-          <div class={styles.icon}>⭐</div>
-          <h3>Mis favoritos</h3>
-          <p>Encuentra tus vehículos guardados</p>
-        </a>
+    <a href="/favorite" class={styles.panelCard}>
+      <div class={styles.icon}>⭐</div>
+      <h3>Mis favoritos</h3>
+      <p>Encuentra tus vehículos guardados</p>
+    </a>
 
-        <div class={`${styles.panelCard} ${styles.panelCardDanger}`}>
-          <div class={styles.icon}>❌</div>
-          <h3>Eliminar cuenta</h3>
-          <p>Esta acción no se puede deshacer</p>
-          <DeleteUser client:load />
-        </div>
-      </div>
-    </main>
-    <FooterCustom client:load />
-  </body>
-</html>
+    <div class={`${styles.panelCard} ${styles.panelCardDanger}`}>
+      <div class={styles.icon}>❌</div>
+      <h3>Eliminar cuenta</h3>
+      <p>Esta acción no se puede deshacer</p>
+      <DeleteUser client:load />
+    </div>
+  </div>
+</MainLayout>

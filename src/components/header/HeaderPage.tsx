@@ -22,15 +22,31 @@ const HeaderPage: React.FC = () => {
   useEffect(() => {
     setHydrated(true)
 
-    // cargar usuario logueado
     if (isUserLogged()) {
       const loggedUser = getLoggedUser()
       if (!loggedUser) return
-      fetchUserData(loggedUser.id_user)
+
+      const cacheKey = `userData_${loggedUser.id_user}`
+      const cachedData = localStorage.getItem(cacheKey)
+      const cacheTime = localStorage.getItem(`${cacheKey}_time`)
+
+      const now = Date.now()
+      const CACHE_DURATION = 60 * 60 * 1000 // 1 hora en ms
+
+      if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION) {
+        // Usar cache
+        const data = JSON.parse(cachedData) as user
+        setUserData(data)
+        setImage(data?.images?.image)
+        return
+      }
+
+      // Si no hay cache válido, fetch y guardar
+      fetchUserData(loggedUser.id_user, cacheKey)
     }
   }, [])
 
-  const fetchUserData = async (idUser: number): Promise<void> => {
+  const fetchUserData = async (idUser: number, cacheKey: string): Promise<void> => {
     try {
       const response = await fetch(`${USERS_URL}?id_user=eq.${idUser}&select=*,images(*)`, {
         method: 'GET',
@@ -41,10 +57,16 @@ const HeaderPage: React.FC = () => {
         }
       })
       const data = await response.json() as user[]
-      setUserData(data[0])
-      setImage(data[0]?.images?.image)
+      const user = data[0]
+      setUserData(user)
+      setImage(user?.images?.image)
+
+      localStorage.setItem(cacheKey, JSON.stringify(user))
+      localStorage.setItem(`${cacheKey}_time`, Date.now().toString())
     } catch (error) {
       console.error('Error fetching user data:', error)
+      localStorage.removeItem(cacheKey)
+      localStorage.removeItem(`${cacheKey}_time`)
     }
   }
 
@@ -144,6 +166,11 @@ const HeaderPage: React.FC = () => {
   ============================= */
   const handleLogout = (): void => {
     localStorage.removeItem('User_Token')
+    if (userData) {
+      const cacheKey = `userData_${userData.id_user}`
+      localStorage.removeItem(cacheKey)
+      localStorage.removeItem(`${cacheKey}_time`)
+    }
     setUserData(null)
     window.location.href = '/'
   }
