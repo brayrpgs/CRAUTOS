@@ -187,12 +187,15 @@ export const CarTechnicalSheet: React.FC = () => {
   if (ctx?.carSelected === undefined) return
   return (
     <Modal open={ctx.openSheet} id='modalSheet' setOpen={ctx.setOpenSheet}>
+    <Modal open={ctx.openSheet} id='modalSheet' setOpen={ctx.setOpenSheet}>
       <ModalHeader>
+        {`${ctx?.carSelected?.brands.desc} - ${ctx.carSelected.styles.desc}`}
         {`${ctx?.carSelected?.brands.desc} - ${ctx.carSelected.styles.desc}`}
       </ModalHeader>
       <ModalContent>
         <div className='carrusel'>
           <Carousel
+            images={ctx.carSelected.cars_images.map((images) => { return images.images.image })}
             images={ctx.carSelected.cars_images.map((images) => { return images.images.image })}
           />
         </div>
@@ -220,6 +223,43 @@ export const CarTechnicalSheet: React.FC = () => {
           <div className={styles.actionsContainer}>
             <button className='glass'>Agregar a Favoritos</button>
             <button className='glass'>Ver Vendedor</button>
+            <a className='glass' href={`https://wa.me/506${ctx.carSelected?.users.phone}/?text=${window.location.href}`}>Compartir Whatsapp</a>
+            <a
+              className='glass'
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              Compartir Facebook
+            </a>
+            <button
+              className='glass'
+              onClick={() => {
+                const exec = async (): Promise<void> => {
+                  const dataUrl = await capture()
+                  if (dataUrl == null) return
+                  const now = new Date()
+                  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
+                  const safeFileName = (String(ctx?.carSelected?.brands?.desc ?? 'ficha') + '-' + String(ctx?.carSelected?.models?.desc ?? '') + '-' + dateStr + '.png').replace(/[^a-z0-9-_.]/gi, '_')
+                  const link = document.createElement('a')
+                  link.href = dataUrl
+                  link.download = safeFileName
+                  document.body.appendChild(link)
+                  link.click()
+                  link.remove()
+                }
+                void exec()
+              }}
+            >
+              Descargar ficha tecnica
+            </button>
+            <a className='glass' href={`mailto:${ctx.carSelected.users.email}`}>Contactar al vendedor(correo)</a>
+            <a
+              className='glass'
+              href={`https://api.whatsapp.com/send?phone=506${ctx.carSelected?.users.phone}`}
+            >
+              Contactar al vendedor(Whatsapp)
+            </a>
             <a className='glass' href={`https://wa.me/506${ctx.carSelected?.users.phone}/?text=${window.location.href}`}>Compartir Whatsapp</a>
             <a
               className='glass'
