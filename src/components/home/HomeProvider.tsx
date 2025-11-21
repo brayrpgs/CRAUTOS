@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { HomeContext } from './HomeContext'
 import { CARS_URL } from '../../common/common'
 import type { Cars } from '../../models/car'
+import { getLoggedUserId } from '../../utils/GetUserUtils'
 
 interface HomeProviderProps {
   children: React.ReactNode
@@ -18,9 +19,29 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
 
   // fetch all cars
   const fetchData = async (): Promise<void> => {
-    const request = await fetch(
-      `${CARS_URL}?select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))`,
-      {
+    try {
+      // Intentar obtener el usuario logueado (si existe)
+      let loggedId: number | null = null
+      try {
+        loggedId = getLoggedUserId()
+      } catch {
+        loggedId = null
+      }
+
+      // Construir el filtro dinámico
+      // Siempre → traer solo los NO vendidos
+      let query = `${CARS_URL}?sold=eq.false`
+
+      // Si hay usuario logueado → excluir sus carros
+      if (loggedId !== null) {
+        query += `&id_users=neq.${loggedId}`
+      }
+
+      // Campos a seleccionar
+      query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
+
+      // Petición con paginación
+      const request = await fetch(query, {
         method: 'GET',
         headers: {
           accept: 'application/json',
@@ -28,15 +49,21 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
           'Range-Unit': 'items',
           Prefer: 'count=exact'
         }
-      }
-    )
-    // hay que ver cuantas paginas hay
-    if (!request.ok) return
-    const totalCountData = await request.headers.get('content-range')
-    const totalPages = Math.ceil(Number(totalCountData?.split('/')[1]) / 10)
-    setTotalPages(totalPages)
-    const data = await request.json() as Cars[]
-    setItems(data)
+      })
+
+      if (!request.ok) return
+
+      // Obtener total de páginas
+      const totalCountData = request.headers.get('content-range')
+      const totalPages = Math.ceil(Number(totalCountData?.split('/')[1]) / 10)
+      setTotalPages(totalPages)
+
+      // Guardar resultados
+      const data = await request.json() as Cars[]
+      setItems(data)
+    } catch (error) {
+      console.error('Error cargando autos', error)
+    }
   }
 
   // Provide the context values to children components
