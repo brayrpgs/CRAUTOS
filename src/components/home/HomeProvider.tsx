@@ -202,18 +202,21 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
 
   // Provide the context values to children components
   useEffect(() => {
-    if (searchQuery === '' && carSelectedById === undefined) {
-      void fetchData()
-    } else if (searchQuery !== '' && carSelectedById === undefined) {
-      void fetchSearch()
+    const exec = async (): Promise<void> => {
+      if (carSelectedById !== 0) {
+        await fetchCarById(carSelectedById)
+        return
+      }
+      if (searchQuery === '' && carSelectedById === 0) {
+        await fetchData()
+        return
+      }
+      if (searchQuery !== '' && carSelectedById === 0) {
+        await fetchSearch()
+      }
     }
+    void exec()
   }, [page, searchQuery, carSelectedById])
-
-  useEffect(() => {
-    if (carSelectedById !== 0) {
-      void fetchCarById(carSelectedById)
-    }
-  }, [carSelectedById])
 
   return (
     <HomeContext.Provider
