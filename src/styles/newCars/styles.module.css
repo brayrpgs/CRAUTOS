@@ -1,59 +1,71 @@
 .carouselContainer {
   width: 100%;
-  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;                  /* Centra TODO */
   margin: 0 auto;
-  max-width: 1400px;
+  padding: 2rem 0;                      /* No forzar padding lateral */
+  box-sizing: border-box;
 }
 
 .newCarsSlogan {
+  width: 100%;
+  max-width: 1200px;                    /* Igual al carousel */
   text-align: center;
   margin-bottom: 2rem;
-  padding: 0 1rem;
 }
 
 .newCarsSlogan h2 {
-  font-size: 2rem;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
   font-weight: 600;
   color: #60a5fa;
-  margin: 0 0 0.5rem 0;
+  margin-bottom: .5rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   line-height: 1.2;
 }
 
 .newCarsSlogan h5 {
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
-  line-height: 1.4;
+  color: rgba(255,255,255,.9);
+  margin: 0 auto;
+  max-width: 900px;
 }
+
+
+/* ======================================
+   TABLET
+   ====================================== */
 
 @media (max-width: 768px) {
   .carouselContainer {
-    padding: 1.5rem 0;
+    padding: 1.5rem 0;                  /* Quita padding lateral raro */
   }
 
   .newCarsSlogan {
-    margin-bottom: 1.5rem;
-  }
-
-  .newCarsSlogan h2 {
-    font-size: 1.5rem;
-  }
-
-  .newCarsSlogan h5 {
-    font-size: 1rem;
+    margin-bottom: 1.3rem;
   }
 }
+
+
+/* ======================================
+   MÓVIL PEQUEÑO
+   ====================================== */
 
 @media (max-width: 480px) {
+
+  .carouselContainer {
+    width: 100%;
+    padding: 1rem 0;                    /* Nada de padding gigante */
+  }
+
   .newCarsSlogan h2 {
-    font-size: 1.25rem;
+    font-size: 1.25rem !important;
+    line-height: 1.3;
   }
 
   .newCarsSlogan h5 {
-    font-size: 0.9rem;
+    font-size: 0.95rem !important;
   }
 }
-
