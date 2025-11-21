@@ -105,7 +105,7 @@ export const Profile: React.FC = () => {
         const a = await res.json() as audit[]
         current = {
           ...current,
-          images: { ...current.images!, id_audit: a[0].id_audit, audit: a[0] }
+          images: { ...current.images, id_audit: a[0].id_audit, audit: a[0] }
         }
       } else {
         const res = await fetch(AUDIT_URL, {
@@ -119,7 +119,7 @@ export const Profile: React.FC = () => {
         })
         const a = await res.json() as audit[]
         current = {
-          ...current!,
+          ...current,
           images: { ...current.images!, id_audit: a[0].id_audit, audit: a[0] }
         }
       }
@@ -142,7 +142,7 @@ export const Profile: React.FC = () => {
           }
         )
         const img = await res.json() as images[]
-        current = { ...current!, images: img[0], id_images: img[0].id_images }
+        current = { ...current, images: img[0], id_images: img[0].id_images }
       } else {
         const res = await fetch(IMAGES_URL, {
           method: 'POST',
@@ -157,7 +157,7 @@ export const Profile: React.FC = () => {
           })
         })
         const img = await res.json() as images[]
-        current = { ...current!, images: img[0], id_images: img[0].id_images }
+        current = { ...current, images: img[0], id_images: img[0].id_images }
       }
 
       // ======== ACTUALIZAR USER =========
@@ -181,6 +181,7 @@ export const Profile: React.FC = () => {
       } else {
         showToast('✔ Datos actualizados correctamente')
         setChanged(prev => !prev)
+        window.dispatchEvent(new Event('user-profile-updated'))
       }
 
       setUser(current)
@@ -194,9 +195,9 @@ export const Profile: React.FC = () => {
   // Convertir imagen a base64
   // ===============================
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
+    if ((e.target.files == null) || e.target.files.length === 0) return
 
-    const base64 = await fileToBase64(e.target.files[0]);
+    const base64 = await fileToBase64(e.target.files[0])
 
     setUser(prev => ({
       ...prev!,
@@ -204,9 +205,9 @@ export const Profile: React.FC = () => {
         ...prev?.images,
         image: base64
       }
-    }));
+    }))
 
-    setImage(base64);
+    setImage(base64)
   };
 
   // ===============================
@@ -333,7 +334,7 @@ export const Profile: React.FC = () => {
 }
 
 // ===============================
-async function fileToBase64(file: File): Promise<string> {
+async function fileToBase64 (file: File): Promise<string> {
   return await new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result as string)

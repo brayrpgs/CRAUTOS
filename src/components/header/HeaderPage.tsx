@@ -24,7 +24,7 @@ const HeaderPage: React.FC = () => {
 
     if (isUserLogged()) {
       const loggedUser = getLoggedUser()
-      if (!loggedUser) return
+      if (loggedUser == null) return
 
       const cacheKey = `userData_${loggedUser.id_user}`
       const cachedData = localStorage.getItem(cacheKey)
@@ -69,6 +69,21 @@ const HeaderPage: React.FC = () => {
       localStorage.removeItem(`${cacheKey}_time`)
     }
   }
+
+  useEffect(() => {
+    const reloadUser = () => {
+      const loggedUser = getLoggedUser()
+      if (loggedUser == null) return
+
+      const cacheKey = `userData_${loggedUser.id_user}`
+
+      // Solo recarga desde backend, NO borra la key
+      fetchUserData(loggedUser.id_user, cacheKey)
+    }
+
+    window.addEventListener('user-profile-updated', reloadUser)
+    return () => window.removeEventListener('user-profile-updated', reloadUser)
+  }, [])
 
   /* Detectar mobile dinámicamente */
   useEffect(() => {
@@ -126,7 +141,7 @@ const HeaderPage: React.FC = () => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (avatarOpen && avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+      if (avatarOpen && (avatarRef.current != null) && !avatarRef.current.contains(e.target as Node)) {
         setAvatarOpen(false)
       }
     }
@@ -166,7 +181,7 @@ const HeaderPage: React.FC = () => {
   ============================= */
   const handleLogout = (): void => {
     localStorage.removeItem('User_Token')
-    if (userData) {
+    if (userData != null) {
       const cacheKey = `userData_${userData.id_user}`
       localStorage.removeItem(cacheKey)
       localStorage.removeItem(`${cacheKey}_time`)
@@ -182,14 +197,14 @@ const HeaderPage: React.FC = () => {
     <div className={styles.avatarContainer} ref={avatarRef}>
       <img
         src={image ?? 'avatar.png'}
-        alt="avatar"
+        alt='avatar'
         className={styles.avatarImg}
         onClick={() => setAvatarOpen(!avatarOpen)}
       />
 
       {avatarOpen && (
         <div className={styles.avatarDropdown}>
-          <a href="/panel">Panel</a>
+          <a href='/panel'>Panel</a>
           <button onClick={handleLogout}>Cerrar sesión</button>
         </div>
       )}
@@ -226,12 +241,14 @@ const HeaderPage: React.FC = () => {
       </a>
 
       <div className={styles.authButtons}>
-        {!userData ? (
+        {(userData == null)
+? (
           <>
-            <a className={styles.carouselButton} href="/login?action=signIn">Iniciar sesión</a>
-            <a className={styles.carouselButton} href="/login?action=signUp">Registrarse</a>
+            <a className={styles.carouselButton} href='/login?action=signIn'>Iniciar sesión</a>
+            <a className={styles.carouselButton} href='/login?action=signUp'>Registrarse</a>
           </>
-        ) : (
+        )
+: (
           avatarMenu
         )}
       </div>
