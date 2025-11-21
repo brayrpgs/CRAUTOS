@@ -1,27 +1,10 @@
 ---
-import { Background } from "../components/background/Background";
 import { Footer } from "../components/footer/FooterCustom";
-import { HeaderPage } from "../components/header/HeaderPage";
 import { Profile } from "../components/profile/Profile";
+import MainLayout from "../layouts/MainLayout.astro";
 import "../styles/global/styles.css";
-import styles from "../styles/profile/styles.module.css";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Perfil</title>
-  </head>
-  <body>
-    <Background client:load />
-    <HeaderPage client:load />
-    <main class={styles.main}>
-      <Profile client:load />
-    </main>
-    <Footer client:load />
-  </body>
-</html>
+<MainLayout title="Mi Perfil">
+  <Profile client:load />
+</MainLayout>
