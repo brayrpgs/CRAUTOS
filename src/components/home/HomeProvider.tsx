@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { HomeContext } from './HomeContext'
-import { CARS_URL } from '../../common/common'
-import type { Cars } from '../../models/car'
+import { BRANDS_URL, CARS_URL, DISPLACEMENT_URL, FUEL_URL, MODELS_URL, STYLES_URL, TRANSMISSIONS_URL, YEARS_URL } from '../../common/common'
+import type { Brands, Cars, Displacements, Fuel, Models, Styles, Transmissions, Years } from '../../models/car'
 import { getLoggedUserId } from '../../utils/GetUserUtils'
+import type { catalog } from '../../models/catalog'
+import type { Prices } from '../../models/Prices'
+import type { Dors } from '../../models/dors'
+import type { filter } from '../../models/filter'
+import { TransmissionEnum } from '../../enums/TransmissionEnum'
 
 interface HomeProviderProps {
   children: React.ReactNode
@@ -17,6 +22,9 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [carSelected, setCarSelected] = useState<Cars | undefined>(undefined)
   const [openSheet, setOpenSheet] = useState<boolean>(false)
   const [carSelectedById, setCarSelectedById] = useState<number>(0)
+  const [aux, setAux] = useState<boolean>(false)
+  const [catalog, setCatalog] = useState<catalog>()
+  const [filters, setFilters] = useState<filter>()
 
   const abortControllerRef = useRef<AbortController | null>(null)
 
@@ -69,6 +77,92 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
       console.error('Error cargando autos', error)
     }
   }
+
+  const fetchDataWithQuery = async (): Promise<void> => {
+    try {
+      // Intentar obtener el usuario logueado (si existe)
+      let loggedId: number | null = null
+      try {
+        loggedId = getLoggedUserId()
+      } catch {
+        loggedId = null
+      }
+
+      // Construir el filtro dinámico
+      // Siempre → traer solo los NO vendidos
+      let query = `${CARS_URL}?sold=eq.false`
+
+      // Si hay usuario logueado → excluir sus carros
+      if (loggedId !== null) {
+        query += `&id_users=neq.${loggedId}`
+      }
+
+      if (filters?.brand !== '0') {
+        query += `&id_brands=eq.${filters?.brand as string}`
+      }
+      if (filters?.model !== '0') {
+        query += `&id_models=eq.${filters?.model as string}`
+      }
+      if (filters?.style !== '0') {
+        query += `&id_styles=eq.${filters?.style as string}`
+      }
+      if (filters?.colorExt !== '') {
+        query += `&exterior_color=ilike.*${filters?.colorExt as string}*`
+      }
+      if (filters?.colorInter !== '') {
+        query += `&interior_color=ilike.*${filters?.colorInter as string}*`
+      }
+      if (filters?.dors !== '') {
+        query += `&number_of_doors=eq.${filters?.dors as string}`
+      }
+      if (filters?.fuel !== '0') {
+        query += `&id_fuel=eq.${filters?.fuel as string}`
+      }
+      if (filters?.transmissions !== '0') {
+        query += `&id_transmission=eq.${filters?.transmissions as string}`
+      }
+      if (filters?.displacements !== '0') {
+        query += `&id_displacement=eq.${filters?.displacements as string}`
+      }
+      // Campos a seleccionar
+      query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
+
+      if (filters?.orderByPrice as boolean) {
+        query += '&order=price.asc'
+      }
+      if (filters?.orderByYear as boolean) {
+        query += '&order=id_year.asc'
+      }
+      // Petición con paginación
+      const request = await fetch(query, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Range: `${(page - 1) * 10}-${page * 10 - 1}`,
+          'Range-Unit': 'items',
+          Prefer: 'count=exact'
+        }
+      })
+
+      if (!request.ok) return
+
+      // Obtener total de páginas
+      const totalCountData = request.headers.get('content-range')
+      const totalPages = Math.ceil(Number(totalCountData?.split('/')[1]) / 10)
+      setTotalPages(totalPages)
+
+      // Guardar resultados
+      const data = await request.json() as Cars[]
+      setItems(data)
+    } catch (error) {
+      console.error('Error cargando autos', error)
+    }
+  }
+  useEffect(() => {
+    if (filters != null) {
+      void fetchDataWithQuery()
+    }
+  }, [filters, page])
 
   // filter brands
   const fetchFilterBrands = async (data: Cars[] = []): Promise<Cars[]> => {
@@ -204,6 +298,59 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
     }
   }
 
+  useEffect(() => {
+    let mounted = true
+
+    const load = async (): Promise<void> => {
+      try {
+        const urls = [
+            `${BRANDS_URL}?order=desc.asc`,
+            `${MODELS_URL}?order=desc.asc`,
+             `${STYLES_URL}?order=desc.asc`,
+             `${YEARS_URL}?order=desc.asc`,
+             `${CARS_URL}?select=price&order=price.asc`,
+             `${DISPLACEMENT_URL}?order=desc.asc`,
+             TRANSMISSIONS_URL,
+            `${FUEL_URL}?order=desc.asc`,
+            `${CARS_URL}?select=number_of_doors&order=number_of_doors.asc`
+        ]
+
+        const responses = await Promise.all(urls.map(async url => await fetch(url)))
+        const data = await Promise.all(responses.map(async r => await r.json()))
+        const brands = data[0] as Brands[]
+        const models = data[1] as Models[]
+        const styles = data[2] as Styles[]
+        const years = data[3] as Years[]
+        const prices = data[4] as Prices[]
+        const displacements = data[5] as Displacements[]
+        const transmissions = data[6] as Transmissions[]
+        const fuel = data[7] as Fuel[]
+        const dors = data[8] as Dors[]
+        if (mounted) {
+          setCatalog(
+            {
+              brands,
+              models,
+              styles,
+              years,
+              prices,
+              displacements,
+              transmissions,
+              fuel,
+              dors
+            }
+          )
+        }
+      } catch (err) {
+        console.error('Error cargando catálogos:', err)
+      }
+    }
+
+    void load()
+    return () => { mounted = false }
+  }, [])
+
+  // Provide the context values to children components
   const cancelPreviousRequest = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
@@ -253,7 +400,10 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
           openSheet,
           setOpenSheet,
           carSelectedById,
-          setCarSelectedById
+          setCarSelectedById,
+          catalog,
+          filters,
+          setFilters
         }
       }
     >
