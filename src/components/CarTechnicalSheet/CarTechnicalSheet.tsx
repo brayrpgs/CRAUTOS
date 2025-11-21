@@ -41,20 +41,29 @@ export const CarTechnicalSheet: React.FC = () => {
         title.style.color = '#111'
         wrapper.appendChild(title)
 
-        const subtitle = document.createElement('div')
-        subtitle.textContent = String(carData.styles?.desc ?? '')
-        subtitle.style.margin = '0 0 16px 0'
-        subtitle.style.color = '#444'
-        wrapper.appendChild(subtitle)
+        const subtitle = document.createElement('span')
+        subtitle.textContent = `${carData.brands?.desc ?? ''} · ${carData.models?.desc ?? ''} · ${carData.years?.desc ?? ''}`
+        subtitle.style.fontSize = '14px'
+        subtitle.style.color = '#6b7280'
 
-        const imgsContainer = document.createElement('div')
-        // Use grid so images keep aspect ratio (width constrained, height auto)
-        imgsContainer.style.display = 'grid'
-        imgsContainer.style.gridTemplateColumns = '1fr 1fr'
+        header.appendChild(title)
+        header.appendChild(subtitle)
+        card.appendChild(header)
 
-        imgsContainer.style.gap =
-          '12px'
-        imgsContainer.style.marginBottom = '18px'
+        // LINEA
+        const hr = document.createElement('div')
+        hr.style.height = '1px'
+        hr.style.background = '#d1d5db'
+        hr.style.marginBottom = '24px'
+        card.appendChild(hr)
+
+        // === GALERÍA DE FOTOS (TODAS PERFECTAS EN CUADROS) ===
+        const photosSection = document.createElement('div')
+        photosSection.style.display = 'grid'
+        photosSection.style.gridTemplateColumns = 'repeat(3, 1fr)'
+        photosSection.style.gap = '14px'
+        photosSection.style.marginBottom = '28px'
+
         const images = Array.isArray(carData.cars_images) ? carData.cars_images : []
         if (images.length === 0) {
           const placeholder = document.createElement('div')
@@ -151,23 +160,23 @@ export const CarTechnicalSheet: React.FC = () => {
         return wrapper
       }
 
-      const elementToCapture = buildSimpleSheetElement(car)
-      elementToCapture.style.position = 'fixed'
-      elementToCapture.style.left = '-9999px'
+      const element = buildPdfElement(car)
+      element.style.position = 'fixed'
+      element.style.top = '-99999px'
+      element.style.left = '-99999px'
+      element.style.opacity = '1'
+      element.style.pointerEvents = 'none'
+      element.style.zIndex = '-1'
+      document.body.appendChild(element)
 
-      elementToCapture.style.top =
-        '0'
-      elementToCapture.style.zIndex = '99999'
-      document.body.appendChild(elementToCapture)
-
-      const imgs = Array.from(elementToCapture.querySelectorAll<HTMLImageElement>('img'))
-      const imgPromises =
-        imgs.map
-        (async (img) => {
-          if (img.complete) return
-          await new Promise<void>((resolve) => { img.onload = img.onerror = () => resolve() })
-        })
-      await Promise.all(imgPromises)
+      const imgs = Array.from(element.querySelectorAll<HTMLImageElement>('img'))
+      await Promise.all(
+        imgs.map(async img =>
+          img.complete
+            ? await Promise.resolve()
+            : await new Promise<void>(res => { img.onload = img.onerror = () => res() })
+        )
+      )
 
       const canvas = await html2canvas(elementToCapture, {
         scale: 2,
