@@ -12,7 +12,7 @@ export const CarTechnicalSheet: React.FC = () => {
   const ctx = useContext(HomeContext)
 
   useEffect(() => {
-  }, [ctx?.carSelected])
+  }, [ctx?.carSelected, ctx?.openSheet])
   // funcion para renderizar el modal
   const capture = async (): Promise<string | undefined> => {
     try {
@@ -210,7 +210,7 @@ export const CarTechnicalSheet: React.FC = () => {
           <p>Año: {ctx.carSelected.years.desc}</p>
           <p>Precio: {ctx.carSelected.price}</p>
           <p>Negociable: {ctx.carSelected.negotiable ? 'Sí' : 'No'}</p>
-          <p>Fecha de ingreso al sistema: {ctx.carSelected.audit.created_at}</p>
+          <p>Fecha de ingreso al sistema: {new Date(ctx.carSelected.audit.created_at).getUTCDate()}</p>
           <p>Vendido: {ctx.carSelected.sold ? 'Sí' : 'No'}</p>
         </div>
       </ModalContent>

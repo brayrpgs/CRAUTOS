@@ -20,12 +20,19 @@ const Modal: React.FC<ModalProps> = ({ children, open, id, setOpen }: ModalProps
     } else {
       dialogRef.current?.close()
     }
-  }, [open])
+  }, [open, dialogRef.current?.open])
 
   return (
-    <dialog ref={dialogRef} className={styles.container} id={id}>
+    <dialog
+      ref={dialogRef} className={styles.container} id={id}
+      onClose={(e) => {
+        setOpen?.(false)
+      }}
+    >
       <button
-        className={styles['close-btn']} title='close' onClick={() => {
+        className={styles['close-btn']}
+        title='close'
+        onClick={() => {
           dialogRef.current?.close()
           if (setOpen !== undefined) {
             setOpen(false)
