@@ -8,70 +8,72 @@ import { getLoggedUser, type TokenPayload } from '../../utils/GetUserUtils'
 import type { images } from '../../models/images'
 
 export const Profile: React.FC = () => {
-  const [user, setUser] = React.useState<user>()
-  const [image, setImage] = React.useState<string>()
-  const [toast, setToast] = React.useState<string | null>(null)
-  const [changed, setChanged] = React.useState<boolean>(false)
+  const [user, setUser] = useState<user>()
+  const [image, setImage] = useState<string>()
+  const [toast, setToast] = useState<string | null>(null)
+  const [changed, setChanged] = useState<boolean>(false)
   const refUploadImage = React.useRef<HTMLInputElement>(null)
   const [id, setId] = useState(0)
 
   // ===============================
-  //   Nuevo método para mostrar toast
+  // TOAST
   // ===============================
-  const showToast = (msg: string): void => {
-    setToast(msg)
-    setTimeout(() => setToast(null), 3000)
-  }
+  const showToast = (msg: string) => setToast(msg)
+
+  useEffect(() => {
+    if (!toast) return
+    const timer = setTimeout(() => setToast(null), 3000)
+    return () => clearTimeout(timer)
+  }, [toast])
 
   // ===============================
-  //   Cargar datos del usuario
+  // Cargar usuario
   // ===============================
-  const fetchUserData = async (idUser: number): Promise<void> => {
+  const fetchUserData = async (idUser: number) => {
     try {
       const response = await fetch(
         `${USERS_URL}?id_user=eq.${idUser}&select=*,audit(*),images(*)`
       )
       const data = await response.json() as user[]
-      setUser(data[0])
-      setImage(data[0]?.images?.image)
-    } catch (error) {
-      console.error('Error fetching user data:', error)
+      const u = data[0]
+
+      setUser(u)
+      setImage(u?.images?.image)
+    } catch (err) {
+      console.error(err)
     }
   }
 
   // ===============================
-  //   Perfil incompleto (toast)
+  // Perfil incompleto
   // ===============================
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const incomplete = params.get('perfilIncompleto')
-
-    if (incomplete === 'true') {
+    if (params.get('perfilIncompleto') === 'true') {
       showToast('⚠️ Por favor completa tu información antes de continuar ⚠️')
     }
   }, [])
 
   // ===============================
-  //   Guardar cambios en el perfil
+  // Guardar cambios del perfil
   // ===============================
-  const handleUpdateProfile = async (): Promise<void> => {
+  const handleUpdateProfile = async () => {
     try {
-      // ======== ACTUALIZAR AUDITORÍA DEL USER =========
-      if (user?.id_audit !== null) {
-        const res = await fetch(
-          `${AUDIT_URL}?id_audit=eq.${user?.id_audit}`,
-          {
-            method: 'PATCH',
-            headers: {
-              accept: 'application/json',
-              'Content-Type': 'application/json',
-              Prefer: 'return=representation'
-            },
-            body: JSON.stringify({ updated_at: new Date() })
-          }
-        )
+      let current = user
+
+      // ======== AUDITORÍA USER =========
+      if (current?.id_audit) {
+        const res = await fetch(`${AUDIT_URL}?id_audit=eq.${current.id_audit}`, {
+          method: 'PATCH',
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({ updated_at: new Date() })
+        })
         const a = await res.json() as audit[]
-        setUser({ ...user, id_audit: a[0].id_audit })
+        current = { ...current, id_audit: a[0].id_audit }
       } else {
         const res = await fetch(AUDIT_URL, {
           method: 'POST',
@@ -83,16 +85,13 @@ export const Profile: React.FC = () => {
           body: JSON.stringify({})
         })
         const a = await res.json() as audit[]
-        const updated = { ...user } as user
-        updated.id_audit = a[0].id_audit
-        updated.audit = a[0]
-        setUser(updated)
+        current = { ...current!, id_audit: a[0].id_audit, audit: a[0] }
       }
 
-      // ======== ACTUALIZAR AUDITORÍA DE LA IMAGEN =========
-      if (user?.images?.id_audit !== undefined) {
+      // ======== AUDITORÍA IMAGEN =========
+      if (current?.images?.id_audit) {
         const res = await fetch(
-          `${AUDIT_URL}?id_audit=eq.${user?.images?.id_audit}`,
+          `${AUDIT_URL}?id_audit=eq.${current.images.id_audit}`,
           {
             method: 'PATCH',
             headers: {
@@ -104,14 +103,10 @@ export const Profile: React.FC = () => {
           }
         )
         const a = await res.json() as audit[]
-        const updated = { ...user } as user
-
-        if (updated.images) {
-          updated.images.id_audit = a[0].id_audit
-          updated.images.audit = a[0]
+        current = {
+          ...current,
+          images: { ...current.images!, id_audit: a[0].id_audit, audit: a[0] }
         }
-
-        setUser(updated)
       } else {
         const res = await fetch(AUDIT_URL, {
           method: 'POST',
@@ -122,22 +117,17 @@ export const Profile: React.FC = () => {
           },
           body: JSON.stringify({})
         })
-
         const a = await res.json() as audit[]
-        const updated = { ...user } as user
-
-        if (updated.images) {
-          updated.images.id_audit = a[0].id_audit
-          updated.images.audit = a[0]
+        current = {
+          ...current!,
+          images: { ...current.images!, id_audit: a[0].id_audit, audit: a[0] }
         }
-
-        setUser(updated)
       }
 
       // ======== ACTUALIZAR IMAGEN =========
-      if (user?.images?.id_images !== undefined) {
+      if (current?.images?.id_images) {
         const res = await fetch(
-          `${IMAGES_URL}?id_images=eq.${user?.images?.id_images}`,
+          `${IMAGES_URL}?id_images=eq.${current.images.id_images}`,
           {
             method: 'PATCH',
             headers: {
@@ -146,16 +136,13 @@ export const Profile: React.FC = () => {
               Prefer: 'return=representation'
             },
             body: JSON.stringify({
-              image: user?.images?.image,
-              id_audit: user?.images?.id_audit
+              image: current.images.image,
+              id_audit: current.images.id_audit
             })
           }
         )
         const img = await res.json() as images[]
-        const updated = { ...user } as user
-        updated.images = img[0]
-        updated.id_images = img[0].id_images
-        setUser(updated)
+        current = { ...current!, images: img[0], id_images: img[0].id_images }
       } else {
         const res = await fetch(IMAGES_URL, {
           method: 'POST',
@@ -165,19 +152,16 @@ export const Profile: React.FC = () => {
             Prefer: 'return=representation'
           },
           body: JSON.stringify({
-            image: user?.images?.image,
-            id_audit: user?.images?.id_audit
+            image: current?.images?.image,
+            id_audit: current?.images?.id_audit
           })
         })
         const img = await res.json() as images[]
-        const updated = { ...user } as user
-        updated.images = img[0]
-        updated.id_images = img[0].id_images
-        setUser(updated)
+        current = { ...current!, images: img[0], id_images: img[0].id_images }
       }
 
       // ======== ACTUALIZAR USER =========
-      const clone = { ...user }
+      const clone = structuredClone(current)
       delete clone.images
       delete clone.audit
       delete clone.id_user
@@ -193,50 +177,53 @@ export const Profile: React.FC = () => {
       })
 
       if (!res.ok) {
-        showToast('Los datos no se pudieron actualizar correctamente')
+        showToast('❌ Los datos no se pudieron actualizar correctamente')
       } else {
-        showToast('Datos actualizados correctamente')
-        setChanged(!changed)
+        showToast('✔ Datos actualizados correctamente')
+        setChanged(prev => !prev)
       }
+
+      setUser(current)
     } catch (err) {
       console.error(err)
+      showToast('❌ Error interno')
     }
   }
 
   // ===============================
-  //   Convertir imagen a base64
+  // Convertir imagen a base64
   // ===============================
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-    if (!e.target.files || e.target.files.length === 0) return
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
 
-    const base64 = await fileToBase64(e.target.files[0])
-    const updated = { ...user } as user
+    const base64 = await fileToBase64(e.target.files[0]);
 
-    updated.images = {
-      image: base64,
-      audit: {}
-    }
+    setUser(prev => ({
+      ...prev!,
+      images: {
+        ...prev?.images,
+        image: base64
+      }
+    }));
 
-    setUser(updated)
-    setImage(base64)
-  }
+    setImage(base64);
+  };
 
   // ===============================
-  //   Cargar user desde token
+  // Cargar user desde token
   // ===============================
   useEffect(() => {
     const token: TokenPayload = getLoggedUser() as TokenPayload
     if (!token) window.location.href = '/'
     setId(token.id_user)
-    void fetchUserData(token.id_user)
-  }, [changed, id])
+    fetchUserData(token.id_user)
+  }, [changed])
 
   return (
     <div className={styles.wrapper}>
 
-      {/* === NUEVO TOAST GLOBAL === */}
       {toast && (
-        <div className={styles.profileToast}>
+        <div className={styles.globalToast}>
           {toast}
         </div>
       )}
@@ -244,17 +231,16 @@ export const Profile: React.FC = () => {
       <div className={styles.card}>
         <h2 className={styles.title}>Mi perfil de usuario</h2>
 
-        {/* Avatar */}
         <div className={styles.avatarBox}>
           <img
             className={styles.avatar}
-            src={image ?? "avatar.png"}
-            alt="foto de perfil"
+            src={image ?? 'avatar.png'}
+            alt='foto de perfil'
             onClick={() => refUploadImage.current?.click()}
           />
 
           <input
-            type="file"
+            type='file'
             hidden
             ref={refUploadImage}
             onChange={handleImageChange}
@@ -270,10 +256,8 @@ export const Profile: React.FC = () => {
         {/* Formulario */}
         <div className={styles.grid}>
           <div className={styles.item}>
-            <label htmlFor='na' className={styles.label}>Nombre</label>
+            <label className={styles.label}>Nombre</label>
             <input
-              id='na'
-              name='na'
               className={`glass ${styles.input}`}
               value={user?.name ?? ''}
               onInput={e => setUser({ ...user!, name: e.currentTarget.value })}
@@ -281,10 +265,8 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label htmlFor='ln' className={styles.label}>Apellidos</label>
+            <label className={styles.label}>Apellidos</label>
             <input
-              id='ln'
-              name='ln'
               className={`glass ${styles.input}`}
               value={user?.last_name ?? ''}
               onInput={e => setUser({ ...user!, last_name: e.currentTarget.value })}
@@ -292,10 +274,8 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label htmlFor='ph' className={styles.label}>Teléfono</label>
+            <label className={styles.label}>Teléfono</label>
             <input
-              id='ph'
-              name='ph'
               className={`glass ${styles.input}`}
               value={user?.phone ?? ''}
               onInput={e => setUser({ ...user!, phone: e.currentTarget.value })}
@@ -303,10 +283,8 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label htmlFor='em' className={styles.label}>Email</label>
+            <label className={styles.label}>Email</label>
             <input
-              id='em'
-              name='em'
               className={`glass ${styles.input}`}
               value={user?.email ?? ''}
               onInput={e => setUser({ ...user!, email: e.currentTarget.value })}
@@ -314,10 +292,8 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label htmlFor='ced' className={styles.label}>Cédula</label>
+            <label className={styles.label}>Cédula</label>
             <input
-              id='ced'
-              name='ced'
               className={`glass ${styles.input}`}
               value={user?.idcard ?? ''}
               onInput={e => setUser({ ...user!, idcard: e.currentTarget.value })}
@@ -325,10 +301,8 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={styles.item}>
-            <label htmlFor='ag' className={styles.label}>Edad</label>
+            <label className={styles.label}>Edad</label>
             <input
-              id='ag'
-              name='ag'
               className={`glass ${styles.input}`}
               value={user?.age ?? ''}
               onInput={e => setUser({ ...user!, age: Number(e.currentTarget.value) })}
@@ -336,10 +310,7 @@ export const Profile: React.FC = () => {
           </div>
 
           <div className={`${styles.item} ${styles.buttonBox}`}>
-            <button
-              className={`glass ${styles.button}`}
-              onClick={() => void handleUpdateProfile()}
-            >
+            <button className={`glass ${styles.button}`} onClick={handleUpdateProfile}>
               Guardar Cambios
             </button>
           </div>
@@ -349,13 +320,12 @@ export const Profile: React.FC = () => {
   )
 }
 
+// ===============================
 async function fileToBase64(file: File): Promise<string> {
   return await new Promise((resolve, reject) => {
     const reader = new FileReader()
-
     reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(reader.error)
-
+    reader.onerror = reject
     reader.readAsDataURL(file)
   })
 }
