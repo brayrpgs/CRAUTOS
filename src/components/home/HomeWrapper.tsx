@@ -8,14 +8,15 @@ import { ModalContent } from '../modal/ModalContent'
 import { ModalFooter } from '../modal/ModalFooter'
 import { ModalHeader } from '../modal/ModalHeader'
 import { CarTechnicalSheet } from '../CarTechnicalSheet/CarTechnicalSheet'
+import { TransmissionEnum } from '../../enums/TransmissionEnum'
 
 const HomeWrapper: React.FC = () => {
   const ctx = useContext(HomeContext)
   const [pageModal, setPageModal] = useState(1)
-  const MIN_YEAR = 1990
-  const MAX_YEAR = 2025
-  const [yearFrom, setYearFrom] = useState<number>(2005)
-  const [yearTo, setYearTo] = useState<number>(2018)
+  const [yearFrom, setYearFrom] = useState<number>(0)
+  const [yearTo, setYearTo] = useState<number>(0)
+  const [priceFrom, setPriceFrom] = useState<number>(0)
+  const [priceTo, setPriceTo] = useState<number>(0)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -27,6 +28,49 @@ const HomeWrapper: React.FC = () => {
 
   useEffect(() => {
   }, [ctx?.stateModal])
+
+  // initialize range state values from catalog bounds (catalog arrays are already ordered)
+  useEffect(() => {
+    const years = ctx?.catalog?.years ?? []
+    if (Array.isArray(years) && years.length > 0) {
+      const minY = parseInt(String(years[0].desc)) || 0
+      const maxY = parseInt(String(years[years.length - 1].desc)) || minY
+      setYearFrom(minY)
+      setYearTo(maxY)
+    }
+
+    const prices = ctx?.catalog?.prices ?? []
+    if (Array.isArray(prices) && prices.length > 0) {
+      const minP = prices[0].price ?? 0
+      const maxP = prices[prices.length - 1].price ?? minP
+      setPriceFrom(minP)
+      setPriceTo(maxP)
+    }
+  }, [ctx?.catalog])
+
+  // compute min/max locally without mutating catalog arrays (avoid using .reverse())
+  const minYear = (() => {
+    const y = ctx?.catalog?.years
+    return Array.isArray(y) && y.length > 0 ? parseInt(String(y[0].desc)) : 0
+  })()
+  const maxYear = (() => {
+    const y = ctx?.catalog?.years
+    return Array.isArray(y) && y.length > 0 ? parseInt(String(y[y.length - 1].desc)) : 0
+  })()
+  const minPrice = (() => {
+    const p = ctx?.catalog?.prices
+    return Array.isArray(p) && p.length > 0 ? p[0].price : 0
+  })()
+  const maxPrice = (() => {
+    const p = ctx?.catalog?.prices
+    return Array.isArray(p) && p.length > 0 ? p[p.length - 1].price : 0
+  })()
+
+  const percentPos = (value: number, min: number, max: number): number => {
+    const range = max - min
+    const safeRange = Number.isFinite(range) && range !== 0 ? range : 1
+    return ((value - min) / safeRange) * 100
+  }
   return (
     <div className={styles.container}>
       <div className={`${styles.child} ${styles.childFilters}`}>
@@ -34,60 +78,80 @@ const HomeWrapper: React.FC = () => {
           <ModalHeader>Filtros Avanzados de Busqueda</ModalHeader>
           <ModalContent>
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 1 ? '' : 'hide'}>
-              <label htmlFor='test'>Marca:</label>
-              <select id='test' defaultValue={0} className='glass' popover='auto'>
-                <option value='0'>option1</option>
-                <option value='1'>option2</option>
+              <label htmlFor='brand'>Marca:</label>
+              <select id='brand' defaultValue={0} className='glass' popover='auto'>
+                <option value={0}>-seleccione una marca-</option>
+                {(ctx?.catalog?.brands ?? []).map(brand =>
+                  <option value={brand.id_brands} key={brand.id_brands}>{brand.desc}</option>
+                )}
               </select>
             </span>
 
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 1 ? '' : 'hide'}>
-              <label htmlFor='test'>Modelo:</label>
-              <select id='test' defaultValue={0} className='glass'>
-                <option value='0'>option1</option>
+              <label htmlFor='models'>Modelo:</label>
+              <select id='models' defaultValue={0} className='glass'>
+                <option value='0'>-seleccione un modelo-</option>
+                {(ctx?.catalog?.models ?? []).map(model =>
+                  <option value={model.id_models} key={model.id_models}>{model.desc}</option>
+                )}
               </select>
             </span>
 
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 1 ? '' : 'hide'}>
-              <label htmlFor='test'>Estilo:</label>
-              <select id='test' defaultValue={0} className='glass'>
-                <option value='0'>option1</option>
+              <label htmlFor='style'>Estilo:</label>
+              <select id='style' defaultValue={0} className='glass'>
+                <option value='0'>-seleccione un estilo-</option>
+                {(ctx?.catalog?.styles ?? []).map(style =>
+                  <option value={style.id_styles} key={style.id_styles}>{style.desc}</option>
+                )}
               </select>
             </span>
 
-            <span style={{ alignSelf: 'stretch' }} className={pageModal === 1 ? '' : 'hide'}>
-              <label htmlFor='test'>Color exterior :</label>
-              <select id='test' defaultValue={0} className='glass'>
-                <option value='0'>option1</option>
-              </select>
+            <span
+              style={{
+                alignSelf: 'stretch',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                marginBlock: '1rem'
+              }} className={pageModal === 1 ? '' : 'hide'}
+            >
+              <label htmlFor='colorExt'>Color exterior :</label>
+              <input style={{ width: '100%' }} className='glass' type='text' name='colorExt' id='colorExt' placeholder='busque su color preferido' />
             </span>
 
-            <span style={{ alignSelf: 'stretch' }} className={pageModal === 1 ? '' : 'hide'}>
-              <label htmlFor='test'>Color interior :</label>
-              <select id='test' defaultValue={0} className='glass'>
-                <option value='0'>option1</option>
-              </select>
+            <span
+              style={{
+                alignSelf: 'stretch',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                marginBlock: '1rem'
+              }} className={pageModal === 1 ? '' : 'hide'}
+            >
+              <label htmlFor='colorInter'>Color interior :</label>
+              <input style={{ width: '100%' }} className='glass' type='text' name='colorInter' id='colorExt' placeholder='busque su color preferido' />
             </span>
-            {/* first options in modal */}
 
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
-              <label htmlFor='test'>Año :</label>
+              <label htmlFor='year-from'>Año :</label>
               <div>
-                <div className={styles.rangeWrapper}>
+                <div className='rangeWrapper'>
                   <input
                     id='year-from'
                     type='range'
                     className='glass range'
-                    min={MIN_YEAR}
-                    max={MAX_YEAR}
+                    min={minYear}
+                    max={maxYear}
                     value={yearFrom}
+                    step={1}
                     onChange={e => setYearFrom(Number(e.target.value))}
                     onInput={e => setYearFrom(Number((e.target as HTMLInputElement).value))}
                   />
                   {/* tooltip positioned according to value percent */}
                   <div
                     className='rangeTooltip'
-                    style={{ left: `${((yearFrom - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100}%` }}
+                    style={{ left: `${percentPos(yearFrom, minYear, maxYear)}%` }}
                   >
                     {yearFrom}
                   </div>
@@ -98,15 +162,15 @@ const HomeWrapper: React.FC = () => {
                     id='year-to'
                     type='range'
                     className='glass range'
-                    min={MIN_YEAR}
-                    max={MAX_YEAR}
+                    min={minYear}
+                    max={maxYear}
                     value={yearTo}
                     onChange={e => setYearTo(Number(e.target.value))}
                     onInput={e => setYearTo(Number((e.target as HTMLInputElement).value))}
                   />
                   <div
                     className='rangeTooltip'
-                    style={{ left: `${((yearTo - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100}%` }}
+                    style={{ left: `${percentPos(yearTo, minYear, maxYear)}%` }}
                   >
                     {yearTo}
                   </div>
@@ -114,98 +178,92 @@ const HomeWrapper: React.FC = () => {
               </div>
             </span>
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
-              <label htmlFor='test'>Precio :</label>
+              <label htmlFor='price-from'>Precio :</label>
               <div>
                 <div className='rangeWrapper'>
                   <input
-                    id='year-from'
+                    id='price-from'
                     type='range'
                     className='glass range'
-                    min={MIN_YEAR}
-                    max={MAX_YEAR}
-                    value={yearFrom}
-                    onChange={e => setYearFrom(Number(e.target.value))}
-                    onInput={e => setYearFrom(Number((e.target as HTMLInputElement).value))}
+                    min={minPrice}
+                    max={maxPrice}
+                    value={priceFrom}
+                    step={250000}
+                    onChange={e => setPriceFrom(Number(e.target.value))}
+                    onInput={e => setPriceFrom(Number((e.target as HTMLInputElement).value))}
                   />
-                  {/* tooltip positioned according to value percent */}
                   <div
                     className='rangeTooltip'
-                    style={{ left: `${((yearFrom - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100}%` }}
+                    style={{ left: `${percentPos(priceFrom, minPrice, maxPrice)}%` }}
                   >
-                    {yearFrom}
+                    {priceFrom.toLocaleString('CR-cr')}
                   </div>
                 </div>
 
                 <div className='rangeWrapper'>
                   <input
-                    id='year-to'
+                    id='price-to'
                     type='range'
                     className='glass range'
-                    min={MIN_YEAR}
-                    max={MAX_YEAR}
-                    value={yearTo}
-                    onChange={e => setYearTo(Number(e.target.value))}
-                    onInput={e => setYearTo(Number((e.target as HTMLInputElement).value))}
+                    min={minPrice}
+                    max={maxPrice}
+                    value={priceTo}
+                    step={250000}
+                    onChange={e => setPriceTo(Number(e.target.value))}
+                    onInput={e => setPriceTo(Number((e.target as HTMLInputElement).value))}
                   />
                   <div
                     className='rangeTooltip'
-                    style={{ left: `${((yearTo - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100}%` }}
+                    style={{ left: `${percentPos(priceTo, minPrice, maxPrice)}%` }}
                   >
-                    {yearTo}
+                    {priceTo.toLocaleString('CR-cr')}
                   </div>
                 </div>
               </div>
             </span>
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
-              <label htmlFor='test'>Cilindraje :</label>
-              <input type='number' className='glass' min={1} />
+              <label htmlFor='displacements'>Cilindraje :</label>
+              <select id='displacements' defaultValue={0} className='glass'>
+                <option value='0'>-seleccione un cilindraje-</option>
+                {(ctx?.catalog?.displacements ?? []).map(displasments =>
+                  <option value={displasments.id_displacements} key={displasments.id_displacements}>{displasments.desc}</option>
+                )}
+              </select>
             </span>
-            {/** second page */}
-            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
-              <legend>Transmisión :</legend>
-              <div className='radioOptions'>
-                <input type='radio' id='1' name='test' className='glass' value='test' />
-                <label htmlFor='1'>dato 1</label>
-              </div>
-              <div className='radioOptions'>
-                <input type='radio' id='2' name='test' className='glass' value='test' />
-                <label htmlFor='2'>dato 2</label>
-              </div>
-            </fieldset>
-            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
-              <legend>Combustible :</legend>
-              <div className='radioOptions'>
-                <input type='radio' id='1' name='test' className='glass' value='test' />
-                <label htmlFor='1'>dato 1</label>
-              </div>
-              <div className='radioOptions'>
-                <input type='radio' id='2' name='test' className='glass' value='test' />
-                <label htmlFor='2'>dato 2</label>
-              </div>
-            </fieldset>
-            <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
-              <legend>Cantidad de Puertas :</legend>
-              <div className='radioOptions'>
-                <input type='radio' id='1' name='test' className='glass' value='test' />
-                <label htmlFor='1'>dato 1</label>
-              </div>
-              <div className='radioOptions'>
-                <input type='radio' id='2' name='test' className='glass' value='test' />
-                <label htmlFor='2'>dato 2</label>
-              </div>
-            </fieldset>
+            <span style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
+              <label htmlFor='displacements'>Transmisión :</label>
+              <select id='displacements' defaultValue={0} className='glass'>
+                <option value='0'>-seleccione un transmisión-</option>
+                {(ctx?.catalog?.transmissions ?? []).map(transmissions =>
+                  <option value={transmissions.id_transmissions} key={transmissions.id_transmissions}>{TransmissionEnum[transmissions.desc]}</option>
+                )}
+              </select>
+            </span>
+            <span style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
+              <label htmlFor='fuel'>Combustible :</label>
+              <select id='fuel' defaultValue={0} className='glass'>
+                <option value='0'>-seleccione un tipo de combustible-</option>
+                {(ctx?.catalog?.fuel ?? []).map(fuel =>
+                  <option value={fuel.id_fuel} key={fuel.id_fuel}>{fuel.desc}</option>
+                )}
+              </select>
+            </span>
+            <span style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
+              <label htmlFor='fuel'>Cantidad de puertas :</label>
+              <input style={{ width: '100%' }} className='glass' type='number' name='fuel' id='fuel' placeholder='' />
+            </span>
             <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
               <legend>Ordernar por :</legend>
               <div className='radioOptions'>
-                <input type='radio' id='1' name='test' className='glass' value='test' />
-                <label htmlFor='1'>precio</label>
+                <input type='radio' id='orderByPrice' name='test' className='glass' />
+                <label htmlFor='orderByPrice'>precio</label>
               </div>
               <div className='radioOptions'>
-                <input type='radio' id='2' name='test' className='glass' value='test' />
-                <label htmlFor='2'>año</label>
+                <input type='radio' id='orderByYear' name='test' className='glass' />
+                <label htmlFor='orderByYear'>año</label>
               </div>
             </fieldset>
-            {/** button navegation in modal */}
+            
             <span style={{
               alignSelf: 'stretch',
               display: 'flex',
@@ -245,7 +303,7 @@ const HomeWrapper: React.FC = () => {
         />
       </div>
       <div className={`${styles.child} ${styles.childContent}`}>
-        {ctx?.items.map(car => (
+        {(ctx?.items ?? []).map(car => (
           <Card
             image={car.cars_images[0].images.image}
             info={`${car.brands.desc}-${car.models.desc}-$${car.price}`}

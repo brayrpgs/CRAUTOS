@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import { HomeContext } from './HomeContext'
-import { CARS_URL } from '../../common/common'
-import type { Cars } from '../../models/car'
+import { BRANDS_URL, CARS_URL, DISPLACEMENT_URL, FUEL_URL, MODELS_URL, STYLES_URL, TRANSMISSIONS_URL, YEARS_URL } from '../../common/common'
+import type { Brands, Cars, Displacements, Fuel, Models, Styles, Transmissions, Years } from '../../models/car'
 import { getLoggedUserId } from '../../utils/GetUserUtils'
+import type { catalog } from '../../models/catalog'
+import type { Prices } from '../../models/Prices'
+import type { Dors } from '../../models/dors'
 
 interface HomeProviderProps {
   children: React.ReactNode
@@ -18,6 +21,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [openSheet, setOpenSheet] = useState<boolean>(false)
   const [carSelectedById, setCarSelectedById] = useState<number>(0)
   const [aux, setAux] = useState<boolean>(false)
+  const [catalog, setCatalog] = useState<catalog>()
 
   // fetch all cars
   const fetchData = async (): Promise<void> => {
@@ -201,6 +205,58 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
     }
   }
 
+  useEffect(() => {
+    let mounted = true
+
+    const load = async (): Promise<void> => {
+      try {
+        const urls = [
+            `${BRANDS_URL}?order=desc.asc`,
+            `${MODELS_URL}?order=desc.asc`,
+             `${STYLES_URL}?order=desc.asc`,
+             `${YEARS_URL}?order=desc.asc`,
+             `${CARS_URL}?select=price&order=price.asc`,
+             `${DISPLACEMENT_URL}?order=desc.asc`,
+             TRANSMISSIONS_URL,
+            `${FUEL_URL}?order=desc.asc`,
+            `${CARS_URL}?select=number_of_doors&order=number_of_doors.asc`
+        ]
+
+        const responses = await Promise.all(urls.map(async url => await fetch(url)))
+        const data = await Promise.all(responses.map(async r => await r.json()))
+        const brands = data[0] as Brands[]
+        const models = data[1] as Models[]
+        const styles = data[2] as Styles[]
+        const years = data[3] as Years[]
+        const prices = data[4] as Prices[]
+        const displacements = data[5] as Displacements[]
+        const transmissions = data[6] as Transmissions[]
+        const fuel = data[7] as Fuel[]
+        const dors = data[8] as Dors[]
+        if (mounted) {
+          setCatalog(
+            {
+              brands,
+              models,
+              styles,
+              years,
+              prices,
+              displacements,
+              transmissions,
+              fuel,
+              dors
+            }
+          )
+        }
+      } catch (err) {
+        console.error('Error cargando catálogos:', err)
+      }
+    }
+
+    void load()
+    return () => { mounted = false }
+  }, [])
+
   // Provide the context values to children components
   useEffect(() => {
     const exec = async (): Promise<void> => {
@@ -241,7 +297,8 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
           openSheet,
           setOpenSheet,
           carSelectedById,
-          setCarSelectedById
+          setCarSelectedById,
+          catalog
         }
       }
     >
