@@ -229,13 +229,13 @@ const LoginComponent: React.FC = () => {
           <div className={`${styles.formPanel} ${resolvedMode === 'signIn' ? styles.formVisible : styles.formHidden}`}>
             <div className={styles.formInput}>
               <div className={styles.inputWrapper}>
-                <input type="email" placeholder="Correo electrónico" />
+                <input id='em' name='em' type="email" placeholder="Correo electrónico" autoComplete='off' />
               </div>
             </div>
 
             <div className={styles.formInput}>
               <div className={styles.inputWrapper}>
-                <input type={showPassword ? 'text' : 'password'} placeholder="Contraseña" />
+                <input id='pa' name='pa' type={showPassword ? 'text' : 'password'} placeholder="Contraseña" />
                 <span className={styles.eyeToggle} onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </span>

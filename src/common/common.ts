@@ -1,6 +1,10 @@
-export const BASE_API_URL = 'http://localhost:3001'
-export const BASE_AUTH_URL = 'http://localhost:3000'
-export const BASE_APP_URL = 'http://38.10.22.15'
+// export const BASE_API_URL = 'http://localhost:3001' local
+// export const BASE_AUTH_URL = 'http://localhost:3000' local
+
+export const BASE_API_URL = 'https://mcrgpc8m-3001.use2.devtunnels.ms'
+export const BASE_AUTH_URL = 'https://mcrgpc8m-3000.use2.devtunnels.ms'
+
+export const BASE_APP_URL = 'https://mcrgpc8m-4321.use2.devtunnels.ms'
 
 export const BRANDS_URL = `${BASE_API_URL}/brands`
 export const USERS_URL = `${BASE_API_URL}/users`
