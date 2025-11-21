@@ -1,10 +1,10 @@
 ---
 import { HeaderPage } from "../components/header/HeaderPage";
 import { Footer } from "../components/footer/FooterCustom";
-import { FavoriteCarsManager } from "../components/favorites/FavoriteCarsManager";
 import "../styles/global/styles.css";
 import styles from "../styles/announcement/styles.module.css";
 import { Background } from "../components/background/Background";
+import { FavoritesPage } from "../components/favorites/FavoritesPage";
 ---
 
 <head>
@@ -46,7 +46,7 @@ import { Background } from "../components/background/Background";
 
     {/* CONTENIDO PRINCIPAL */}
     <main class={styles.main}>
-      <FavoriteCarsManager client:load />
+      <FavoritesPage client:load />
     </main>
 
     {/* FOOTER */}
