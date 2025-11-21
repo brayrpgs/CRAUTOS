@@ -296,7 +296,7 @@ export const CarForm: React.FC<CarFormProps> = ({
         <>
           <div className={styles.formGrid}>
             <span>
-              <label>Marca</label>
+              <label htmlFor='ma'>Marca</label>
               <select
                 id='ma'
                 name='ma'
