@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { HomeContext } from './HomeContext'
 import styles from '../../styles/home/styles.module.css'
 import stylePagination from '../../styles/pagination/styles.module.css'
@@ -17,6 +17,23 @@ const HomeWrapper: React.FC = () => {
   const [yearTo, setYearTo] = useState<number>(0)
   const [priceFrom, setPriceFrom] = useState<number>(0)
   const [priceTo, setPriceTo] = useState<number>(0)
+
+  /// referencias del los filtros avanzados
+  const brandRef = useRef<HTMLSelectElement>(null)
+  const modelRef = useRef<HTMLSelectElement>(null)
+  const styleRef = useRef<HTMLSelectElement>(null)
+  const colorExtRef = useRef<HTMLInputElement>(null)
+  const colorInterRef = useRef<HTMLInputElement>(null)
+  const yearFromRef = useRef<HTMLInputElement>(null)
+  const yearToRef = useRef<HTMLInputElement>(null)
+  const priceFromRef = useRef<HTMLInputElement>(null)
+  const priceToRef = useRef<HTMLInputElement>(null)
+  const displacementsRef = useRef<HTMLSelectElement>(null)
+  const transmissionsRef = useRef<HTMLSelectElement>(null)
+  const fuelRef = useRef<HTMLSelectElement>(null)
+  const dorsRef = useRef<HTMLInputElement>(null)
+  const orderByPriceRef = useRef<HTMLInputElement>(null)
+  const orderByYearRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -79,7 +96,7 @@ const HomeWrapper: React.FC = () => {
           <ModalContent>
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 1 ? '' : 'hide'}>
               <label htmlFor='brand'>Marca:</label>
-              <select id='brand' defaultValue={0} className='glass' popover='auto'>
+              <select id='brand' defaultValue={0} className='glass' popover='auto' ref={brandRef}>
                 <option value={0}>-seleccione una marca-</option>
                 {(ctx?.catalog?.brands ?? []).map(brand =>
                   <option value={brand.id_brands} key={brand.id_brands}>{brand.desc}</option>
@@ -89,7 +106,7 @@ const HomeWrapper: React.FC = () => {
 
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 1 ? '' : 'hide'}>
               <label htmlFor='models'>Modelo:</label>
-              <select id='models' defaultValue={0} className='glass'>
+              <select id='models' defaultValue={0} className='glass' ref={modelRef}>
                 <option value='0'>-seleccione un modelo-</option>
                 {(ctx?.catalog?.models ?? []).map(model =>
                   <option value={model.id_models} key={model.id_models}>{model.desc}</option>
@@ -99,7 +116,7 @@ const HomeWrapper: React.FC = () => {
 
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 1 ? '' : 'hide'}>
               <label htmlFor='style'>Estilo:</label>
-              <select id='style' defaultValue={0} className='glass'>
+              <select id='style' defaultValue={0} className='glass' ref={styleRef}>
                 <option value='0'>-seleccione un estilo-</option>
                 {(ctx?.catalog?.styles ?? []).map(style =>
                   <option value={style.id_styles} key={style.id_styles}>{style.desc}</option>
@@ -117,7 +134,7 @@ const HomeWrapper: React.FC = () => {
               }} className={pageModal === 1 ? '' : 'hide'}
             >
               <label htmlFor='colorExt'>Color exterior :</label>
-              <input style={{ width: '100%' }} className='glass' type='text' name='colorExt' id='colorExt' placeholder='busque su color preferido' />
+              <input style={{ width: '100%' }} className='glass' type='text' name='colorExt' id='colorExt' placeholder='busque su color preferido' ref={colorExtRef} />
             </span>
 
             <span
@@ -130,7 +147,7 @@ const HomeWrapper: React.FC = () => {
               }} className={pageModal === 1 ? '' : 'hide'}
             >
               <label htmlFor='colorInter'>Color interior :</label>
-              <input style={{ width: '100%' }} className='glass' type='text' name='colorInter' id='colorExt' placeholder='busque su color preferido' />
+              <input style={{ width: '100%' }} className='glass' type='text' name='colorInter' id='colorInter' placeholder='busque su color preferido' ref={colorInterRef} />
             </span>
 
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
@@ -147,6 +164,7 @@ const HomeWrapper: React.FC = () => {
                     step={1}
                     onChange={e => setYearFrom(Number(e.target.value))}
                     onInput={e => setYearFrom(Number((e.target as HTMLInputElement).value))}
+                    ref={yearFromRef}
                   />
                   {/* tooltip positioned according to value percent */}
                   <div
@@ -167,6 +185,7 @@ const HomeWrapper: React.FC = () => {
                     value={yearTo}
                     onChange={e => setYearTo(Number(e.target.value))}
                     onInput={e => setYearTo(Number((e.target as HTMLInputElement).value))}
+                    ref={yearToRef}
                   />
                   <div
                     className='rangeTooltip'
@@ -191,6 +210,7 @@ const HomeWrapper: React.FC = () => {
                     step={250000}
                     onChange={e => setPriceFrom(Number(e.target.value))}
                     onInput={e => setPriceFrom(Number((e.target as HTMLInputElement).value))}
+                    ref={priceFromRef}
                   />
                   <div
                     className='rangeTooltip'
@@ -211,6 +231,7 @@ const HomeWrapper: React.FC = () => {
                     step={250000}
                     onChange={e => setPriceTo(Number(e.target.value))}
                     onInput={e => setPriceTo(Number((e.target as HTMLInputElement).value))}
+                    ref={priceToRef}
                   />
                   <div
                     className='rangeTooltip'
@@ -223,7 +244,7 @@ const HomeWrapper: React.FC = () => {
             </span>
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
               <label htmlFor='displacements'>Cilindraje :</label>
-              <select id='displacements' defaultValue={0} className='glass'>
+              <select id='displacements' defaultValue={0} className='glass' ref={displacementsRef}>
                 <option value='0'>-seleccione un cilindraje-</option>
                 {(ctx?.catalog?.displacements ?? []).map(displasments =>
                   <option value={displasments.id_displacements} key={displasments.id_displacements}>{displasments.desc}</option>
@@ -231,8 +252,8 @@ const HomeWrapper: React.FC = () => {
               </select>
             </span>
             <span style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
-              <label htmlFor='displacements'>Transmisión :</label>
-              <select id='displacements' defaultValue={0} className='glass'>
+              <label htmlFor='transmissions'>Transmisión :</label>
+              <select id='transmissions' defaultValue={0} className='glass' ref={transmissionsRef}>
                 <option value='0'>-seleccione un transmisión-</option>
                 {(ctx?.catalog?.transmissions ?? []).map(transmissions =>
                   <option value={transmissions.id_transmissions} key={transmissions.id_transmissions}>{TransmissionEnum[transmissions.desc]}</option>
@@ -241,7 +262,7 @@ const HomeWrapper: React.FC = () => {
             </span>
             <span style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
               <label htmlFor='fuel'>Combustible :</label>
-              <select id='fuel' defaultValue={0} className='glass'>
+              <select id='fuel' defaultValue={0} className='glass' ref={fuelRef}>
                 <option value='0'>-seleccione un tipo de combustible-</option>
                 {(ctx?.catalog?.fuel ?? []).map(fuel =>
                   <option value={fuel.id_fuel} key={fuel.id_fuel}>{fuel.desc}</option>
@@ -249,21 +270,20 @@ const HomeWrapper: React.FC = () => {
               </select>
             </span>
             <span style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
-              <label htmlFor='fuel'>Cantidad de puertas :</label>
-              <input style={{ width: '100%' }} className='glass' type='number' name='fuel' id='fuel' placeholder='' />
+              <label htmlFor='dors'>Cantidad de puertas :</label>
+              <input style={{ width: '100%' }} className='glass' type='number' name='fuel' id='dors' placeholder='' ref={dorsRef} />
             </span>
             <fieldset style={{ alignSelf: 'stretch', borderRadius: '1rem' }} className={pageModal === 3 ? '' : 'hide'}>
               <legend>Ordernar por :</legend>
               <div className='radioOptions'>
-                <input type='radio' id='orderByPrice' name='test' className='glass' />
+                <input type='radio' id='orderByPrice' name='test' className='glass' ref={orderByPriceRef} />
                 <label htmlFor='orderByPrice'>precio</label>
               </div>
               <div className='radioOptions'>
-                <input type='radio' id='orderByYear' name='test' className='glass' />
+                <input type='radio' id='orderByYear' name='test' className='glass' ref={orderByYearRef} />
                 <label htmlFor='orderByYear'>año</label>
               </div>
             </fieldset>
-            
             <span style={{
               alignSelf: 'stretch',
               display: 'flex',
@@ -290,7 +310,30 @@ const HomeWrapper: React.FC = () => {
             </span>
           </ModalContent>
           <ModalFooter>
-            <button className='glass'>Realizar filtro</button>
+            <button
+              className='glass'
+              onClick={(e) => {
+                ctx?.setFilters?.(
+                  {
+                    brand: brandRef.current?.value,
+                    model: modelRef.current?.value,
+                    style: styleRef.current?.value,
+                    colorExt: colorExtRef.current?.value,
+                    colorInter: colorInterRef.current?.value,
+                    yearFrom: yearFromRef.current?.value,
+                    yearTo: yearToRef.current?.value,
+                    priceFrom: priceFromRef.current?.value,
+                    priceTo: priceToRef.current?.value,
+                    dors: dorsRef.current?.value,
+                    fuel: fuelRef.current?.value,
+                    orderByPrice: orderByPriceRef.current?.checked,
+                    orderByYear: orderByYearRef.current?.checked
+                  }
+                )
+              }}
+            >
+              Realizar filtro
+            </button>
           </ModalFooter>
         </Modal>
         <button className='glass' onClick={() => ctx?.setStateModal?.(prev => !prev)}>Filtros</button>

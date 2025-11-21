@@ -6,6 +6,7 @@ import { getLoggedUserId } from '../../utils/GetUserUtils'
 import type { catalog } from '../../models/catalog'
 import type { Prices } from '../../models/Prices'
 import type { Dors } from '../../models/dors'
+import type { filter } from '../../models/filter'
 
 interface HomeProviderProps {
   children: React.ReactNode
@@ -22,6 +23,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [carSelectedById, setCarSelectedById] = useState<number>(0)
   const [aux, setAux] = useState<boolean>(false)
   const [catalog, setCatalog] = useState<catalog>()
+  const [filters, setFilters] = useState<filter>()
 
   // fetch all cars
   const fetchData = async (): Promise<void> => {
@@ -43,6 +45,93 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
         query += `&id_users=neq.${loggedId}`
       }
 
+      // Campos a seleccionar
+      query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
+
+      // Petición con paginación
+      const request = await fetch(query, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Range: `${(page - 1) * 10}-${page * 10 - 1}`,
+          'Range-Unit': 'items',
+          Prefer: 'count=exact'
+        }
+      })
+
+      if (!request.ok) return
+
+      // Obtener total de páginas
+      const totalCountData = request.headers.get('content-range')
+      const totalPages = Math.ceil(Number(totalCountData?.split('/')[1]) / 10)
+      setTotalPages(totalPages)
+
+      // Guardar resultados
+      const data = await request.json() as Cars[]
+      setItems(data)
+    } catch (error) {
+      console.error('Error cargando autos', error)
+    }
+  }
+
+  const fetchDataWithQuery = async (): Promise<void> => {
+    try {
+      // Intentar obtener el usuario logueado (si existe)
+      let loggedId: number | null = null
+      try {
+        loggedId = getLoggedUserId()
+      } catch {
+        loggedId = null
+      }
+
+      // Construir el filtro dinámico
+      // Siempre → traer solo los NO vendidos
+      let query = `${CARS_URL}?sold=eq.false`
+
+      // Si hay usuario logueado → excluir sus carros
+      if (loggedId !== null) {
+        query += `&id_users=neq.${loggedId}`
+      }
+
+      if (filters?.brand !== undefined) {
+        query += `&id_brands=eq.${filters.brand}`
+      }
+      if (filters?.model !== undefined) {
+        query += `&id_models=eq.${filters.model}`
+      }
+      if (filters?.style !== undefined) {
+        query += `&id_styles=eq.${filters.style}`
+      }
+      if (filters?.colorExt !== undefined) {
+        query += `&color_ext=ilike.*${filters.colorExt}*`
+      }
+      if (filters?.colorInter !== undefined) {
+        query += `&color_int=ilike.*${filters.colorInter}*`
+      }
+      if (filters?.yearFrom !== undefined) {
+        query += `&id_years=gte.${filters.yearFrom}`
+      }
+      if (filters?.yearTo !== undefined) {
+        query += `&id_years=lte.${filters.yearTo}`
+      }
+      if (filters?.priceFrom !== undefined) {
+        query += `&price=gte.${filters.priceFrom}`
+      }
+      if (filters?.priceTo !== undefined) {
+        query += `&price=lte.${filters.priceTo}`
+      }
+      if (filters?.dors !== undefined) {
+        query += `&dors=eq.${filters.dors}`
+      }
+      if (filters?.fuel !== undefined) {
+        query += `&id_fuel=eq.${filters.fuel}`
+      }
+      if (filters?.orderByPrice !== undefined) {
+        query += '&order=price.asc'
+      }
+      if (filters?.orderByYear !== undefined) {
+        query += '&order=id_years.asc'
+      }
       // Campos a seleccionar
       query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
 
@@ -298,7 +387,9 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
           setOpenSheet,
           carSelectedById,
           setCarSelectedById,
-          catalog
+          catalog,
+          filters,
+          setFilters
         }
       }
     >
