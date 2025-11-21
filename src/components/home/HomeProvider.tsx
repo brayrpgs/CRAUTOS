@@ -3,6 +3,7 @@ import { HomeContext } from './HomeContext'
 import { CARS_URL } from '../../common/common'
 import type { Cars } from '../../models/car'
 import { getLoggedUserId } from '../../utils/GetUserUtils'
+import { set } from 'astro:schema'
 
 interface HomeProviderProps {
   children: React.ReactNode
@@ -17,6 +18,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [carSelected, setCarSelected] = useState<Cars | undefined>(undefined)
   const [openSheet, setOpenSheet] = useState<boolean>(false)
   const [carSelectedById, setCarSelectedById] = useState<number>(0)
+  const [aux, setAux] = useState<boolean>(false)
 
   // fetch all cars
   const fetchData = async (): Promise<void> => {
@@ -203,20 +205,24 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   // Provide the context values to children components
   useEffect(() => {
     const exec = async (): Promise<void> => {
-      if (carSelectedById !== 0) {
-        await fetchCarById(carSelectedById)
-        return
-      }
       if (searchQuery === '' && carSelectedById === 0) {
+        setAux(true)
         await fetchData()
-        return
+        setAux(false)
       }
       if (searchQuery !== '' && carSelectedById === 0) {
+        setAux(true)
         await fetchSearch()
+        setAux(false)
+      }
+      if (carSelectedById !== 0) {
+        setAux(true)
+        await fetchCarById(carSelectedById)
+        setAux(false)
       }
     }
     void exec()
-  }, [page, searchQuery, carSelectedById])
+  }, [page, searchQuery, carSelectedById, aux])
 
   return (
     <HomeContext.Provider
