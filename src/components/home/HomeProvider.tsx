@@ -71,7 +71,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   }
 
   // filter brands
-  const fetchFilterBrands = async (data: Cars[] = [], signal: AbortSignal): Promise<Cars[]> => {
+  const fetchFilterBrands = async (data: Cars[] = []): Promise<Cars[]> => {
     if (searchQuery === '') return []
     try {
       // Intentar obtener el usuario logueado (si existe)
@@ -98,7 +98,6 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
       // Petición con paginación
       const request = await fetch(query, {
         method: 'GET',
-        signal,
         headers: {
           accept: 'application/json',
           Range: `${(page - 1) * 10}-${page * 10 - 1}`,
@@ -124,7 +123,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   }
 
   // filter models
-  const fetchFilterModels = async (data: Cars[] = [], signal: AbortSignal): Promise<Cars[]> => {
+  const fetchFilterModels = async (data: Cars[] = []): Promise<Cars[]> => {
     if (searchQuery === '') return []
     try {
       // Intentar obtener el usuario logueado (si existe)
@@ -153,7 +152,6 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
       // Petición con paginación
       const request = await fetch(query, {
         method: 'GET',
-        signal,
         headers: {
           accept: 'application/json',
           Range: `${(page - 1) * 10}-${page * 10 - 1}`,
@@ -181,10 +179,10 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
     }
   }
 
-  const fetchSearch = async (signal: AbortSignal): Promise<void> => {
+  const fetchSearch = async (): Promise<void> => {
     let data: Cars[]
-    data = await fetchFilterBrands(undefined, signal)
-    data = await fetchFilterModels(data, signal)
+    data = await fetchFilterBrands(undefined)
+    data = await fetchFilterModels(data)
     setItems(data)
   }
 
@@ -222,7 +220,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
       if (carSelectedById !== 0) {
         await fetchCarById(carSelectedById, signal)
       } else if (searchQuery !== '') {
-        await fetchSearch(signal)
+        await fetchSearch()
       } else {
         await fetchData(signal)
       }
