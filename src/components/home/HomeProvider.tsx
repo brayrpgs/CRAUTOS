@@ -16,6 +16,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [totalPages, setTotalPages] = useState<number>(0)
   const [carSelected, setCarSelected] = useState<Cars | undefined>(undefined)
   const [openSheet, setOpenSheet] = useState<boolean>(false)
+  const [carSelectedById, setCarSelectedById] = useState<number>(0)
 
   // fetch all cars
   const fetchData = async (): Promise<void> => {
@@ -66,10 +67,153 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
     }
   }
 
+  // filter brands
+  const fetchFilterBrands = async (data: Cars[] = []): Promise<Cars[]> => {
+    if (searchQuery === '') return []
+    try {
+      // Intentar obtener el usuario logueado (si existe)
+      let loggedId: number | null = null
+      try {
+        loggedId = getLoggedUserId()
+      } catch {
+        loggedId = null
+      }
+
+      // Construir el filtro dinámico
+      let query = `${CARS_URL}?sold=eq.false`
+
+      if (loggedId !== null) {
+        query += `&id_users=neq.${loggedId}`
+      }
+
+      // brands filter
+      query += `&brands.desc=ilike.${searchQuery}*`
+
+      // Campos a seleccionar
+      query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
+
+      // Petición con paginación
+      const request = await fetch(query, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Range: `${(page - 1) * 10}-${page * 10 - 1}`,
+          'Range-Unit': 'items',
+          Prefer: 'count=exact'
+        }
+      })
+
+      if (!request.ok) return []
+
+      // Obtener total de páginas
+      const totalCountData = request.headers.get('content-range')
+      const totalPagesFromBack = Math.ceil(Number(totalCountData?.split('/')[1]) / 10)
+      setTotalPages(totalPagesFromBack >= totalPages ? totalPagesFromBack : totalPages)
+
+      // Guardar resultados
+      data = await request.json() as Cars[]
+      return data.filter(car => car.brands !== null)
+    } catch (error) {
+      console.error('Error cargando autos', error)
+      return []
+    }
+  }
+
+  // filter models
+  const fetchFilterModels = async (data: Cars[] = []): Promise<Cars[]> => {
+    if (searchQuery === '') return []
+    try {
+      // Intentar obtener el usuario logueado (si existe)
+      let loggedId: number | null = null
+      try {
+        loggedId = getLoggedUserId()
+      } catch {
+        loggedId = null
+      }
+
+      // Construir el filtro dinámico
+      // Siempre → traer solo los NO vendidos
+      let query = `${CARS_URL}?sold=eq.false`
+
+      // Si hay usuario logueado → excluir sus carros
+      if (loggedId !== null) {
+        query += `&id_users=neq.${loggedId}`
+      }
+
+      // brands filter
+      query += `&models.desc=ilike.${searchQuery}*`
+
+      // Campos a seleccionar
+      query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
+
+      // Petición con paginación
+      const request = await fetch(query, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Range: `${(page - 1) * 10}-${page * 10 - 1}`,
+          'Range-Unit': 'items',
+          Prefer: 'count=exact'
+        }
+      })
+
+      if (!request.ok) return []
+
+      // Obtener total de páginas
+      const totalCountData = request.headers.get('content-range')
+      const totalPagesFromBack = Math.ceil(Number(totalCountData?.split('/')[1]) / 10)
+      setTotalPages(totalPagesFromBack >= totalPages ? totalPagesFromBack : totalPages)
+
+      // Guardar resultados
+      data = (await request.json() as Cars[]).filter(car => car.models !== null).concat(data)
+      const unique: Cars[] = Array.from(
+        new Map(data.map(car => [car.id_cars, car])).values()
+      )
+      return unique
+    } catch (error) {
+      console.error('Error cargando autos', error)
+      return []
+    }
+  }
+
+  const fetchSearch = async (): Promise<void> => {
+    let data: Cars[]
+    data = await fetchFilterBrands()
+    data = await fetchFilterModels(data)
+    setItems(data)
+  }
+
+  const fetchCarById = async (id: number): Promise<void> => {
+    try {
+      const response = await fetch(`${CARS_URL}?id_cars=eq.${id}&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))`, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json'
+        }
+      })
+      if (!response.ok) return
+      const data = (await response.json() as Cars[])
+      setTotalPages(1)
+      setItems(data)
+    } catch (error) {
+      console.error('Error cargando auto por ID', error)
+    }
+  }
+
   // Provide the context values to children components
   useEffect(() => {
-    void fetchData()
-  }, [page])
+    if (searchQuery === '' && carSelectedById === undefined) {
+      void fetchData()
+    } else if (searchQuery !== '' && carSelectedById === undefined) {
+      void fetchSearch()
+    }
+  }, [page, searchQuery, carSelectedById])
+
+  useEffect(() => {
+    if (carSelectedById !== 0) {
+      void fetchCarById(carSelectedById)
+    }
+  }, [carSelectedById])
 
   return (
     <HomeContext.Provider
@@ -87,7 +231,9 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
           carSelected,
           setCarSelected,
           openSheet,
-          setOpenSheet
+          setOpenSheet,
+          carSelectedById,
+          setCarSelectedById
         }
       }
     >

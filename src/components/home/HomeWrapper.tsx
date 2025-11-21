@@ -16,15 +16,14 @@ const HomeWrapper: React.FC = () => {
   const MAX_YEAR = 2025
   const [yearFrom, setYearFrom] = useState<number>(2005)
   const [yearTo, setYearTo] = useState<number>(2018)
-  const [idSelected, setIdSelected] = useState(0)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const idParam = Number(params.get('idSelected'))
+    const idParam = Number(params.get('car'))
     if (!isNaN(idParam) && idParam >= 0) {
-      setIdSelected(idParam)
+      ctx?.setCarSelectedById?.(idParam)
     }
-  }, [])
+  }, [ctx?.setCarSelectedById])
 
   useEffect(() => {
   }, [ctx?.stateModal])
@@ -249,7 +248,7 @@ const HomeWrapper: React.FC = () => {
         {ctx?.items.map(car => (
           <Card
             image={car.cars_images[0].images.image}
-            info={`${car.brands.desc}-${car.styles.desc}-$${car.price}`}
+            info={`${car.brands.desc}-${car.models.desc}-$${car.price}`}
             key={car.id_cars}
             onClick={
               (e) => {

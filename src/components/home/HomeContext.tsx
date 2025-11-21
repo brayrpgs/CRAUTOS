@@ -15,6 +15,8 @@ interface HomeContextProps<T> {
   page: number
   setPage: React.Dispatch<React.SetStateAction<number>>
   totalPages?: number
+  carSelectedById?: number
+  setCarSelectedById?: React.Dispatch<React.SetStateAction<number>>
 }
 
 const HomeContext = createContext<HomeContextProps<Cars> | null>(null)
