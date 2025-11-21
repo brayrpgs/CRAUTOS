@@ -16,6 +16,16 @@ const HomeWrapper: React.FC = () => {
   const MAX_YEAR = 2025
   const [yearFrom, setYearFrom] = useState<number>(2005)
   const [yearTo, setYearTo] = useState<number>(2018)
+  const [idSelected, setIdSelected] = useState(0)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const idParam = Number(params.get('idSelected'))
+    if (!isNaN(idParam) && idParam >= 0) {
+      setIdSelected(idParam)
+    }
+  }, [])
+
   useEffect(() => {
   }, [ctx?.stateModal])
   return (

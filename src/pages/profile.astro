@@ -14,12 +14,14 @@ import styles from "../styles/profile/styles.module.css";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <title>profile</title>
+    <title>Perfil</title>
   </head>
   <body>
     <Background client:load />
     <HeaderPage client:load />
-    <Profile client:load />
+    <main class={styles.main}>
+      <Profile client:load />
+    </main>
     <Footer client:load />
   </body>
 </html>

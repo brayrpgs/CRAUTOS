@@ -10,23 +10,27 @@ import type { images } from '../../models/images'
 export const Profile: React.FC = () => {
   const [user, setUser] = React.useState<user>()
   const [image, setImage] = React.useState<string>()
-  const [error, setError] = React.useState<string>()
+  const [toast, setToast] = React.useState<string | null>(null)
   const [changed, setChanged] = React.useState<boolean>(false)
-  const refToast = React.useRef<HTMLDivElement>(null)
   const refUploadImage = React.useRef<HTMLInputElement>(null)
   const [id, setId] = useState(0)
 
-  // aca la logica con el id para traer los datos del usuario
+  // ===============================
+  //   Nuevo método para mostrar toast
+  // ===============================
+  const showToast = (msg: string): void => {
+    setToast(msg)
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  // ===============================
+  //   Cargar datos del usuario
+  // ===============================
   const fetchUserData = async (idUser: number): Promise<void> => {
     try {
-      const response = await fetch(`${USERS_URL}?id_user=eq.${idUser}&select=*,audit(*),images(*)`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          'Range-Unit': 'items'
-        }
-      })
+      const response = await fetch(
+        `${USERS_URL}?id_user=eq.${idUser}&select=*,audit(*),images(*)`
+      )
       const data = await response.json() as user[]
       setUser(data[0])
       setImage(data[0]?.images?.image)
@@ -35,29 +39,27 @@ export const Profile: React.FC = () => {
     }
   }
 
-  // Leer si viene como perfil incompleto despues de iniciar sesion o crear cuenta
+  // ===============================
+  //   Perfil incompleto (toast)
+  // ===============================
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const perfilIncompleto = params.get('perfilIncompleto')
+    const incomplete = params.get('perfilIncompleto')
 
-    if (perfilIncompleto === 'true') {
-      setError('⚠️ Por favor completa tu información antes de continuar ⚠️')
-      refToast.current?.classList.add(styles.showToast)
-
-      setTimeout(() => {
-        refToast.current?.classList.remove(styles.showToast)
-      }, 5000)
+    if (incomplete === 'true') {
+      showToast('⚠️ Por favor completa tu información antes de continuar ⚠️')
     }
   }, [])
 
-
-  // funcion para actualizar los datos del usuario
+  // ===============================
+  //   Guardar cambios en el perfil
+  // ===============================
   const handleUpdateProfile = async (): Promise<void> => {
     try {
-      // actualizar la auditoria del usuario
+      // ======== ACTUALIZAR AUDITORÍA DEL USER =========
       if (user?.id_audit !== null) {
-        const requestUpdateAudit = await fetch(
-          `${AUDIT_URL}?id_audit=eq.${user?.id_audit as number}`,
+        const res = await fetch(
+          `${AUDIT_URL}?id_audit=eq.${user?.id_audit}`,
           {
             method: 'PATCH',
             headers: {
@@ -68,44 +70,28 @@ export const Profile: React.FC = () => {
             body: JSON.stringify({ updated_at: new Date() })
           }
         )
-        if (!requestUpdateAudit.ok) {
-          console.error('not updated audit user')
-          setChanged(!changed)
-        }
-        const auditUpdated = await requestUpdateAudit.json() as audit[]
-        setUser({
-          ...user as user,
-          id_audit: auditUpdated[0].id_audit
-        })
+        const a = await res.json() as audit[]
+        setUser({ ...user, id_audit: a[0].id_audit })
       } else {
-        const requestCreateAudit = await fetch(
-          AUDIT_URL,
-          {
-            method: 'POST',
-            headers: {
-              accept: 'application/json',
-              'Content-Type': 'application/json',
-              Prefer: 'return=representation'
-            },
-            body: JSON.stringify({})
-          }
-        )
-        if (!requestCreateAudit.ok) {
-          console.error('not updated audit user')
-          setChanged(!changed)
-        }
-        const auditUpdated = await requestCreateAudit.json() as audit[]
-        const userUpdated = user
-        if (userUpdated !== undefined) {
-          userUpdated.id_audit = auditUpdated[0].id_audit
-          userUpdated.audit = auditUpdated[0]
-        }
-        setUser(userUpdated)
+        const res = await fetch(AUDIT_URL, {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({})
+        })
+        const a = await res.json() as audit[]
+        const updated = { ...user } as user
+        updated.id_audit = a[0].id_audit
+        updated.audit = a[0]
+        setUser(updated)
       }
 
-      // actualizar auditoria de la imagen
+      // ======== ACTUALIZAR AUDITORÍA DE LA IMAGEN =========
       if (user?.images?.id_audit !== undefined) {
-        const requestUpdateAudit = await fetch(
+        const res = await fetch(
           `${AUDIT_URL}?id_audit=eq.${user?.images?.id_audit}`,
           {
             method: 'PATCH',
@@ -117,73 +103,61 @@ export const Profile: React.FC = () => {
             body: JSON.stringify({ updated_at: new Date().toISOString() })
           }
         )
-        if (!requestUpdateAudit.ok) {
-          console.error('not updated audit user')
-          setChanged(!changed)
-        }
-        const auditImageCreated = await requestUpdateAudit.json() as audit[]
-        const updatedUser = user
-        if (updatedUser?.images !== undefined && updatedUser?.images !== null) {
-          updatedUser.images.id_audit = auditImageCreated[0].id_audit
-          updatedUser.images.audit = auditImageCreated[0]
-          setUser(updatedUser)
-        }
-      } else {
-        const requestCreateAudit = await fetch(
-          AUDIT_URL,
-          {
-            method: 'POST',
-            headers: {
-              accept: 'application/json',
-              'Content-Type': 'application/json',
-              Prefer: 'return=representation'
-            },
-            body: JSON.stringify({})
-          }
-        )
-        if (!requestCreateAudit.ok) {
-          console.error('not updated audit user')
-          setChanged(!changed)
-        }
-        const auditImageCreated = await requestCreateAudit.json() as audit[]
-        const updatedUser = user
-        if (updatedUser?.images !== undefined && updatedUser.images !== null) {
-          updatedUser.images.id_audit = auditImageCreated[0].id_audit
-          updatedUser.images.audit = auditImageCreated[0]
-          setUser(updatedUser)
-        }
-      }
+        const a = await res.json() as audit[]
+        const updated = { ...user } as user
 
-      // actualizar la imagen en el endpoint de images
-      if (user?.images?.id_images !== undefined) {
-        const requestUpdateImage = await fetch(
-        `${IMAGES_URL}?id_images=eq.${user?.images?.id_images}`,
-        {
-          method: 'PATCH',
+        if (updated.images) {
+          updated.images.id_audit = a[0].id_audit
+          updated.images.audit = a[0]
+        }
+
+        setUser(updated)
+      } else {
+        const res = await fetch(AUDIT_URL, {
+          method: 'POST',
           headers: {
             accept: 'application/json',
             'Content-Type': 'application/json',
             Prefer: 'return=representation'
           },
-          body: JSON.stringify({
-            image: user?.images?.image,
-            id_audit: user?.images?.id_audit as number
-          })
+          body: JSON.stringify({})
+        })
+
+        const a = await res.json() as audit[]
+        const updated = { ...user } as user
+
+        if (updated.images) {
+          updated.images.id_audit = a[0].id_audit
+          updated.images.audit = a[0]
         }
+
+        setUser(updated)
+      }
+
+      // ======== ACTUALIZAR IMAGEN =========
+      if (user?.images?.id_images !== undefined) {
+        const res = await fetch(
+          `${IMAGES_URL}?id_images=eq.${user?.images?.id_images}`,
+          {
+            method: 'PATCH',
+            headers: {
+              accept: 'application/json',
+              'Content-Type': 'application/json',
+              Prefer: 'return=representation'
+            },
+            body: JSON.stringify({
+              image: user?.images?.image,
+              id_audit: user?.images?.id_audit
+            })
+          }
         )
-        if (!requestUpdateImage.ok) {
-          console.error('not updated image user')
-          setChanged(!changed)
-        }
-        const imageData = await requestUpdateImage.json() as images[]
-        const userUpdated = user
-        userUpdated.images = imageData[0]
-        userUpdated.id_images = imageData[0].id_images
-        setUser(userUpdated)
+        const img = await res.json() as images[]
+        const updated = { ...user } as user
+        updated.images = img[0]
+        updated.id_images = img[0].id_images
+        setUser(updated)
       } else {
-        const requestUpdateImage = await fetch(
-        `${IMAGES_URL}`,
-        {
+        const res = await fetch(IMAGES_URL, {
           method: 'POST',
           headers: {
             accept: 'application/json',
@@ -192,173 +166,170 @@ export const Profile: React.FC = () => {
           },
           body: JSON.stringify({
             image: user?.images?.image,
-            id_audit: user?.images?.id_audit as number
+            id_audit: user?.images?.id_audit
           })
-        }
-        )
-        if (!requestUpdateImage.ok) {
-          console.error('not updated image user')
-          setChanged(!changed)
-        }
-        const imageData = await requestUpdateImage.json() as images[]
-        const userUpdated = user as user
-        userUpdated.images = imageData[0]
-        userUpdated.id_images = imageData[0].id_images
-        setUser(userUpdated)
+        })
+        const img = await res.json() as images[]
+        const updated = { ...user } as user
+        updated.images = img[0]
+        updated.id_images = img[0].id_images
+        setUser(updated)
       }
-      // actualizar los datos del usuario
-      delete user?.images
-      delete user?.audit
-      delete user?.id_user
-      const response = await fetch(`${USERS_URL}?id_user=eq.${id}`, {
+
+      // ======== ACTUALIZAR USER =========
+      const clone = { ...user }
+      delete clone.images
+      delete clone.audit
+      delete clone.id_user
+
+      const res = await fetch(`${USERS_URL}?id_user=eq.${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
           Prefer: 'return=representation'
         },
-        body: JSON.stringify(user)
+        body: JSON.stringify(clone)
       })
-      if (!response.ok) {
-        setError('❌ Los datos no se pudieron actualizar correctamente. ❌')
-        refToast.current?.classList.add(styles.showToast)
-        setTimeout(() => {
-          refToast.current?.classList.remove(styles.showToast)
-        }, 5000)
+
+      if (!res.ok) {
+        showToast('Los datos no se pudieron actualizar correctamente')
       } else {
-        setError('✅ Datos actualizados correctamente. ✅')
-        refToast.current?.classList.remove('hide')
-        refToast.current?.classList.add(styles.showToast)
-        setTimeout(() => {
-          refToast.current?.classList.remove(styles.showToast)
-          refToast.current?.classList.add('hide')
-          setChanged(!changed)
-        }, 5000)
+        showToast('Datos actualizados correctamente')
+        setChanged(!changed)
       }
-    } catch (error) {
-      console.error('Error updating user data:', error)
+    } catch (err) {
+      console.error(err)
     }
   }
 
+  // ===============================
+  //   Convertir imagen a base64
+  // ===============================
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-    if ((e.target.files != null) && e.target.files.length > 0) {
-      const image = await fileToBase64(e.target.files[0])
-      if (image !== user?.images?.image) {
-        console.log('imagen cambiada')
-      }
-      if (user !== undefined) {
-        const userWithUpdatedImage = user
-        userWithUpdatedImage.images = {
-          image,
-          audit: {}
-        }
-        setUser(userWithUpdatedImage)
-        setImage(image)
-      }
+    if (!e.target.files || e.target.files.length === 0) return
+
+    const base64 = await fileToBase64(e.target.files[0])
+    const updated = { ...user } as user
+
+    updated.images = {
+      image: base64,
+      audit: {}
     }
+
+    setUser(updated)
+    setImage(base64)
   }
 
+  // ===============================
+  //   Cargar user desde token
+  // ===============================
   useEffect(() => {
-    // optener el user
-    const userFromToken: TokenPayload = getLoggedUser() as TokenPayload
-    if (userFromToken == null) window.location.href = '/'
-    setId(userFromToken.id_user)
-    void fetchUserData(userFromToken.id_user)
+    const token: TokenPayload = getLoggedUser() as TokenPayload
+    if (!token) window.location.href = '/'
+    setId(token.id_user)
+    void fetchUserData(token.id_user)
   }, [changed, id])
+
   return (
-    <div className={styles.containerView}>
-      <div className={`glass ${styles.toast}`} ref={refToast}>
-        {error}
-      </div>
-      <div className={styles.containerProfile}>
-        <div className={styles.headProfile}>
-          <p>{'mi perfil de usuario'.toUpperCase()}</p>
+    <div className={styles.wrapper}>
+
+      {/* === NUEVO TOAST GLOBAL === */}
+      {toast && (
+        <div className={styles.profileToast}>
+          {toast}
         </div>
-        <div className={styles.containerResposive}>
-          <div className={`${styles.itemsProfile} ${styles.containerProfilePhoto}`}>
-            <p className={styles.itemsTitle}>Foto de Perfil</p>
-            <input type='file' hidden onChange={(e) => { void handleImageChange(e) }} ref={refUploadImage} />
-            <img className={styles.profilePhoto} src={image ?? 'avatar.png'} alt='foto de perfil' onClick={(e) => { refUploadImage.current?.click() }} />
-            <input type='hidden' />
-          </div>
-          <div>
-            <div className={styles.itemsProfile}>
-              <p className={styles.itemsTitle}>Nombre</p>
-              <input
-                type='text'
-                className={`glass ${styles.itemsData}`}
-                value={user?.name ?? ''}
-                onInput={(e) => {
-                  if (user !== undefined) {
-                    setUser({ ...user, name: e.currentTarget.value })
-                  }
-                }}
-              />
-            </div>
-            <div className={styles.itemsProfile}>
-              <p className={styles.itemsTitle}>Apellidos</p>
-              <input
-                type='text' className={`glass ${styles.itemsData}`} value={user?.last_name ?? ''} onInput={(e) => {
-                  if (user !== undefined) {
-                    setUser({ ...user, last_name: e.currentTarget.value })
-                  }
-                }}
-              />
-            </div>
-          </div>
+      )}
+
+      <div className={styles.card}>
+        <h2 className={styles.title}>Mi perfil de usuario</h2>
+
+        {/* Avatar */}
+        <div className={styles.avatarBox}>
+          <img
+            className={styles.avatar}
+            src={image ?? "avatar.png"}
+            alt="foto de perfil"
+            onClick={() => refUploadImage.current?.click()}
+          />
+
+          <input
+            type="file"
+            hidden
+            ref={refUploadImage}
+            onChange={handleImageChange}
+          />
+
+          <p className={styles.label}>Foto de Perfil</p>
+
+          <span className={styles.roleBadge}>
+            {Rol[user?.rol as any]}
+          </span>
         </div>
-        <div className={styles.containerResposive}>
-          <div className={styles.itemsProfile}>
-            <p className={styles.itemsTitle}>Telefono</p>
+
+        {/* Formulario */}
+        <div className={styles.grid}>
+          <div className={styles.item}>
+            <label className={styles.label}>Nombre</label>
             <input
-              type='tel' className={`glass ${styles.itemsData}`} value={user?.phone ?? ''} onInput={(e) => {
-                if (user !== undefined) {
-                  setUser({ ...user, phone: e.currentTarget.value })
-                }
-              }}
+              className={`glass ${styles.input}`}
+              value={user?.name ?? ''}
+              onInput={e => setUser({ ...user!, name: e.currentTarget.value })}
             />
           </div>
-          <div className={styles.itemsProfile}>
-            <p className={styles.itemsTitle}>Email</p>
+
+          <div className={styles.item}>
+            <label className={styles.label}>Apellidos</label>
             <input
-              type='email' className={`glass ${styles.itemsData}`} value={user?.email ?? ''} onInput={(e) => {
-                if (user !== undefined) {
-                  setUser({ ...user, email: e.currentTarget.value })
-                }
-              }}
+              className={`glass ${styles.input}`}
+              value={user?.last_name ?? ''}
+              onInput={e => setUser({ ...user!, last_name: e.currentTarget.value })}
             />
           </div>
-        </div>
-        <div className={styles.containerResposive}>
-          <div className={styles.itemsProfile}>
-            <p className={styles.itemsTitle}>Cedula</p>
+
+          <div className={styles.item}>
+            <label className={styles.label}>Teléfono</label>
             <input
-              type='text' className={`glass ${styles.itemsData}`} value={user?.idcard ?? ''} onInput={(e) => {
-                if (user !== undefined) {
-                  setUser({ ...user, idcard: e.currentTarget.value })
-                }
-              }}
+              className={`glass ${styles.input}`}
+              value={user?.phone ?? ''}
+              onInput={e => setUser({ ...user!, phone: e.currentTarget.value })}
             />
           </div>
-          <div className={styles.itemsProfile}>
-            <p className={styles.itemsTitle}>Edad</p>
+
+          <div className={styles.item}>
+            <label className={styles.label}>Email</label>
             <input
-              type='number' className={`glass ${styles.itemsData}`} value={user?.age ?? ''} onInput={(e) => {
-                if (user !== undefined) {
-                  setUser({ ...user, age: Number(e.currentTarget.value) })
-                }
-              }}
+              className={`glass ${styles.input}`}
+              value={user?.email ?? ''}
+              onInput={e => setUser({ ...user!, email: e.currentTarget.value })}
             />
           </div>
-        </div>
-        <div className={styles.containerResposive}>
-          <div className={styles.itemsProfile}>
-            <p className={styles.itemsTitle}>Rol</p>
-            <input type='text' disabled className={`glass ${styles.itemsData}`} value={Rol[user?.rol as any] ?? ''} />
+
+          <div className={styles.item}>
+            <label className={styles.label}>Cédula</label>
+            <input
+              className={`glass ${styles.input}`}
+              value={user?.idcard ?? ''}
+              onInput={e => setUser({ ...user!, idcard: e.currentTarget.value })}
+            />
           </div>
-          <div className={styles.itemsProfile}>
-            <p className={styles.itemsTitle}>Actualizar mis datos</p>
-            <button className={`glass ${styles.itemsData}`} onClick={(e) => { void handleUpdateProfile() }}>Guardar Cambios</button>
+
+          <div className={styles.item}>
+            <label className={styles.label}>Edad</label>
+            <input
+              className={`glass ${styles.input}`}
+              value={user?.age ?? ''}
+              onInput={e => setUser({ ...user!, age: Number(e.currentTarget.value) })}
+            />
+          </div>
+
+          <div className={`${styles.item} ${styles.buttonBox}`}>
+            <button
+              className={`glass ${styles.button}`}
+              onClick={() => void handleUpdateProfile()}
+            >
+              Guardar Cambios
+            </button>
           </div>
         </div>
       </div>

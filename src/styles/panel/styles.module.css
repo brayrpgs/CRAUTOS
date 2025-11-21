@@ -1,29 +1,109 @@
-.container {
-  width: 80%;
-  margin: auto;
-  height: auto;
+/* ---- GRID PRINCIPAL ---- */
+.panelGrid {
+  width: 85%;
+  margin: 3rem auto;
   display: grid;
-  justify-content: space-around;
-  align-items: center;
-  grid-template-columns: repeat(2, auto);
-  outline: 1px white solid;
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+@media (max-width: 820px) {
+  .panelGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- CARD GENERAL ---- */
+.panelCard {
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 1rem;
-  margin-block: 5rem;
-  gap: 2rem;
-  padding: 1rem;
-}
-
-.child {
-  display: block;
-  width: fit-content;
-}
-
-span.anchor {
-  all: unset;
-  display: block;
-  width: max-content;
-}
-
-a.navigate {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 2rem;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-align: center;
+  color: #fff;
   cursor: pointer;
+  transition: .25s ease;
+  text-decoration: none !important;
+}
+
+.panelCard:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-5px);
+}
+
+/* ---- CARD DE ELIMINAR ---- */
+.panelCardDanger {
+  background: rgba(255, 0, 0, 0.12);
+  border-color: rgba(255, 0, 0, 0.3);
+}
+
+.panelCardDanger:hover {
+  background: rgba(255, 0, 0, 0.25);
+}
+
+/* ---- ICONO ---- */
+.icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: .85;
+}
+
+/* ---- TEXTO ---- */
+.panelCard h3 {
+  font-size: 1.3rem;
+  letter-spacing: .06em;
+  margin-bottom: .4rem;
+  text-transform: uppercase;
+  text-decoration: none !important;
+}
+
+.panelCard p {
+  margin: .3rem 0 1rem 0;
+  font-size: .9rem;
+  opacity: .85;
+  text-decoration: none !important;
+}
+
+/* ---- FOOTER PEGADO ABAJO ---- */
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+@media (min-width: 2560px) {
+  .panelGrid {
+    width: 75%;
+    margin-top: 4.5rem;
+    margin-bottom: 4.5rem;
+    gap: 3.5rem;
+  }
+
+  .panelCard {
+    padding: 3rem;
+    border-radius: 1.4rem;
+  }
+
+  .icon {
+    font-size: 4.2rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .panelCard h3 {
+    font-size: 2rem !important;
+    margin-bottom: 0.8rem;
+  }
+
+  .panelCard p {
+    font-size: 1.8rem !important;
+  }
 }
