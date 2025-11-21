@@ -34,7 +34,7 @@ export const CarTechnicalSheet: React.FC = () => {
   // Revisar si ya es favorito
   useEffect(() => {
     const checkFav = async (): Promise<void> => {
-      if (!car || !loggedId) return
+      if (car == null || loggedId == null) return
 
       const res = await fetch(
         `${FAVORITE_CAR_URL}?id_users=eq.${loggedId}&id_cars=eq.${car.id_cars}`
@@ -53,7 +53,7 @@ export const CarTechnicalSheet: React.FC = () => {
       showFavToast('Debes iniciar sesión para agregar favoritos.')
       return
     }
-    if (!car) return
+    if (car == null) return
 
     try {
       setSavingFav(true)
@@ -88,131 +88,248 @@ export const CarTechnicalSheet: React.FC = () => {
   ============================ */
   const capture = async (): Promise<string | undefined> => {
     try {
-      if (!car) return undefined
+      if (car == null) return undefined
 
-      const buildSimpleSheetElement = (carData: any): HTMLElement => {
+      const buildPdfElement = (carData: any): HTMLElement => {
+        // === LIENZO A4 ===
         const wrapper = document.createElement('div')
         wrapper.style.width = '1123px'
         wrapper.style.minHeight = '1587px'
-        wrapper.style.background = '#ffffff'
-        wrapper.style.color = '#111'
-        wrapper.style.padding = '32px'
-        wrapper.style.fontFamily = 'Arial, Helvetica, sans-serif'
+        wrapper.style.background = '#f3f4f7'
+        wrapper.style.display = 'flex'
+        wrapper.style.justifyContent = 'center'
+        wrapper.style.alignItems = 'flex-start'
         wrapper.style.boxSizing = 'border-box'
-        wrapper.style.border = '1px solid #e6e6e6'
-        wrapper.style.lineHeight = '1.3'
-        wrapper.style.fontSize = '14px'
+        wrapper.style.padding = '40px'
+        wrapper.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+
+        // === CARD ===
+        const card = document.createElement('div')
+        card.style.width = '100%'
+        card.style.maxWidth = '980px'
+        card.style.background = '#ffffff'
+        card.style.borderRadius = '20px'
+        card.style.boxShadow = '0 18px 40px rgba(0,0,0,0.15)'
+        card.style.padding = '36px'
+        card.style.boxSizing = 'border-box'
+        card.style.color = '#111827'
+        wrapper.appendChild(card)
+
+        // === HEADER ===
+        const header = document.createElement('div')
+        header.style.display = 'flex'
+        header.style.justifyContent = 'space-between'
+        header.style.alignItems = 'baseline'
+        header.style.marginBottom = '18px'
 
         const title = document.createElement('h1')
-        title.textContent = `${carData.brands?.desc ?? ''} - ${carData.models?.desc ?? ''}`
-        title.style.margin = '0 0 8px 0'
-        wrapper.appendChild(title)
+        title.textContent = `${carData.brands?.desc ?? ''} – ${carData.models?.desc ?? ''}`
+        title.style.margin = '0'
+        title.style.fontSize = '26px'
+        title.style.letterSpacing = '0.04em'
+        title.style.textTransform = 'uppercase'
 
-        const subtitle = document.createElement('div')
-        subtitle.textContent = carData.styles?.desc ?? ''
-        subtitle.style.margin = '0 0 16px 0'
-        wrapper.appendChild(subtitle)
+        const subtitle = document.createElement('span')
+        subtitle.textContent = `${carData.brands?.desc ?? ''} · ${carData.models?.desc ?? ''} · ${carData.years?.desc ?? ''}`
+        subtitle.style.fontSize = '14px'
+        subtitle.style.color = '#6b7280'
 
-        const imgsContainer = document.createElement('div')
-        imgsContainer.style.display = 'grid'
-        imgsContainer.style.gridTemplateColumns = '1fr 1fr'
-        imgsContainer.style.gap = '12px'
-        imgsContainer.style.marginBottom = '18px'
+        header.appendChild(title)
+        header.appendChild(subtitle)
+        card.appendChild(header)
+
+        // LINEA
+        const hr = document.createElement('div')
+        hr.style.height = '1px'
+        hr.style.background = 'linear-gradient(to right,#e5e7eb,#d1d5db,#e5e7eb)'
+        hr.style.marginBottom = '24px'
+        card.appendChild(hr)
+
+        // === GALERÍA DE FOTOS (TODAS PERFECTAS EN CUADROS) ===
+        const photosSection = document.createElement('div')
+        photosSection.style.display = 'grid'
+        photosSection.style.gridTemplateColumns = 'repeat(3, 1fr)'
+        photosSection.style.gap = '14px'
+        photosSection.style.marginBottom = '28px'
 
         const images = Array.isArray(carData.cars_images) ? carData.cars_images : []
 
         if (images.length === 0) {
           const placeholder = document.createElement('div')
-          placeholder.style.width = '100%'
-          placeholder.style.height = '260px'
-          placeholder.style.background = '#eee'
-          imgsContainer.appendChild(placeholder)
+          placeholder.style.gridColumn = '1 / span 3'
+          placeholder.style.height = '200px'
+          placeholder.style.borderRadius = '14px'
+          placeholder.style.background = '#e5e7eb'
+          placeholder.style.display = 'flex'
+          placeholder.style.alignItems = 'center'
+          placeholder.style.justifyContent = 'center'
+          placeholder.style.color = '#6b7280'
+          placeholder.textContent = 'Sin imágenes disponibles'
+          photosSection.appendChild(placeholder)
         } else {
-          images.slice(0, 4).forEach((imgObj: any) => {
-            const wrapperImg = document.createElement('div')
-            wrapperImg.style.width = '100%'
-            wrapperImg.style.height = '260px'
-            wrapperImg.style.display = 'flex'
-            wrapperImg.style.justifyContent = 'center'
-            wrapperImg.style.alignItems = 'center'
-            wrapperImg.style.background = '#fff'
+          images.forEach((imgObj: any) => {
+            const cell = document.createElement('div')
+            cell.style.position = 'relative'
+            cell.style.overflow = 'hidden'
+            cell.style.borderRadius = '14px'
+            cell.style.height = '200px'
+            cell.style.background = '#000'
+            cell.style.display = 'flex'
+            cell.style.alignItems = 'center'
+            cell.style.justifyContent = 'center'
 
             const img = document.createElement('img')
-            img.src = imgObj?.images?.image ?? ''
-            img.style.maxWidth = '100%'
-            img.style.maxHeight = '100%'
-            img.style.objectFit = 'contain'
+            img.src = String(imgObj?.images?.image ?? '')
+            img.style.width = '100%'
+            img.style.height = '100%'
+            img.style.objectFit = 'cover' // 🔥 N A D A    D E    E S T I R A C I Ó N
+            img.style.display = 'block'
 
-            wrapperImg.appendChild(img)
-            imgsContainer.appendChild(wrapperImg)
+            cell.appendChild(img)
+            photosSection.appendChild(cell)
           })
         }
 
-        wrapper.appendChild(imgsContainer)
+        card.appendChild(photosSection)
 
-        const fields: Array<[string, string]> = [
+        // === GRID DE DETALLES ===
+        const detailsGrid = document.createElement('div')
+        detailsGrid.style.display = 'grid'
+        detailsGrid.style.gridTemplateColumns = '1.2fr 1.2fr'
+        detailsGrid.style.columnGap = '48px'
+        detailsGrid.style.rowGap = '28px'
+        detailsGrid.style.marginBottom = '24px'
+        card.appendChild(detailsGrid)
+
+        const makeSection = (titleText: string, items: Array<[string, string]>) => {
+          const section = document.createElement('div')
+
+          const titleSec = document.createElement('h2')
+          titleSec.textContent = titleText
+          titleSec.style.fontSize = '15px'
+          titleSec.style.textTransform = 'uppercase'
+          titleSec.style.letterSpacing = '0.08em'
+          titleSec.style.margin = '0 0 10px 0'
+          titleSec.style.color = '#374151'
+          section.appendChild(titleSec)
+
+          const list = document.createElement('div')
+          list.style.display = 'grid'
+          list.style.gridTemplateColumns = '1fr 1fr'
+          list.style.columnGap = '18px'
+          list.style.rowGap = '6px'
+
+          items.forEach(([label, value]) => {
+            const row = document.createElement('div')
+            row.style.fontSize = '12px'
+            row.style.color = '#4b5563'
+
+            const strong = document.createElement('span')
+            strong.textContent = `${label}: `
+            strong.style.fontWeight = '600'
+            strong.style.color = '#111827'
+
+            const spanVal = document.createElement('span')
+            spanVal.textContent = value ?? ''
+
+            row.appendChild(strong)
+            row.appendChild(spanVal)
+            list.appendChild(row)
+          })
+
+          section.appendChild(list)
+          return section
+        }
+
+        const specs = makeSection('Especificaciones', [
           ['Marca', carData.brands?.desc ?? ''],
           ['Modelo', carData.models?.desc ?? ''],
           ['Estilo', carData.styles?.desc ?? ''],
-          ['Color exterior', carData.exterior_color ?? ''],
-          ['Color interior', carData.interior_color ?? ''],
-          ['Transmisión', carData.transmissions?.desc ?? ''],
-          ['Cilindraje', carData.displacements?.desc ?? ''],
-          ['Combustible', carData.fuel?.desc ?? ''],
-          ['Recibe', carData.receives ? 'Sí' : 'No'],
-          ['Puertas', String(carData.number_of_doors ?? '')],
           ['Año', carData.years?.desc ?? ''],
+          ['Color exterior', carData.exterior_color ?? ''],
+          ['Color interior', carData.interior_color ?? '']
+        ])
+
+        const mech = makeSection('Detalles mecánicos', [
+          ['Transmisión', mapTransmission(carData.transmissions?.desc ?? '3')],
+          ['Cilindraje', (() => {
+            const desc = carData?.displacements?.desc
+
+            if (typeof desc === 'string') {
+              return desc.toLowerCase() === 'otro'
+                ? 'Otro'
+                : `${desc} L`
+            }
+
+            return ''
+          })()],
+          ['Combustible', carData.fuel?.desc ?? ''],
+          ['Puertas', String(carData.number_of_doors ?? '')],
+          ['Recibe', carData.receives ? 'Sí' : 'No'],
+          ['Negociable', carData.negotiable ? 'Sí' : 'No']
+        ])
+
+        const state = makeSection('Estado', [
           ['Precio', formatCRC(carData.price)],
-          ['Negociable', carData.negotiable ? 'Sí' : 'No'],
-          ['Fecha de ingreso', (carData.audit?.created_at as string)?.split('T')[0] ?? ''],
-          ['Vendido', carData.sold ? 'Sí' : 'No']
-        ]
+          ['Vendido', carData.sold ? 'Sí' : 'No'],
+          ['Fecha de ingreso', (carData.audit?.created_at as string)?.split('T')[0] ?? '']
+        ])
 
-        const list = document.createElement('div')
-        list.style.display = 'grid'
-        list.style.gridTemplateColumns = '1fr 1fr'
-        list.style.gap = '10px 24px'
+        detailsGrid.appendChild(specs)
+        detailsGrid.appendChild(mech)
 
-        fields.forEach(([label, val]) => {
-          const p = document.createElement('p')
-          p.style.margin = '6px 0'
+        const stateWrapper = document.createElement('div')
+        stateWrapper.style.gridColumn = '1 / span 2'
+        stateWrapper.appendChild(state)
+        detailsGrid.appendChild(stateWrapper)
 
-          const labelSpan = document.createElement('span')
-          labelSpan.style.fontWeight = '700'
-          labelSpan.textContent = label + ': '
+        // === FOOTER PRECIO ===
+        const priceFooter = document.createElement('div')
+        priceFooter.style.marginTop = '10px'
+        priceFooter.style.paddingTop = '14px'
+        priceFooter.style.borderTop = '1px solid #e5e7eb'
+        priceFooter.style.display = 'flex'
+        priceFooter.style.justifyContent = 'space-between'
+        priceFooter.style.alignItems = 'center'
 
-          const valueSpan = document.createElement('span')
-          valueSpan.textContent = val
+        const sellerLabel = document.createElement('div')
+        sellerLabel.style.fontSize = '11px'
+        sellerLabel.style.color = '#6b7280'
+        sellerLabel.textContent = `Vendedor: ${carData.users?.name ?? ''} ${carData.users?.last_name ?? ''}`
 
-          p.appendChild(labelSpan)
-          p.appendChild(valueSpan)
-          list.appendChild(p)
-        })
+        const priceBig = document.createElement('div')
+        priceBig.textContent = formatCRC(carData.price)
+        priceBig.style.fontSize = '20px'
+        priceBig.style.fontWeight = '700'
+        priceBig.style.color = '#0b3d91'
 
-        wrapper.appendChild(list)
+        priceFooter.appendChild(sellerLabel)
+        priceFooter.appendChild(priceBig)
+        card.appendChild(priceFooter)
 
         return wrapper
       }
 
-      const element = buildSimpleSheetElement(car)
+      const element = buildPdfElement(car)
       element.style.position = 'fixed'
       element.style.left = '-9999px'
       element.style.top = '0'
+      element.style.zIndex = '99999'
       document.body.appendChild(element)
 
       const imgs = Array.from(element.querySelectorAll<HTMLImageElement>('img'))
       await Promise.all(
-        imgs.map(img =>
+        imgs.map(async img =>
           img.complete
             ? Promise.resolve()
-            : new Promise(resolve => { img.onload = img.onerror = resolve })
+            : new Promise<void>(res => { img.onload = img.onerror = () => res() })
         )
       )
 
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#f3f4f7'
       })
 
       const dataUrl = canvas.toDataURL('image/png')
@@ -224,10 +341,10 @@ export const CarTechnicalSheet: React.FC = () => {
     }
   }
 
-  if (!car) return null
+  if (car == null) return null
 
   return (
-    <Modal open={ctx.openSheet} id="modalSheet" setOpen={ctx.setOpenSheet}>
+    <Modal open={ctx.openSheet} id='modalSheet' setOpen={ctx.setOpenSheet}>
 
       {favToast && <div className={styles.globalToast}>{favToast}</div>}
 
@@ -288,7 +405,7 @@ export const CarTechnicalSheet: React.FC = () => {
             <p><strong>Teléfono:</strong> {car.users.phone}</p>
 
             <div className={styles.sellerButtonsInline}>
-              <a href={`https://wa.me/506${car.users.phone}`} target="_blank" rel="noreferrer">WhatsApp</a>
+              <a href={`https://wa.me/506${car.users.phone}`} target='_blank' rel='noreferrer'>WhatsApp</a>
               <a href={`mailto:${car.users.email}`}>Correo</a>
             </div>
           </div>
@@ -305,7 +422,7 @@ export const CarTechnicalSheet: React.FC = () => {
 
             {/* FAVORITOS */}
             <button
-              className="glass"
+              className='glass'
               disabled={isFavorite || savingFav}
               onClick={() => void addToFavorites()}
               style={{
@@ -320,26 +437,45 @@ export const CarTechnicalSheet: React.FC = () => {
             <button
               className='glass'
               onClick={() => {
-                const exec = async () => {
-                  const dataUrl = await capture()
-                  if (!dataUrl) return
+                const exec = async (): Promise<void> => {
+                  const imgData = await capture()
+                  if (imgData == null) return
 
-                  const now = new Date()
-                  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
-                  const safeFileName = `${car.brands.desc}-${car.models.desc}-${dateStr}.png`
-                    .replace(/[^a-z0-9-_.]/gi, '_')
+                  const JsPDF = (await import('jspdf')).default
+                  const pdf = new JsPDF('p', 'mm', 'a4')
 
-                  const link = document.createElement('a')
-                  link.href = dataUrl
-                  link.download = safeFileName
-                  document.body.appendChild(link)
-                  link.click()
-                  link.remove()
+                  const pageWidth = 210
+                  const pageHeight = 297
+
+                  const img = new Image()
+                  img.src = imgData
+
+                  img.onload = () => {
+                    const imgWidth = img.width
+                    const imgHeight = img.height
+
+                    const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight)
+
+                    const finalWidth = imgWidth * ratio
+                    const finalHeight = imgHeight * ratio
+
+                    const marginX = (pageWidth - finalWidth) / 2
+                    const marginY = 10
+
+                    pdf.addImage(imgData, 'PNG', marginX, marginY, finalWidth, finalHeight)
+
+                    const now = new Date()
+                    const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
+                    const safeFileName = `${car.brands.desc}-${car.models.desc}-${dateStr}.pdf`
+                      .replace(/[^a-z0-9-_.]/gi, '_')
+
+                    pdf.save(safeFileName)
+                  }
                 }
                 void exec()
               }}
             >
-              Descargar ficha técnica
+              Descargar ficha técnica (PDF)
             </button>
 
             {/* SOCIAL */}
@@ -355,7 +491,7 @@ export const CarTechnicalSheet: React.FC = () => {
             <a
               className='glass'
               target='_blank'
-              href={`https://wa.me/506${car.users.phone}/?text=${window.location.href}`}
+              href={`https://wa.me/506${car.users.phone}/?text=${window.location.href}`} rel='noreferrer'
             >
               Compartir WhatsApp
             </a>
@@ -380,5 +516,16 @@ const formatCRC = (value: any): string => {
     }).format(n)
   } catch {
     return '₡' + n.toLocaleString('es-CR')
+  }
+}
+
+const mapTransmission = (id: number | string | null | undefined): string => {
+  const num = Number(id)
+
+  switch (num) {
+    case 1: return 'Manual'
+    case 2: return 'Automática'
+    case 3: return 'Híbrida'
+    default: return 'Desconocida'
   }
 }
