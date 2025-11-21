@@ -67,16 +67,16 @@ export const CarForm: React.FC<CarFormProps> = ({
   const [toast, setToast] = useState<string | null>(null)
 
   const formatNumber = (value: string): string => {
-    const numeric = value.replace(/\D/g, ""); // quitar todo lo que no sea número
-    if (!numeric) return "";
-    return Number(numeric).toLocaleString("es-CR"); // separadores por miles
-  };
+    const numeric = value.replace(/\D/g, '') // quitar todo lo que no sea número
+    if (!numeric) return ''
+    return Number(numeric).toLocaleString('es-CR') // separadores por miles
+  }
 
   const handlePriceChange = (value: string): void => {
-    const numeric = Number(value.replace(/\D/g, ""));
-    update("price", numeric < 1 ? 1 : numeric); // guardar limpio
-    update("priceFormatted", formatNumber(value)); // guardar formateado
-  };
+    const numeric = Number(value.replace(/\D/g, ''))
+    update('price', numeric < 1 ? 1 : numeric) // guardar limpio
+    update('priceFormatted', formatNumber(value)) // guardar formateado
+  }
 
   // ============================
   // CARGAR CATÁLOGOS
@@ -166,7 +166,7 @@ export const CarForm: React.FC<CarFormProps> = ({
 
       price: car.price?.toString() ?? '',
       priceFormatted: car.price
-        ? Number(car.price).toLocaleString("es-CR")
+        ? Number(car.price).toLocaleString('es-CR')
         : '',
       sold: car.sold ?? false,
 
@@ -360,10 +360,10 @@ export const CarForm: React.FC<CarFormProps> = ({
             <label>Precio</label>
             <input
               className={`glass ${styles.fullInput} ${styles.numberInput}`}
-              type="text"
-              inputMode="numeric"
+              type='text'
+              inputMode='numeric'
               min={1}
-              value={form.priceFormatted ?? ""}
+              value={form.priceFormatted ?? ''}
               onChange={e => handlePriceChange(e.target.value)}
             />
           </span>

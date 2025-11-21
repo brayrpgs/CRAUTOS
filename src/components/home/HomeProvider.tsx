@@ -3,7 +3,6 @@ import { HomeContext } from './HomeContext'
 import { CARS_URL } from '../../common/common'
 import type { Cars } from '../../models/car'
 import { getLoggedUserId } from '../../utils/GetUserUtils'
-import { set } from 'astro:schema'
 
 interface HomeProviderProps {
   children: React.ReactNode
