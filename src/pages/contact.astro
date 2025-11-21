@@ -1,26 +1,11 @@
 ---
-import { HeaderPage } from "../components/header/HeaderPage";
-import { Footer } from "../components/footer/FooterCustom";
-
 import { ContactForm } from "../components/contact/ContacForm";
 import styles from "../styles/contact/styles.module.css";
 import "../styles/global/styles.css";
-import { Background } from "../components/background/Background";
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<head>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="generator" content={Astro.generator} />
-  <title>Contacto</title>
-</head>
-
-<div class={styles.page}>
-  <header class={styles.header}>
-    <HeaderPage client:load />
-  </header>
-
+<MainLayout title={"Contacto"}>
   <main class={styles.main}>
     <section class={styles.box}>
       <div class={styles.banner}>
@@ -58,9 +43,4 @@ import { Background } from "../components/background/Background";
       </div>
     </section>
   </main>
-
-  <footer class={styles.footer}>
-    <Footer client:load />
-  </footer>
-  <Background client:load />
-</div>
+</MainLayout>

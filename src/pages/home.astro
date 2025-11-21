@@ -1,24 +1,9 @@
 ---
 import "../styles/global/styles.css";
-import { Background } from "../components/background/Background";
-import { HeaderPage } from "../components/header/HeaderPage";
-import { Footer } from "../components/footer/FooterCustom";
 import { HomeView } from "../components/home/Home";
+import MainLayout from "../layouts/MainLayout.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Inicio</title>
-  </head>
-  <body>
-    <Background client:load />
-    <HeaderPage client:load />
-    <HomeView client:load />
-    <Footer />
-  </body>
-</html>
+<MainLayout title="Buscar">
+  <HomeView client:load />
+</MainLayout>

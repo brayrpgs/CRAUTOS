@@ -7,7 +7,7 @@ import Carousel from '../carousel/Carousel'
 import styles from '../../styles/card-sheet/styles.module.css'
 import { HomeContext } from '../home/HomeContext'
 import html2canvas from 'html2canvas'
-import { FAVORITE_CAR_URL } from '../../common/common'
+import { BASE_APP_URL, FAVORITE_CAR_URL } from '../../common/common'
 import { getLoggedUserId } from '../../utils/GetUserUtils'
 
 export const CarTechnicalSheet: React.FC = () => {
@@ -485,7 +485,7 @@ export const CarTechnicalSheet: React.FC = () => {
               className='glass'
               target='_blank'
               rel='noreferrer'
-              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+              href={`https://www.facebook.com/share.php?u=${encodeURIComponent(`${BASE_APP_URL}/home?car=${car.id_cars}`)}`}
             >
               Compartir Facebook
             </a>
@@ -493,7 +493,8 @@ export const CarTechnicalSheet: React.FC = () => {
             <a
               className='glass'
               target='_blank'
-              href={`https://wa.me/506${car.users.phone}/?text=${window.location.href}`} rel='noreferrer'
+              rel='noreferrer'
+              href={`https://wa.me/?text=${encodeURIComponent(`http://localhost:4321/home?car=${car.id_cars}`)}`}
             >
               Compartir WhatsApp
             </a>
