@@ -184,7 +184,7 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const fetchSearch = async (signal: AbortSignal): Promise<void> => {
     let data: Cars[]
     data = await fetchFilterBrands(undefined, signal)
-    data = await fetchFilterModels(undefined, signal)
+    data = await fetchFilterModels(data, signal)
     setItems(data)
   }
 
