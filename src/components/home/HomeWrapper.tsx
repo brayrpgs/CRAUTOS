@@ -249,7 +249,7 @@ const HomeWrapper: React.FC = () => {
         {ctx?.items.map(car => (
           <Card
             image={car.cars_images[0].images.image}
-            info={`${car.brands.desc}-${car.styles.desc}-$${car.price}`}
+            info={`${car.brands.desc}-${car.models.desc}-$${car.price}`}
             key={car.id_cars}
             onClick={
               (e) => {

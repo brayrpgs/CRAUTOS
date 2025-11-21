@@ -162,8 +162,7 @@ export const CarTechnicalSheet: React.FC = () => {
 
       const imgs = Array.from(elementToCapture.querySelectorAll<HTMLImageElement>('img'))
       const imgPromises =
-        imgs.map
-        (async (img) => {
+        imgs.map(async (img) => {
           if (img.complete) return
           await new Promise<void>((resolve) => { img.onload = img.onerror = () => resolve() })
         })

@@ -66,10 +66,130 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
     }
   }
 
+  // filter brands
+  const fetchFilterBrands = async (data: Cars[] = []): Promise<Cars[]> => {
+    if (searchQuery === '') return []
+    try {
+      // Intentar obtener el usuario logueado (si existe)
+      let loggedId: number | null = null
+      try {
+        loggedId = getLoggedUserId()
+      } catch {
+        loggedId = null
+      }
+
+      // Construir el filtro dinámico
+      let query = `${CARS_URL}?sold=eq.false`
+
+      if (loggedId !== null) {
+        query += `&id_users=neq.${loggedId}`
+      }
+
+      // brands filter
+      query += `&brands.desc=ilike.${searchQuery}*`
+
+      // Campos a seleccionar
+      query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
+
+      // Petición con paginación
+      const request = await fetch(query, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Range: `${(page - 1) * 10}-${page * 10 - 1}`,
+          'Range-Unit': 'items',
+          Prefer: 'count=exact'
+        }
+      })
+
+      if (!request.ok) return []
+
+      // Obtener total de páginas
+      const totalCountData = request.headers.get('content-range')
+      const totalPagesFromBack = Math.ceil(Number(totalCountData?.split('/')[1]) / 10)
+      setTotalPages(totalPagesFromBack >= totalPages ? totalPagesFromBack : totalPages)
+
+      // Guardar resultados
+      data = await request.json() as Cars[]
+      return data.filter(car => car.brands !== null)
+    } catch (error) {
+      console.error('Error cargando autos', error)
+      return []
+    }
+  }
+
+  // filter models
+  const fetchFilterModels = async (data: Cars[] = []): Promise<Cars[]> => {
+    if (searchQuery === '') return []
+    try {
+      // Intentar obtener el usuario logueado (si existe)
+      let loggedId: number | null = null
+      try {
+        loggedId = getLoggedUserId()
+      } catch {
+        loggedId = null
+      }
+
+      // Construir el filtro dinámico
+      // Siempre → traer solo los NO vendidos
+      let query = `${CARS_URL}?sold=eq.false`
+
+      // Si hay usuario logueado → excluir sus carros
+      if (loggedId !== null) {
+        query += `&id_users=neq.${loggedId}`
+      }
+
+      // brands filter
+      query += `&models.desc=ilike.${searchQuery}*`
+
+      // Campos a seleccionar
+      query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
+
+      // Petición con paginación
+      const request = await fetch(query, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Range: `${(page - 1) * 10}-${page * 10 - 1}`,
+          'Range-Unit': 'items',
+          Prefer: 'count=exact'
+        }
+      })
+
+      if (!request.ok) return []
+
+      // Obtener total de páginas
+      const totalCountData = request.headers.get('content-range')
+      const totalPagesFromBack = Math.ceil(Number(totalCountData?.split('/')[1]) / 10)
+      setTotalPages(totalPagesFromBack >= totalPages ? totalPagesFromBack : totalPages)
+
+      // Guardar resultados
+      data = (await request.json() as Cars[]).filter(car => car.models !== null).concat(data)
+      const unique: Cars[] = Array.from(
+        new Map(data.map(car => [car.id_cars, car])).values()
+      )
+      return unique
+    } catch (error) {
+      console.error('Error cargando autos', error)
+      return []
+    }
+  }
+
+  const fetchSearch = async (): Promise<void> => {
+    let data: Cars[]
+    data = await fetchFilterBrands()
+    data = await fetchFilterModels(data)
+    setItems(data)
+  }
+
   // Provide the context values to children components
   useEffect(() => {
-    void fetchData()
-  }, [page])
+    if (searchQuery === '') {
+      void fetchData()
+    } else if (searchQuery !== '') {
+      void fetchSearch()
+    }
+  }, [page, searchQuery])
 
   return (
     <HomeContext.Provider
