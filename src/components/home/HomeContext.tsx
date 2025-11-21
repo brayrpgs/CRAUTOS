@@ -1,5 +1,7 @@
 import { createContext } from 'react'
 import type { Cars } from '../../models/car'
+import type { catalog } from '../../models/catalog'
+import type { filter } from '../../models/filter'
 
 interface HomeContextProps<T> {
   searchQuery: string
@@ -17,6 +19,9 @@ interface HomeContextProps<T> {
   totalPages?: number
   carSelectedById?: number
   setCarSelectedById?: React.Dispatch<React.SetStateAction<number>>
+  catalog?: catalog
+  filter?: filter
+  setFilters?: React.Dispatch<React.SetStateAction<filter>>
 }
 
 const HomeContext = createContext<HomeContextProps<Cars> | null>(null)

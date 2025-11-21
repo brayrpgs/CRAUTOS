@@ -28,48 +28,48 @@ export interface Cars {
   cars_images: CarsImage[]
 }
 
-interface Brands {
+export interface Brands {
   desc: string
   id_brands: number
 }
 
-interface Models {
+export interface Models {
   desc: string
   id_models: number
 }
 
-interface Styles {
+export interface Styles {
   desc: string
   id_styles: number
 }
 
-interface Transmissions {
+export interface Transmissions {
   desc: number
   id_transmissions: number
 }
 
-interface Displacements {
+export interface Displacements {
   desc: string
   id_displacements: number
 }
 
-interface Fuel {
+export interface Fuel {
   desc: string
   id_fuel: number
 }
 
-interface Years {
+export interface Years {
   desc: string
   id_years: number
 }
 
-interface Audit {
+export interface Audit {
   id_audit: number
   created_at: string
   updated_at: string
 }
 
-interface Users {
+export interface Users {
   age: number
   rol: number
   name: string
@@ -82,11 +82,11 @@ interface Users {
   last_name: string
 }
 
-interface CarsImage {
+export interface CarsImage {
   images: Images
 }
 
-interface Images {
+export interface Images {
   image: string
   id_audit: any
   id_images: number
