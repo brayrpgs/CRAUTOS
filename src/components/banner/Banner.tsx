@@ -1,63 +1,72 @@
 import React from 'react';
 import styles from '../../styles/banner/styles.module.css';
-import { Background } from '../background/Background';
 
 interface BannerSection {
-  id: string
-  image: string
-  title: string
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
 }
 
 const sections: BannerSection[] = [
   {
-    id: 'nuevos',
-    image: '/',
-    title: 'NUEVOS',
+    id: 'seguridad',
+    title: 'COMPRA SEGURA',
+    description: 'Verificación de vendedores, historial del vehículo y protección de datos.',
+    imageUrl: '/seguridad.png',
   },
   {
-    id: 'usados',
-    image: '/',
-    title: 'USADOS',
+    id: 'soporte',
+    title: 'SOPORTE AL CLIENTE',
+    description: 'Acompañamiento durante todo el proceso de compra o venta, 24/7.',
+    imageUrl: '/soporte.png',
   },
   {
-    id: 'zona-verde',
-    image: '/',
-    title: 'ZONA VERDE',
+    id: 'innovacion',
+    title: 'CATÁLOGO MODERNO',
+    description: 'Miles de vehículos con fotos en alta calidad y datos completos.',
+    imageUrl: '/innovacion.png',
   },
   {
-    id: 'premium',
-    image: '/',
-    title: 'PREMIUM',
+    id: 'escalabilidad',
+    title: 'PUBLICA SIN LÍMITES',
+    description: 'Sube todos los carros que quieras con rapidez y excelente rendimiento.',
+    imageUrl: '/escalabilidad.jpg',
   },
   {
-    id: 'bluebook',
-    image: '/',
-    title: 'BLUEBOOK',
-  }
-]
+    id: 'analytics',
+    title: 'ANÁLISIS DE MERCADO',
+    description: 'Precios, demanda y tendencias para ayudarte a tomar mejores decisiones.',
+    imageUrl: '/analytics.png',
+  },
+];
 
 export const PromoBanner: React.FC = () => {
   return (
     <section className={styles.bannerContainer}>
       <div className={styles.bannerHeader}>
         <h1 className={styles.bannerTitle}>
-          EXPLORA LAS SIGUIENTES CATEGORÍAS
+          TODO LO QUE NECESITAS PARA COMPRAR Y VENDER CARROS
         </h1>
         <p className={styles.bannerSubtitle}>
-          Puedes comprar tu carro soñado o vender el tuyo. ¡Anímate!
+          Tecnología, seguridad y herramientas avanzadas para una experiencia confiable.
         </p>
       </div>
 
       <div className={styles.bannerGrid}>
         {sections.map((section) => (
-          <a
+          <div
             key={section.id}
             className={`${styles.bannerCard} ${styles[section.id]}`}
+            style={{
+              backgroundImage: `url(${section.imageUrl})`,
+            }}
           >
             <div className={styles.bannerCardOverlay}>
               <span className={styles.bannerCardTitle}>{section.title}</span>
+              <p className={styles.bannerCardDescription}>{section.description}</p>
             </div>
-          </a>
+          </div>
         ))}
       </div>
     </section>
