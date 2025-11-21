@@ -25,7 +25,7 @@ interface CarFromApi {
   brands?: { desc: string }
   models?: { desc: string }
   years?: { desc: number }
-  cars_images?: Array<{ id_images: number; images: { image: string } }>
+  cars_images?: Array<{ id_images: number, images: { image: string } }>
 }
 
 // Favoritos procesados
@@ -180,7 +180,6 @@ const FavoriteCarsManager: React.FC = () => {
     </div>
   )
 
-
   return (
     <section className={styles.box}>
       {toast && <div className={styles.globalToast}>{toast}</div>}
@@ -201,7 +200,7 @@ const FavoriteCarsManager: React.FC = () => {
               renderItem={renderFavoriteCard}
               itemsPerPage={10}
             />
-          )}
+            )}
 
       {/* MODAL */}
       <Modal open={open} id='confirm-delete-modal'>

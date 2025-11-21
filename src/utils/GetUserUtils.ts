@@ -1,4 +1,4 @@
-import { jwtDecode } from 'jwt-decode'
+import { jwtDecode } from "jwt-decode"
 
 // Tipo del payload del token
 export interface TokenPayload {
@@ -31,7 +31,7 @@ export type TokenResult = TokenResultSuccess | TokenResultError
 // Util principal (solo decodifica, no valida firma)
 function getUserFromToken (token: string): TokenResult {
   try {
-    const decoded = jwtDecode<TokenPayload>(token)
+    const decoded = jwtDecode(token) as TokenPayload
 
     return {
       ok: true,

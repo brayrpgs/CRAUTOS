@@ -27,7 +27,7 @@ const HomeWrapper: React.FC = () => {
   }, [])
 
   useEffect(() => {
-  }, [ctx?.stateModal, idSelected])
+  }, [ctx?.stateModal])
   return (
     <div className={styles.container}>
       <div className={`${styles.child} ${styles.childFilters}`}>
@@ -247,18 +247,27 @@ const HomeWrapper: React.FC = () => {
       </div>
       <div className={`${styles.child} ${styles.childContent}`}>
         {ctx?.items.map(car => (
-          <Card image={car.cars_images[0].images.image} info={`${car.brands.desc}-${car.styles.desc}-$${car.price}`} key={crypto.randomUUID()} />
+          <Card
+            image={car.cars_images[0].images.image}
+            info={`${car.brands.desc}-${car.styles.desc}-$${car.price}`}
+            key={car.id_cars}
+            onClick={
+              (e) => {
+                ctx?.setCarSelected?.(car)
+                ctx?.setOpenSheet?.(true)
+              }
+          }
+          />
         ))}
       </div>
       <div className={`${stylePagination.controls} ${styles.fixPagination}`}>
-        <button disabled className={stylePagination.btn}>←</button>
+        <button disabled={!!(ctx?.page !== undefined && ctx.page <= 1)} className={stylePagination.btn} onClick={(e) => ctx?.setPage(ctx.page - 1)}>←</button>
         <span className={stylePagination.pageInfo}>
-          Página 1 de 2
+          Página {ctx?.page} de {ctx?.totalPages}
         </span>
-        <button className={stylePagination.btn}>→</button>
+        <button disabled={ctx?.page !== undefined && ctx.page >= (ctx.totalPages as number)} className={stylePagination.btn} onClick={(e) => ctx?.setPage(ctx.page + 1)}>→</button>
       </div>
-      {}
-      <CarTechnicalSheet id={idSelected} />
+      <CarTechnicalSheet />
     </div>
   )
 }

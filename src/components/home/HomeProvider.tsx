@@ -13,6 +13,8 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [items, setItems] = useState<Cars[]>([])
   const [page, setPage] = useState<number>(1)
   const [totalPages, setTotalPages] = useState<number>(0)
+  const [carSelected, setCarSelected] = useState<Cars | undefined>(undefined)
+  const [openSheet, setOpenSheet] = useState<boolean>(false)
 
   // fetch all cars
   const fetchData = async (): Promise<void> => {
@@ -54,7 +56,11 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
           setItems,
           page,
           setPage,
-          totalPages
+          totalPages,
+          carSelected,
+          setCarSelected,
+          openSheet,
+          setOpenSheet
         }
       }
     >

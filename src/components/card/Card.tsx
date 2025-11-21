@@ -5,11 +5,12 @@ interface CardProps {
   image?: string
   info?: string
   children?: React.ReactNode // Para overlays externos si se ocupan
+  onClick?: React.MouseEventHandler<HTMLDivElement> | undefined
 }
 
-const Card: React.FC<CardProps> = ({ image, info, children }) => {
+const Card: React.FC<CardProps> = ({ image, info, children, onClick }) => {
   return (
-    <div className={styles['container-card']}>
+    <div className={styles['container-card']} onClick={onClick}>
       {/* Imagen */}
       <div className={styles.image}>
         <img src={image} alt='' />
