@@ -105,6 +105,31 @@ const Carousel: React.FC<CarouselProps> = ({
   // Move horizontally on carousel
   const translateX = -(current * itemWidth)
 
+  // Convert img to blob from a cleaned base64 in order to open new blank page
+  const handleOpenImg = (base64: string) => {
+    try {
+      // Clean base64
+      const cleanBase64 = base64.includes('base64,')
+        ? base64.split('base64,')[1]
+        : base64
+      const byteCharacters = atob(cleanBase64)
+      const byteNumbers = new Array(byteCharacters.length)
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i)
+      }
+
+      const byteArray = new Uint8Array(byteNumbers)
+
+      const blob = new Blob([byteArray], { type: 'image/jpeg' })
+      const blobUrl = URL.createObjectURL(blob)
+
+      window.open(blobUrl, '_blank')
+    } catch (error) {
+      console.error('Error abriendo imagen:', error)
+    }
+  }
+
   return (
     <div className='carousel-container' ref={containerRef}>
       <div className='carousel-wrapper'>
@@ -122,10 +147,7 @@ const Carousel: React.FC<CarouselProps> = ({
               <div
                 key={`img-${index}`}
                 className='carousel-card-wrapper'
-                onClick={() => {
-                  // TODO: Handle image click (e.g. open lightbox)
-                  alert(`Image clicked: ${src}`)
-                }}
+                onClick={() => handleOpenImg(src)}
               >
                 <img
                   src={src}
@@ -143,7 +165,7 @@ const Carousel: React.FC<CarouselProps> = ({
                 key={card.id}
                 className='carousel-card-wrapper'
                 onClick={() => {
-                  window.location.href=`/home?idSelected=${card.id}`
+                  window.location.href = `/home?car=${card.id}`
                 }}
               >
                 <Card image={card.image} info={card.info} />
