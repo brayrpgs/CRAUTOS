@@ -19,17 +19,6 @@ export const CarTechnicalSheet: React.FC = () => {
       const car = ctx?.carSelected
       if (car == null) return undefined
 
-      const formatCRC = (value: unknown): string => {
-        const nVal = Number(value)
-        const n = Number.isFinite(nVal) ? nVal : 0
-        try {
-          return new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', maximumFractionDigits: 0 }).format(n)
-        } catch (_e) {
-          // fallback: use ₡ with thousand separators
-          return '₡' + n.toLocaleString('es-CR')
-        }
-      }
-
       const buildSimpleSheetElement = (carData: any): HTMLElement => {
         // A4-like layout (portrait) at ~96dpi: 1123 x 1587 px
         const wrapper = document.createElement('div')
@@ -208,9 +197,9 @@ export const CarTechnicalSheet: React.FC = () => {
           <p>Recibe: {ctx.carSelected.receives ? 'Sí' : 'No'}</p>
           <p>Numero de puertas: {ctx.carSelected.number_of_doors}</p>
           <p>Año: {ctx.carSelected.years.desc}</p>
-          <p>Precio: {ctx.carSelected.price}</p>
+          <p>Precio: {formatCRC(ctx.carSelected.price)}</p>
           <p>Negociable: {ctx.carSelected.negotiable ? 'Sí' : 'No'}</p>
-          <p>Fecha de ingreso al sistema: {new Date(ctx.carSelected.audit.created_at).getUTCDate()}</p>
+          <p>Fecha de ingreso al sistema: {`${(ctx.carSelected.audit.created_at).split('T')[0]}`}</p>
           <p>Vendido: {ctx.carSelected.sold ? 'Sí' : 'No'}</p>
         </div>
       </ModalContent>
@@ -262,4 +251,15 @@ export const CarTechnicalSheet: React.FC = () => {
       </ModalFooter>
     </Modal>
   )
+}
+
+const formatCRC = (value: unknown): string => {
+  const nVal = Number(value)
+  const n = Number.isFinite(nVal) ? nVal : 0
+  try {
+    return new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', maximumFractionDigits: 0 }).format(n)
+  } catch (_e) {
+    // fallback: use ₡ with thousand separators
+    return '₡' + n.toLocaleString('es-CR')
+  }
 }
