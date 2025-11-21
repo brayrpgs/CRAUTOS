@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Modal } from '../modal/Modal'
 import { ModalContent } from '../modal/ModalContent'
 import { ModalFooter } from '../modal/ModalFooter'
@@ -7,21 +7,90 @@ import Carousel from '../carousel/Carousel'
 import styles from '../../styles/card-sheet/styles.module.css'
 import { HomeContext } from '../home/HomeContext'
 import html2canvas from 'html2canvas'
+import { FAVORITE_CAR_URL } from '../../common/common'
+import { getLoggedUserId } from '../../utils/GetUserUtils'
 
 export const CarTechnicalSheet: React.FC = () => {
   const ctx = useContext(HomeContext)
+  const car = ctx?.carSelected
 
+  /* ===========================
+       TOAST
+  ============================ */
+  const [favToast, setFavToast] = useState<string | null>(null)
+
+  const showFavToast = (msg: string): void => {
+    setFavToast(msg)
+    setTimeout(() => setFavToast(null), 3000)
+  }
+
+  /* ===========================
+       FAVORITOS
+  ============================ */
+  const loggedId = getLoggedUserId()
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [savingFav, setSavingFav] = useState(false)
+
+  // Revisar si ya es favorito
   useEffect(() => {
-  }, [ctx?.carSelected, ctx?.openSheet])
+    const checkFav = async (): Promise<void> => {
+      if (!car || !loggedId) return
 
-  // funcion para renderizar el modal
+      const res = await fetch(
+        `${FAVORITE_CAR_URL}?id_users=eq.${loggedId}&id_cars=eq.${car.id_cars}`
+      )
+      const data = await res.json()
+
+      setIsFavorite(data.length > 0)
+    }
+
+    void checkFav()
+  }, [car, loggedId])
+
+  // Agregar a favoritos
+  const addToFavorites = async (): Promise<void> => {
+    if (!loggedId) {
+      showFavToast('Debes iniciar sesión para agregar favoritos.')
+      return
+    }
+    if (!car) return
+
+    try {
+      setSavingFav(true)
+
+      const res = await fetch(FAVORITE_CAR_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_users: loggedId,
+          id_cars: car.id_cars
+        })
+      })
+
+      if (!res.ok) {
+        showFavToast('Este vehículo ya está en tu lista de favoritos.')
+        setIsFavorite(true)
+        return
+      }
+
+      setIsFavorite(true)
+      showFavToast('¡Agregado a favoritos!')
+    } catch (err) {
+      console.error(err)
+      showFavToast('Error agregando a favoritos.')
+    } finally {
+      setSavingFav(false)
+    }
+  }
+
+  /* ===========================
+       CAPTURA (html2canvas)
+  ============================ */
   const capture = async (): Promise<string | undefined> => {
     try {
-      const car = ctx?.carSelected
-      if (car == null) return undefined
+      if (!car) return undefined
 
       const buildSimpleSheetElement = (carData: any): HTMLElement => {
-        // A4-like layout (portrait) at ~96dpi: 1123 x 1587 px
         const wrapper = document.createElement('div')
         wrapper.style.width = '1123px'
         wrapper.style.minHeight = '1587px'
@@ -35,57 +104,50 @@ export const CarTechnicalSheet: React.FC = () => {
         wrapper.style.fontSize = '14px'
 
         const title = document.createElement('h1')
-        title.textContent = String(carData.brands?.desc ?? '') + ' - ' + String(carData.models?.desc ?? '')
+        title.textContent = `${carData.brands?.desc ?? ''} - ${carData.models?.desc ?? ''}`
         title.style.margin = '0 0 8px 0'
-        title.style.fontSize = '26px'
-        title.style.color = '#111'
         wrapper.appendChild(title)
 
         const subtitle = document.createElement('div')
-        subtitle.textContent = String(carData.styles?.desc ?? '')
+        subtitle.textContent = carData.styles?.desc ?? ''
         subtitle.style.margin = '0 0 16px 0'
-        subtitle.style.color = '#444'
         wrapper.appendChild(subtitle)
 
         const imgsContainer = document.createElement('div')
-        // Use grid so images keep aspect ratio (width constrained, height auto)
         imgsContainer.style.display = 'grid'
         imgsContainer.style.gridTemplateColumns = '1fr 1fr'
-
-        imgsContainer.style.gap =
-          '12px'
+        imgsContainer.style.gap = '12px'
         imgsContainer.style.marginBottom = '18px'
+
         const images = Array.isArray(carData.cars_images) ? carData.cars_images : []
+
         if (images.length === 0) {
           const placeholder = document.createElement('div')
           placeholder.style.width = '100%'
           placeholder.style.height = '260px'
-          placeholder.style.background = '#f4f4f4'
+          placeholder.style.background = '#eee'
           imgsContainer.appendChild(placeholder)
         } else {
-          // place up to 4 images and keep their natural aspect ratio
           images.slice(0, 4).forEach((imgObj: any) => {
-            const container = document.createElement('div')
-            container.style.width = '100%'
-            container.style.height = '260px'
-            container.style.overflow = 'hidden'
-            container.style.display = 'flex'
-            container.style.alignItems = 'center'
-            container.style.justifyContent = 'center'
-            container.style.background = '#fff'
+            const wrapperImg = document.createElement('div')
+            wrapperImg.style.width = '100%'
+            wrapperImg.style.height = '260px'
+            wrapperImg.style.display = 'flex'
+            wrapperImg.style.justifyContent = 'center'
+            wrapperImg.style.alignItems = 'center'
+            wrapperImg.style.background = '#fff'
 
             const img = document.createElement('img')
-            img.src = String(imgObj?.images?.image ?? '')
+            img.src = imgObj?.images?.image ?? ''
             img.style.maxWidth = '100%'
             img.style.maxHeight = '100%'
-            img.style.width = 'auto'
-            img.style.height = 'auto'
             img.style.objectFit = 'contain'
-            img.style.display = 'block'
-            container.appendChild(img)
-            imgsContainer.appendChild(container)
+
+            wrapperImg.appendChild(img)
+            imgsContainer.appendChild(wrapperImg)
           })
         }
+
         wrapper.appendChild(imgsContainer)
 
         const fields: Array<[string, string]> = [
@@ -94,114 +156,91 @@ export const CarTechnicalSheet: React.FC = () => {
           ['Estilo', carData.styles?.desc ?? ''],
           ['Color exterior', carData.exterior_color ?? ''],
           ['Color interior', carData.interior_color ?? ''],
-          ['Transmision', carData.transmissions?.desc ?? ''],
+          ['Transmisión', carData.transmissions?.desc ?? ''],
           ['Cilindraje', carData.displacements?.desc ?? ''],
           ['Combustible', carData.fuel?.desc ?? ''],
-          ['Recibe', carData.receives === true ? 'Sí' : 'No'],
-          ['Numero de puertas', String(carData.number_of_doors ?? '')],
+          ['Recibe', carData.receives ? 'Sí' : 'No'],
+          ['Puertas', String(carData.number_of_doors ?? '')],
           ['Año', carData.years?.desc ?? ''],
-          ['Precio', String(carData.price ?? '')],
-          ['Negociable', carData.negotiable === true ? 'Sí' : 'No'],
-          ['Fecha de ingreso', (carData.audit?.created_at as string).split('T')[0] ?? ''],
-          ['Vendido', carData.sold === true ? 'Sí' : 'No']
+          ['Precio', formatCRC(carData.price)],
+          ['Negociable', carData.negotiable ? 'Sí' : 'No'],
+          ['Fecha de ingreso', (carData.audit?.created_at as string)?.split('T')[0] ?? ''],
+          ['Vendido', carData.sold ? 'Sí' : 'No']
         ]
 
         const list = document.createElement('div')
         list.style.display = 'grid'
         list.style.gridTemplateColumns = '1fr 1fr'
+        list.style.gap = '10px 24px'
 
-        list.style.gap =
-          '10px 24px'
-        list.style.color = '#222'
         fields.forEach(([label, val]) => {
           const p = document.createElement('p')
           p.style.margin = '6px 0'
+
           const labelSpan = document.createElement('span')
-          labelSpan.style.display = 'inline-block'
-          labelSpan.style.width = '140px'
           labelSpan.style.fontWeight = '700'
-          labelSpan.textContent = String(label) + ':'
+          labelSpan.textContent = label + ': '
+
           const valueSpan = document.createElement('span')
-          valueSpan.style.marginLeft = '8px'
-          // format price field specially
-          if (String(label).toLowerCase().includes('precio')) {
-            valueSpan.textContent = formatCRC(val)
-          } else {
-            valueSpan.textContent = String(val)
-          }
+          valueSpan.textContent = val
+
           p.appendChild(labelSpan)
           p.appendChild(valueSpan)
           list.appendChild(p)
         })
-        wrapper.appendChild(list)
 
-        // Footer / price highlight
-        const footer = document.createElement('div')
-        footer.style.marginTop = '20px'
-        footer.style.display = 'flex'
-        footer.style.justifyContent = 'space-between'
-        const price = document.createElement('div')
-        price.textContent = 'Precio: ' + formatCRC(carData.price)
-        price.style.fontSize = '18px'
-        price.style.fontWeight = '700'
-        price.style.color = '#0b3d91'
-        footer.appendChild(price)
-        wrapper.appendChild(footer)
+        wrapper.appendChild(list)
 
         return wrapper
       }
 
-      const elementToCapture = buildSimpleSheetElement(car)
-      elementToCapture.style.position = 'fixed'
-      elementToCapture.style.left = '-9999px'
+      const element = buildSimpleSheetElement(car)
+      element.style.position = 'fixed'
+      element.style.left = '-9999px'
+      element.style.top = '0'
+      document.body.appendChild(element)
 
-      elementToCapture.style.top =
-        '0'
-      elementToCapture.style.zIndex = '99999'
-      document.body.appendChild(elementToCapture)
+      const imgs = Array.from(element.querySelectorAll<HTMLImageElement>('img'))
+      await Promise.all(
+        imgs.map(img =>
+          img.complete
+            ? Promise.resolve()
+            : new Promise(resolve => { img.onload = img.onerror = resolve })
+        )
+      )
 
-      const imgs = Array.from(elementToCapture.querySelectorAll<HTMLImageElement>('img'))
-      const imgPromises =
-        imgs.map
-        (async (img) => {
-          if (img.complete) return
-          await new Promise<void>((resolve) => { img.onload = img.onerror = () => resolve() })
-        })
-      await Promise.all(imgPromises)
-
-      const canvas = await html2canvas(elementToCapture, {
+      const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff'
       })
+
       const dataUrl = canvas.toDataURL('image/png')
-      elementToCapture.remove()
+      element.remove()
       return dataUrl
     } catch (err) {
-      console.error('Error capturando el modal →', err)
+      console.error('Error capturando el modal:', err)
       return undefined
     }
   }
 
-  if (ctx?.carSelected === undefined) return
-
-  const car = ctx.carSelected
+  if (!car) return null
 
   return (
-    <Modal open={ctx.openSheet} id='modalSheet' setOpen={ctx.setOpenSheet}>
+    <Modal open={ctx.openSheet} id="modalSheet" setOpen={ctx.setOpenSheet}>
+
+      {favToast && <div className={styles.globalToast}>{favToast}</div>}
+
       <ModalHeader>
         {car.brands.desc} - {car.styles.desc}
       </ModalHeader>
 
       <ModalContent>
-        {/* Carrusel */}
+
         <div className={styles.carouselWrapper}>
-          <Carousel
-            images={car.cars_images.map(image => image.images.image)}
-          />
+          <Carousel images={car.cars_images.map(i => i.images.image)} />
         </div>
 
-        {/* Información organizada en columnas */}
         <div className={styles.columnsGrid}>
 
           {/* ESPECIFICACIONES */}
@@ -249,7 +288,7 @@ export const CarTechnicalSheet: React.FC = () => {
             <p><strong>Teléfono:</strong> {car.users.phone}</p>
 
             <div className={styles.sellerButtonsInline}>
-              <a href={`https://wa.me/506${car.users.phone}`} target='_blank' rel='noreferrer'>WhatsApp</a>
+              <a href={`https://wa.me/506${car.users.phone}`} target="_blank" rel="noreferrer">WhatsApp</a>
               <a href={`mailto:${car.users.email}`}>Correo</a>
             </div>
           </div>
@@ -263,47 +302,64 @@ export const CarTechnicalSheet: React.FC = () => {
           <summary>Más opciones</summary>
 
           <div className={styles.actionsContainer}>
-            <button className='glass'>Agregar a Favoritos</button>
-            <button className='glass'>Ver vendedor</button>
 
+            {/* FAVORITOS */}
+            <button
+              className="glass"
+              disabled={isFavorite || savingFav}
+              onClick={() => void addToFavorites()}
+              style={{
+                opacity: isFavorite ? 0.6 : 1,
+                cursor: isFavorite ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {isFavorite ? 'Ya está en favoritos' : savingFav ? 'Guardando...' : 'Agregar a Favoritos'}
+            </button>
+
+            {/* DESCARGAR */}
             <button
               className='glass'
               onClick={() => {
-                const exec = async (): Promise<void> => {
+                const exec = async () => {
                   const dataUrl = await capture()
-                  if (dataUrl == null) return
+                  if (!dataUrl) return
+
                   const now = new Date()
                   const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
-                  const safeFileName = (String(ctx?.carSelected?.brands?.desc ?? 'ficha') + '-' + String(ctx?.carSelected?.models?.desc ?? '') + '-' + dateStr + '.png').replace(/[^a-z0-9-_.]/gi, '_')
+                  const safeFileName = `${car.brands.desc}-${car.models.desc}-${dateStr}.png`
+                    .replace(/[^a-z0-9-_.]/gi, '_')
+
                   const link = document.createElement('a')
                   link.href = dataUrl
-
-                  link.download =
-                    safeFileName
+                  link.download = safeFileName
                   document.body.appendChild(link)
-
                   link.click()
                   link.remove()
                 }
                 void exec()
               }}
-            >Descargar ficha técnica
+            >
+              Descargar ficha técnica
             </button>
 
+            {/* SOCIAL */}
             <a
               className='glass'
+              target='_blank'
+              rel='noreferrer'
               href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
-              target='_blank' rel='noreferrer'
             >
               Compartir Facebook
             </a>
 
             <a
               className='glass'
+              target='_blank'
               href={`https://wa.me/506${car.users.phone}/?text=${window.location.href}`}
             >
               Compartir WhatsApp
             </a>
+
           </div>
         </details>
       </ModalFooter>
@@ -311,13 +367,18 @@ export const CarTechnicalSheet: React.FC = () => {
   )
 }
 
-const formatCRC = (value: unknown): string => {
-  const nVal = Number(value)
-  const n = Number.isFinite(nVal) ? nVal : 0
+/* ===========================
+      FORMATO CRC
+=========================== */
+const formatCRC = (value: any): string => {
+  const n = Number(value)
   try {
-    return new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', maximumFractionDigits: 0 }).format(n)
-  } catch (_e) {
-    // fallback: use ₡ with thousand separators
+    return new Intl.NumberFormat('es-CR', {
+      style: 'currency',
+      currency: 'CRC',
+      maximumFractionDigits: 0
+    }).format(n)
+  } catch {
     return '₡' + n.toLocaleString('es-CR')
   }
 }
