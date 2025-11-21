@@ -13,10 +13,6 @@ import { TransmissionEnum } from '../../enums/TransmissionEnum'
 const HomeWrapper: React.FC = () => {
   const ctx = useContext(HomeContext)
   const [pageModal, setPageModal] = useState(1)
-  const [yearFrom, setYearFrom] = useState<number>(0)
-  const [yearTo, setYearTo] = useState<number>(0)
-  const [priceFrom, setPriceFrom] = useState<number>(0)
-  const [priceTo, setPriceTo] = useState<number>(0)
 
   /// referencias del los filtros avanzados
   const brandRef = useRef<HTMLSelectElement>(null)
@@ -24,10 +20,6 @@ const HomeWrapper: React.FC = () => {
   const styleRef = useRef<HTMLSelectElement>(null)
   const colorExtRef = useRef<HTMLInputElement>(null)
   const colorInterRef = useRef<HTMLInputElement>(null)
-  const yearFromRef = useRef<HTMLInputElement>(null)
-  const yearToRef = useRef<HTMLInputElement>(null)
-  const priceFromRef = useRef<HTMLInputElement>(null)
-  const priceToRef = useRef<HTMLInputElement>(null)
   const displacementsRef = useRef<HTMLSelectElement>(null)
   const transmissionsRef = useRef<HTMLSelectElement>(null)
   const fuelRef = useRef<HTMLSelectElement>(null)
@@ -48,46 +40,8 @@ const HomeWrapper: React.FC = () => {
 
   // initialize range state values from catalog bounds (catalog arrays are already ordered)
   useEffect(() => {
-    const years = ctx?.catalog?.years ?? []
-    if (Array.isArray(years) && years.length > 0) {
-      const minY = parseInt(String(years[0].desc)) || 0
-      const maxY = parseInt(String(years[years.length - 1].desc)) || minY
-      setYearFrom(minY)
-      setYearTo(maxY)
-    }
-
-    const prices = ctx?.catalog?.prices ?? []
-    if (Array.isArray(prices) && prices.length > 0) {
-      const minP = prices[0].price ?? 0
-      const maxP = prices[prices.length - 1].price ?? minP
-      setPriceFrom(minP)
-      setPriceTo(maxP)
-    }
   }, [ctx?.catalog])
 
-  // compute min/max locally without mutating catalog arrays (avoid using .reverse())
-  const minYear = (() => {
-    const y = ctx?.catalog?.years
-    return Array.isArray(y) && y.length > 0 ? parseInt(String(y[0].desc)) : 0
-  })()
-  const maxYear = (() => {
-    const y = ctx?.catalog?.years
-    return Array.isArray(y) && y.length > 0 ? parseInt(String(y[y.length - 1].desc)) : 0
-  })()
-  const minPrice = (() => {
-    const p = ctx?.catalog?.prices
-    return Array.isArray(p) && p.length > 0 ? p[0].price : 0
-  })()
-  const maxPrice = (() => {
-    const p = ctx?.catalog?.prices
-    return Array.isArray(p) && p.length > 0 ? p[p.length - 1].price : 0
-  })()
-
-  const percentPos = (value: number, min: number, max: number): number => {
-    const range = max - min
-    const safeRange = Number.isFinite(range) && range !== 0 ? range : 1
-    return ((value - min) / safeRange) * 100
-  }
   return (
     <div className={styles.container}>
       <div className={`${styles.child} ${styles.childFilters}`}>
@@ -150,98 +104,6 @@ const HomeWrapper: React.FC = () => {
               <input style={{ width: '100%' }} className='glass' type='text' name='colorInter' id='colorInter' placeholder='busque su color preferido' ref={colorInterRef} />
             </span>
 
-            <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
-              <label htmlFor='year-from'>Año :</label>
-              <div>
-                <div className='rangeWrapper'>
-                  <input
-                    id='year-from'
-                    type='range'
-                    className='glass range'
-                    min={minYear}
-                    max={maxYear}
-                    value={yearFrom}
-                    step={1}
-                    onChange={e => setYearFrom(Number(e.target.value))}
-                    onInput={e => setYearFrom(Number((e.target as HTMLInputElement).value))}
-                    ref={yearFromRef}
-                  />
-                  {/* tooltip positioned according to value percent */}
-                  <div
-                    className='rangeTooltip'
-                    style={{ left: `${percentPos(yearFrom, minYear, maxYear)}%` }}
-                  >
-                    {yearFrom}
-                  </div>
-                </div>
-
-                <div className='rangeWrapper'>
-                  <input
-                    id='year-to'
-                    type='range'
-                    className='glass range'
-                    min={minYear}
-                    max={maxYear}
-                    value={yearTo}
-                    onChange={e => setYearTo(Number(e.target.value))}
-                    onInput={e => setYearTo(Number((e.target as HTMLInputElement).value))}
-                    ref={yearToRef}
-                  />
-                  <div
-                    className='rangeTooltip'
-                    style={{ left: `${percentPos(yearTo, minYear, maxYear)}%` }}
-                  >
-                    {yearTo}
-                  </div>
-                </div>
-              </div>
-            </span>
-            <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
-              <label htmlFor='price-from'>Precio :</label>
-              <div>
-                <div className='rangeWrapper'>
-                  <input
-                    id='price-from'
-                    type='range'
-                    className='glass range'
-                    min={minPrice}
-                    max={maxPrice}
-                    value={priceFrom}
-                    step={250000}
-                    onChange={e => setPriceFrom(Number(e.target.value))}
-                    onInput={e => setPriceFrom(Number((e.target as HTMLInputElement).value))}
-                    ref={priceFromRef}
-                  />
-                  <div
-                    className='rangeTooltip'
-                    style={{ left: `${percentPos(priceFrom, minPrice, maxPrice)}%` }}
-                  >
-                    {priceFrom.toLocaleString('CR-cr')}
-                  </div>
-                </div>
-
-                <div className='rangeWrapper'>
-                  <input
-                    id='price-to'
-                    type='range'
-                    className='glass range'
-                    min={minPrice}
-                    max={maxPrice}
-                    value={priceTo}
-                    step={250000}
-                    onChange={e => setPriceTo(Number(e.target.value))}
-                    onInput={e => setPriceTo(Number((e.target as HTMLInputElement).value))}
-                    ref={priceToRef}
-                  />
-                  <div
-                    className='rangeTooltip'
-                    style={{ left: `${percentPos(priceTo, minPrice, maxPrice)}%` }}
-                  >
-                    {priceTo.toLocaleString('CR-cr')}
-                  </div>
-                </div>
-              </div>
-            </span>
             <span style={{ alignSelf: 'stretch' }} className={pageModal === 2 ? '' : 'hide'}>
               <label htmlFor='displacements'>Cilindraje :</label>
               <select id='displacements' defaultValue={0} className='glass' ref={displacementsRef}>
@@ -320,14 +182,12 @@ const HomeWrapper: React.FC = () => {
                     style: styleRef.current?.value,
                     colorExt: colorExtRef.current?.value,
                     colorInter: colorInterRef.current?.value,
-                    yearFrom: yearFromRef.current?.value,
-                    yearTo: yearToRef.current?.value,
-                    priceFrom: priceFromRef.current?.value,
-                    priceTo: priceToRef.current?.value,
                     dors: dorsRef.current?.value,
                     fuel: fuelRef.current?.value,
                     orderByPrice: orderByPriceRef.current?.checked,
-                    orderByYear: orderByYearRef.current?.checked
+                    orderByYear: orderByYearRef.current?.checked,
+                    transmissions: transmissionsRef.current?.value,
+                    displacements: displacementsRef.current?.value
                   }
                 )
               }}

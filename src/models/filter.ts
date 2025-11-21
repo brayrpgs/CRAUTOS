@@ -4,10 +4,6 @@ export interface filter {
   style?: string
   colorExt?: string
   colorInter?: string
-  yearFrom?: string
-  yearTo?: string
-  priceFrom?: string
-  priceTo?: string
   displacements?: string
   transmissions?: string
   fuel?: string

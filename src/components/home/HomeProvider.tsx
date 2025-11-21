@@ -7,6 +7,7 @@ import type { catalog } from '../../models/catalog'
 import type { Prices } from '../../models/Prices'
 import type { Dors } from '../../models/dors'
 import type { filter } from '../../models/filter'
+import { TransmissionEnum } from '../../enums/TransmissionEnum'
 
 interface HomeProviderProps {
   children: React.ReactNode
@@ -93,48 +94,42 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
         query += `&id_users=neq.${loggedId}`
       }
 
-      if (filters?.brand !== undefined) {
-        query += `&id_brands=eq.${filters.brand}`
+      if (filters?.brand !== '0') {
+        query += `&id_brands=eq.${filters?.brand as string}`
       }
-      if (filters?.model !== undefined) {
-        query += `&id_models=eq.${filters.model}`
+      if (filters?.model !== '0') {
+        query += `&id_models=eq.${filters?.model as string}`
       }
-      if (filters?.style !== undefined) {
-        query += `&id_styles=eq.${filters.style}`
+      if (filters?.style !== '0') {
+        query += `&id_styles=eq.${filters?.style as string}`
       }
-      if (filters?.colorExt !== undefined) {
-        query += `&color_ext=ilike.*${filters.colorExt}*`
+      if (filters?.colorExt !== '') {
+        query += `&exterior_color=ilike.*${filters?.colorExt as string}*`
       }
-      if (filters?.colorInter !== undefined) {
-        query += `&color_int=ilike.*${filters.colorInter}*`
+      if (filters?.colorInter !== '') {
+        query += `&interior_color=ilike.*${filters?.colorInter as string}*`
       }
-      if (filters?.yearFrom !== undefined) {
-        query += `&id_years=gte.${filters.yearFrom}`
+      if (filters?.dors !== '') {
+        query += `&number_of_doors=eq.${filters?.dors as string}`
       }
-      if (filters?.yearTo !== undefined) {
-        query += `&id_years=lte.${filters.yearTo}`
+      if (filters?.fuel !== '0') {
+        query += `&id_fuel=eq.${filters?.fuel as string}`
       }
-      if (filters?.priceFrom !== undefined) {
-        query += `&price=gte.${filters.priceFrom}`
+      if (filters?.transmissions !== '0') {
+        query += `&id_transmission=eq.${filters?.transmissions as string}`
       }
-      if (filters?.priceTo !== undefined) {
-        query += `&price=lte.${filters.priceTo}`
-      }
-      if (filters?.dors !== undefined) {
-        query += `&dors=eq.${filters.dors}`
-      }
-      if (filters?.fuel !== undefined) {
-        query += `&id_fuel=eq.${filters.fuel}`
-      }
-      if (filters?.orderByPrice !== undefined) {
-        query += '&order=price.asc'
-      }
-      if (filters?.orderByYear !== undefined) {
-        query += '&order=id_years.asc'
+      if (filters?.displacements !== '0') {
+        query += `&id_displacement=eq.${filters?.displacements as string}`
       }
       // Campos a seleccionar
       query += '&select=*,brands(*),models(*),styles(*),transmissions(*),displacements(*),fuel(*),years(*),audit(*),users(*),cars_images(images(*))'
 
+      if (filters?.orderByPrice as boolean) {
+        query += '&order=price.asc'
+      }
+      if (filters?.orderByYear as boolean) {
+        query += '&order=id_year.asc'
+      }
       // Petición con paginación
       const request = await fetch(query, {
         method: 'GET',
@@ -160,6 +155,11 @@ const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
       console.error('Error cargando autos', error)
     }
   }
+  useEffect(() => {
+    if (filters != null) {
+      void fetchDataWithQuery()
+    }
+  }, [filters, page])
 
   // filter brands
   const fetchFilterBrands = async (data: Cars[] = []): Promise<Cars[]> => {
